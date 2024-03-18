@@ -1,0 +1,45 @@
+@import "../theme";
+
+.profile {
+  &.container {
+    margin-top: 2em;
+    min-height: 300px;
+    @include center;
+    flex-direction: column;
+  }
+  &.form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 60%;
+    max-width: 30em;
+    height: 20em;
+    font-size: 18px;
+    font-weight: 400;
+    padding-left: 37px;
+    padding-right: 37px;
+    border-radius: 0.75em;
+    background-color: $background;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    box-shadow: $dropShadow;
+    }
+  &.user-list {
+    list-style: none;
+    padding-left: 0;
+  }
+}
+
+.player {
+  &.container {
+    width: 100%;
+    padding-left: 20px;
+    margin-top: 20px;
+  }
+  &.list-item {
+    display: flex;
+    align-items: center;
+  }
+  &.info-item {
+    margin-bottom: 10px;
+  }
+}

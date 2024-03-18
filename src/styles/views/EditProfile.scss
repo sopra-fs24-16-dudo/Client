@@ -1,0 +1,53 @@
+@import "../theme";
+
+.editprofile {
+  &.container {
+    margin-top: 2em;
+    min-height: 300px;
+    @include center;
+    flex-direction: column;
+  }
+  &.form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 60%;
+    max-width: 30em;
+    height: 20em;
+    font-size: 18px;
+    font-weight: 400;
+    padding-left: 37px;
+    padding-right: 37px;
+    border-radius: 0.75em;
+    background-color: $background;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    box-shadow: $dropShadow;
+    }
+  &.user-list {
+    list-style: none;
+    padding-left: 1em;
+  }
+  &.field {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: 0.5em;
+  }
+  &.input {
+    height: 35px;
+    font-weight: 500;
+    padding-left: 15px;
+    margin-left: -4px;
+    border: none;
+    border-radius: 0.75em;
+    margin-bottom: 0.75em;
+    background: transparentize(rgb(62, 132, 216), 0.85);
+    color: $textColor;
+  }
+  &.label {
+    color: $textColor;
+    margin-bottom: 5px;
+    font-weight: 300;
+    margin-top: 10px;
+  }
+}
