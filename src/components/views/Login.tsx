@@ -74,16 +74,7 @@ const Login = () => {
             </div>
             <div className="Column2">
               <div className="Div5">
-              <span style={{
-                fontFamily: "Libre Bodoni",
-                fontSize: "100px",
-                fontStyle: "normal",
-                fontVariantLigatures: "normal",
-                fontVariantCaps: "normal",
-                fontWeight: 400
-              }}>
                 Dudo
-              </span>
               </div>
             </div>
             <div className="Column3">
@@ -96,10 +87,7 @@ const Login = () => {
           </div>
         </div>
         <div className="Div6">
-          <br />
-          <span style={{ fontFamily: "Libre Bodoni", fontSize: "50px" }}>
           Roll, Bid, and Bluff Your Way to Victory
-        </span>
         </div>
         <div className="Div7">
           <div className="Div8">Username</div>
@@ -111,7 +99,4 @@ const Login = () => {
   );
 };
 
-  /**
- * You can get access to the history object's properties via the useLocation, useNavigate, useParams, ... hooks.
- */
 export default Login;
