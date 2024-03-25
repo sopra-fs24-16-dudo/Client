@@ -1,9 +1,24 @@
 {
   "compilerOptions": {
     "jsx": "react",
-    "baseUrl": "src"
+    "baseUrl": "src",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
   },
+
   "include": [
     "src"
-  ]
+  ],
+
+  "resolve": {
+    "extensions": [
+      ".ts",
+      ".tsx",
+      ".js",
+      ".jsx",
+      ".json",
+      ".png"
+    ]
+  }
 }

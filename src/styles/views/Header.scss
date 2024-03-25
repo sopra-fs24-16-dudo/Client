@@ -7,7 +7,17 @@
 
   &.title {
     font-weight: bold;
-    color: $background;
+    color: #ffffff;
     text-align: center;
+    margin-left: 50px;
+    margin-right: 50px;
+  }
+
+  &.header h2 {
+    font-weight: bold;
+    color: #ffffff;
+    text-align: center;
+    margin-left: 50px;
+    margin-right: 50px;
   }
 }

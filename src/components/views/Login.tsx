@@ -4,6 +4,7 @@ import User from "models/User";
 import {useNavigate} from "react-router-dom";
 import { Button } from "components/ui/Button";
 import "styles/views/Login.scss";
+import Header from "components/views/Header";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
 
@@ -61,41 +62,39 @@ const Login = () => {
   }
 
   return (
-    <div className="Div">
-      <div className="Div2">
-        <div className="Div3">
-          <div className="Div4">
-            <div className="Column">
-              <img
-                loading="lazy"
-                srcSet="https://cdn.builder.io/api/v1/image/assets%2Fc5149f80998544599b064363e6cf88da%2Fb3223ee50ca84556b9540adede97590c?width=100 100w, https://cdn.builder.io/api/v1/image/assets%2Fc5149f80998544599b064363e6cf88da%2Fb3223ee50ca84556b9540adede97590c?width=200 200w, https://cdn.builder.io/api/v1/image/assets%2Fc5149f80998544599b064363e6cf88da%2Fb3223ee50ca84556b9540adede97590c?width=400 400w, https://cdn.builder.io/api/v1/image/assets%2Fc5149f80998544599b064363e6cf88da%2Fb3223ee50ca84556b9540adede97590c?width=800 800w, https://cdn.builder.io/api/v1/image/assets%2Fc5149f80998544599b064363e6cf88da%2Fb3223ee50ca84556b9540adede97590c?width=1200 1200w, https://cdn.builder.io/api/v1/image/assets%2Fc5149f80998544599b064363e6cf88da%2Fb3223ee50ca84556b9540adede97590c?width=1600 1600w, https://cdn.builder.io/api/v1/image/assets%2Fc5149f80998544599b064363e6cf88da%2Fb3223ee50ca84556b9540adede97590c?width=2000 2000w, https://cdn.builder.io/api/v1/image/assets%2Fc5149f80998544599b064363e6cf88da%2Fb3223ee50ca84556b9540adede97590c"
-                className="Img"
-              />
-            </div>
-            <div className="Column2">
-              <div className="Div5">
-                Dudo
-              </div>
-            </div>
-            <div className="Column3">
-              <img
-                loading="lazy"
-                srcSet="https://cdn.builder.io/api/v1/image/assets%2Fc5149f80998544599b064363e6cf88da%2Ff61ebad238f2460fa82781fbaf0546cc?width=100 100w, https://cdn.builder.io/api/v1/image/assets%2Fc5149f80998544599b064363e6cf88da%2Ff61ebad238f2460fa82781fbaf0546cc?width=200 200w, https://cdn.builder.io/api/v1/image/assets%2Fc5149f80998544599b064363e6cf88da%2Ff61ebad238f2460fa82781fbaf0546cc?width=400 400w, https://cdn.builder.io/api/v1/image/assets%2Fc5149f80998544599b064363e6cf88da%2Ff61ebad238f2460fa82781fbaf0546cc?width=800 800w, https://cdn.builder.io/api/v1/image/assets%2Fc5149f80998544599b064363e6cf88da%2Ff61ebad238f2460fa82781fbaf0546cc?width=1200 1200w, https://cdn.builder.io/api/v1/image/assets%2Fc5149f80998544599b064363e6cf88da%2Ff61ebad238f2460fa82781fbaf0546cc?width=1600 1600w, https://cdn.builder.io/api/v1/image/assets%2Fc5149f80998544599b064363e6cf88da%2Ff61ebad238f2460fa82781fbaf0546cc?width=2000 2000w, https://cdn.builder.io/api/v1/image/assets%2Fc5149f80998544599b064363e6cf88da%2Ff61ebad238f2460fa82781fbaf0546cc"
-                className="Img2"
-              />
-            </div>
+    <BaseContainer>
+      <div className="login container">
+        <div className="login form">
+          <FormField
+            placeholder="Username"
+            value={username}
+            onChange={(un: string) => setUsername(un)}
+          />
+          <FormField
+            placeholder="Password"
+            value={name}
+            onChange={(n) => setName(n)}
+          />
+          <div className="login button-container">
+            <Button
+              disabled={!username || !name}
+              width="100%"
+              onClick={() => doLogin()}
+            >
+              Login
+            </Button>
+            <Button
+              width="100%"
+              onClick={() => doRegistration()}
+              className="secondary-button"
+            >
+              Create an Account
+            </Button>
           </div>
         </div>
-        <div className="Div6">
-          Roll, Bid, and Bluff Your Way to Victory
-        </div>
-        <div className="Div7">
-          <div className="Div8">Username</div>
-          <div className="Div9" />
-          <div className="Div10">login</div>
-        </div>
       </div>
-    </div>
+    </BaseContainer>
+
   );
 };
 

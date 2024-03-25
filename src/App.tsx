@@ -11,7 +11,8 @@ import AppRouter from "./components/routing/routers/AppRouter";
 const App = () => {
   return (
     <div>
-      <AppRouter />
+      <Header width ="100px"/>
+      <AppRouter/>
     </div>
   );
 };

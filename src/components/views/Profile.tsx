@@ -22,6 +22,7 @@ const Player = ({ user, isCurrentUser }: { user: User, isCurrentUser: boolean })
         <div className="player info-item">Birthday: {user.birthday}</div>
         <div className="player info-item">Creation Date: {user.creationDate}</div>
         <div className="player info-item">Status: {user.status}</div>
+
         {isCurrentUser && (
           <div className="player info-item">
             <Button onClick={handleEditProfile}>Edit Profile</Button>

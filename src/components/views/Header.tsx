@@ -1,5 +1,4 @@
 import React from "react";
-import {ReactLogo} from "../ui/ReactLogo";
 import PropTypes from "prop-types";
 import "../../styles/views/Header.scss";
 
@@ -11,18 +10,19 @@ import "../../styles/views/Header.scss";
  * https://react.dev/learn/your-first-component and https://react.dev/learn/passing-props-to-a-component 
  * @FunctionalComponent
  */
-const Header = props => (
-  <div className="header container" style={{height: props.height}}>
-    <h1 className="header title">SoPra FS24 rocks with React!</h1>
-    <ReactLogo width="60px" height="60px"/>
+const Header = (props) => (
+  <div className="header container" style={{ height: props.height }}>
+    <img src="/assets/Poker_Chips.png" alt="Poker_Chips" width="80px" height="70px" />
+    <div>
+      <h1 className="header title">Dudo</h1>
+      <h2 className="header undertitle">Roll, Bid and Bluff your Way to Victory</h2>
+    </div>
+    <img src="/assets/Dices.png" alt="Dices" width="100px" height="80px" />
   </div>
 );
+
 
 Header.propTypes = {
   height: PropTypes.string,
 };
-
-/**
- * Don't forget to export your component!
- */
 export default Header;

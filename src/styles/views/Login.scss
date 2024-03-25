@@ -1,176 +1,48 @@
+@import "../theme";
 
-.Div {
-  align-items: center;
-  background-color: #486c50;
-  display: flex;
-  color: #fff;
-  font-weight: 400;
-  text-align: center;
-  justify-content: center;
-  padding: 80px 60px;
-}
-
-@media (max-width: 991px) {
-  .Div {
-    padding: 0 20px;
-  }
-}
-
-.Div2 {
-  display: flex;
-  margin-top: 12px;
-  width: 873px;
-  max-width: 100%;
-  flex-direction: column;
-}
-
-.Div3 {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  margin-left: 20px;
-}
-
-.Div4 {
-  gap: 20px;
-  display: flex;
-}
-
-@media (max-width: 991px) {
-  .Div4 {
+.login {
+  &.container {
+    margin-top: 2em;
+    min-height: 300px;
+    /* we include the center mixin defined in _theme.scss and save three duplicate lines :) */
+    @include center;
     flex-direction: column;
-    align-items: stretch;
-    gap: 0px;
   }
-}
-
-.Column {
-  display: flex;
-  flex-direction: column;
-  line-height: normal;
-  width: 33%;
-  margin-left: 0px;
-}
-
-@media (max-width: 991px) {
-  .Column {
-    width: 100%;
+  &.form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 60%;
+    max-width: 30em;
+    height: 20em;
+    font-size: 16px;
+    font-weight: 300;
+    padding-left: 37px;
+    padding-right: 37px;
+    border-radius: 0.75em;
+    background-color: $background;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    box-shadow: $dropShadow;
   }
-}
-
-.Img {
-  aspect-ratio: 1.36;
-  object-fit: cover;
-  object-position: center;
-  width: 100%;
-  margin-top: 20px;
-  min-height: 20px;
-  min-width: 20px;
-  overflow: hidden;
-  max-width: 188px;
-}
-
-.Column2 {
-  display: flex;
-  flex-direction: column;
-  line-height: normal;
-  width: 33%;
-  margin-left: 20px;
-}
-
-@media (max-width: 991px) {
-  .Column2 {
-    width: 100%;
+  &.field {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
-}
-
-.Div5 {
-  font: 60px Inter, sans-serif;
-  margin-top: 60px;
-  height: auto;
-}
-
-.Column3 {
-  display: flex;
-  flex-direction: column;
-  line-height: normal;
-  width: 33%;
-  margin-left: 20px;
-}
-
-@media (max-width: 991px) {
-  .Column3 {
-    width: 100%;
+  &.input {
+    height: 35px;
+    font-weight: 500;
+    padding-left: 15px;
+    margin-left: -4px;
+    border: none;
+    border-radius: 0.75em;
+    margin-bottom: 2em;
+    background: transparentize(rgb(62, 132, 216), 0.85);
+    color: $textColor;
   }
-}
-
-.Img2 {
-  aspect-ratio: 1.78;
-  object-fit: cover;
-  object-position: center;
-  width: 100%;
-  margin-top: 20px;
-  min-height: 20px;
-  min-width: 20px;
-  overflow: hidden;
-}
-
-.Div6 {
-  font: 30px Inter, sans-serif;
-}
-
-@media (max-width: 991px) {
-  .Div6 {
-    max-width: 100%;
-  }
-}
-
-.Div7 {
-  border-radius: 20px;
-  background-color: rgba(217, 217, 217, 0.15);
-  align-self: center;
-  display: flex;
-  margin-top: 71px;
-  width: 494px;
-  max-width: 100%;
-  flex-direction: column;
-  white-space: nowrap;
-  padding: 48px 72px 80px;
-}
-
-@media (max-width: 991px) {
-  .Div7 {
-    margin-top: 40px;
-    white-space: initial;
-    padding: 0 20px;
-  }
-}
-
-.Div8 {
-  align-self: center;
-  font: 25px Libre Bodoni, sans-serif;
-}
-
-.Div9 {
-  border-radius: 20px;
-  background-color: rgba(217, 217, 217, 0.2);
-  height: 62px;
-}
-
-.Div10 {
-  border-radius: 20px;
-  background-color: #ccc;
-  align-items: center;
-  justify-content: center;
-  margin: 60px 0 80px;
-  padding: 12px 60px;
-  font: 30px Libre Bodoni, sans-serif;
-}
-
-@media (max-width: 991px) {
-  .Div10 {
-    white-space: initial;
-    margin: 40px 0;
-    padding: 0 20px;
+  &.button-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 }

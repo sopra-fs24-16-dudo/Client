@@ -9,14 +9,14 @@ import "styles/views/Game.scss";
 import { User } from "types";
 
 const Game = () => {
-  // use react-router-dom's hook to access navigation, more info: https://reactrouter.com/en/main/hooks/use-navigate 
+  // use react-router-dom's hook to access navigation, more info: https://reactrouter.com/en/main/hooks/use-navigate
   const navigate = useNavigate();
 
   // define a state variable (using the state hook).
   // if this variable changes, the component will re-render, but the variable will
   // keep its value throughout render cycles.
   // a component can have as many state variables as you like.
-  // more information can be found under https://react.dev/learn/state-a-components-memory and https://react.dev/reference/react/useState 
+  // more information can be found under https://react.dev/learn/state-a-components-memory and https://react.dev/reference/react/useState
   const [users, setUsers] = useState<User[]>(null);
   const [id, setUserId] = useState<number>(null);
 
@@ -35,13 +35,13 @@ const Game = () => {
   };
 
   const logout = async () => {
-    try { 
-      
+    try {
+
       // Call the backend API to update the user's status to "offline"
       const requestBody = JSON.stringify({id});
 
       await api.put("/logout", requestBody);
-      
+
       localStorage.removeItem("token");
       localStorage.removeItem("id");
 
@@ -56,7 +56,7 @@ const Game = () => {
   // the effect hook can be used to react to change in your component.
   // in this case, the effect hook is only run once, the first time the component is mounted
   // this can be achieved by leaving the second argument an empty array.
-  // for more information on the effect hook, please see https://react.dev/reference/react/useEffect 
+  // for more information on the effect hook, please see https://react.dev/reference/react/useEffect
   useEffect(() => {
 
     const storedUserId = localStorage.getItem("id");
@@ -74,7 +74,7 @@ const Game = () => {
 
         // Get the returned users and update the state.
         setUsers(response.data);
-        
+
       } catch (error) {
         console.error(
           `Something went wrong while fetching the users: \n${handleError(
