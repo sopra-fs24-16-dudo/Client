@@ -16,14 +16,13 @@ const Game = () => {
   };
 
   const createLobby = async ()  => {
+
     try {
+      console.log("Response Data:"); // Log response data
       const response = await api.post("/lobbies");
-
-      // Get the returned user and update a new object.
+      console.log("Response Data:", response.data); // Log response data
       const lobby = new Lobby (response.data);
-
       localStorage.setItem("id", lobby.id);
-
       // Login successfully worked --> navigate to the route /game in the GameRouter
       navigate("/lobby");
     } catch (error) {
