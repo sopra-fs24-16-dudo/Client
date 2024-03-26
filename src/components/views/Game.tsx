@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { api, handleError } from "helpers/api";
 import { Button } from "components/ui/Button";
 import { useNavigate } from "react-router-dom";
@@ -9,10 +9,20 @@ import Lobby from "models/Lobby";
 const Game = () => {
   const navigate = useNavigate();
   const [lobbyId, setLobbyId] = useState<string>("");
+  const [id, setUserId] = useState<number>(null);
 
-  const joinLobby = () => {
-    // Functionality for joining a lobby goes here
-    // For now, it doesn't do anything
+  const joinLobby = async () => {
+    try {
+      const requestBody = JSON.stringify(lobbyId);
+
+      await api.put("/lobby/user", requestBody);
+
+      navigate("/lobby/${lobbyId}");
+    } catch (error) {
+      alert(
+        `Something went wrong while trying to join a lobby: \n${handleError(error)}`
+      );
+    }
   };
 
   const createLobby = async ()  => {
@@ -32,6 +42,33 @@ const Game = () => {
     }
   };
 
+  const logout = async () => {
+    try { 
+      
+      // Call the backend API to update the user's status to "offline"
+      const requestBody = JSON.stringify({id});
+      console.log(requestBody);
+
+      await api.put("/logout", requestBody);
+      
+      localStorage.removeItem("token");
+      localStorage.removeItem("id");
+
+      // Navigate to the login page
+      navigate("/login");
+    } catch (error) {
+      console.error("Error logging out:", error);
+      alert("Failed to logout. Please try again.");
+    }
+  }
+
+  useEffect(() => {
+
+    const storedUserId = localStorage.getItem("id");
+    setUserId(storedUserId);  
+
+  }, []);
+
   return (
     <BaseContainer className="game container">
       <h2>Join or create lobby</h2>
@@ -49,6 +86,9 @@ const Game = () => {
           </Button>
           <Button width="100%" onClick={createLobby}>
             Create Lobby
+          </Button>
+          <Button width="100%" onClick={logout}>
+            Logout
           </Button>
         </div>
       </div>
