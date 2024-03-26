@@ -33,25 +33,16 @@
   }
 }
 
-.player {
-  &.container {
-    margin: 0.5em 0;
-    min-width: 20em;
-    padding: 10px;
-    border-radius: $borderRadius;
+.lobby-form {
     display: flex;
-    align-items: center;
-    background: lighten($background, 5);
-  }
-  &.username {
-    font-weight: 500;
-    color: $accent;
-  }
-  &.list-item {
-    display: flex;
+    flex-direction: column;
     align-items: center;
   }
-  &.profile-button {
-    margin-left: auto;
-  }
+
+.button-container {
+  margin-top: -20px; /* Adjust as needed */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Adjust as needed */
 }
