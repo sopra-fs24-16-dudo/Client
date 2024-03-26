@@ -9,6 +9,11 @@ import Profile from "../../views/Profile";
 import {ProfileGuard} from "../routeProtectors/ProfileGuard";
 import EditProfile from "../../views/EditProfile";
 import {EditProfileGuard} from "../routeProtectors/EditProfileGuard";
+import Lobby from "../../views/Lobby";
+
+function LobbyGuard() {
+  return null;
+}
 
 /**
  * Main router of your application.
@@ -41,6 +46,10 @@ const AppRouter = () => {
         </Route>
         
         <Route path="/registration" element={<Registration/>} />
+
+        <Route path="/lobby" element={<LobbyGuard />}>
+          <Route path="/lobby" element={<Lobby/>} />
+        </Route>
 
         <Route path="/" element={
           <Navigate to="/game" replace />

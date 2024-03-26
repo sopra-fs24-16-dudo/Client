@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { api, handleError } from "helpers/api";
 import { Button } from "components/ui/Button";
 import { useNavigate } from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
 import "styles/views/Game.scss";
+import Lobby from "models/Lobby";
 
 const Game = () => {
   const navigate = useNavigate();
@@ -13,9 +15,22 @@ const Game = () => {
     // For now, it doesn't do anything
   };
 
-  const createLobby = () => {
-    // Functionality for creating a lobby goes here
-    // For now, it doesn't do anything
+  const createLobby = async ()  => {
+    try {
+      const response = await api.post("/lobbies");
+
+      // Get the returned user and update a new object.
+      const lobby = new Lobby (response.data);
+
+      localStorage.setItem("id", lobby.id);
+
+      // Login successfully worked --> navigate to the route /game in the GameRouter
+      navigate("/lobby");
+    } catch (error) {
+      alert(
+        `Something went wrong while creating a lobby: \n${handleError(error)}`
+      );
+    }
   };
 
   return (
