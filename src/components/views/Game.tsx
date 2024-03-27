@@ -10,14 +10,15 @@ const Game = () => {
   const navigate = useNavigate();
   const [lobbyId, setLobbyId] = useState<string>("");
   const [id, setUserId] = useState<number>(null);
+  
 
   const joinLobby = async () => {
     try {
-      const requestBody = JSON.stringify(lobbyId);
+      const requestBody = JSON.stringify(id);
 
-      await api.put("/lobby/user", requestBody);
+      await api.put(`/lobby/user/${lobbyId}`, requestBody);
 
-      navigate("/lobby/${lobbyId}");
+      navigate(`/lobby/${lobbyId}`);
     } catch (error) {
       alert(
         `Something went wrong while trying to join a lobby: \n${handleError(error)}`
@@ -28,13 +29,14 @@ const Game = () => {
   const createLobby = async ()  => {
 
     try {
-      console.log("Response Data:"); // Log response data
       const response = await api.post("/lobbies");
       console.log("Response Data:", response.data); // Log response data
       const lobby = new Lobby (response.data);
-      localStorage.setItem("id", lobby.id);
+
+      localStorage.setItem("lobbyid", lobby.id);
+
       // Login successfully worked --> navigate to the route /game in the GameRouter
-      navigate("/lobby");
+      navigate(`/lobby/${lobby.id}`);
     } catch (error) {
       alert(
         `Something went wrong while creating a lobby: \n${handleError(error)}`
@@ -46,7 +48,7 @@ const Game = () => {
     try { 
       
       // Call the backend API to update the user's status to "offline"
-      const requestBody = JSON.stringify({id});
+      const requestBody = JSON.stringify(id);
       console.log(requestBody);
 
       await api.put("/logout", requestBody);
@@ -61,7 +63,7 @@ const Game = () => {
       alert("Failed to logout. Please try again.");
     }
   }
-
+  
   useEffect(() => {
 
     const storedUserId = localStorage.getItem("id");

@@ -8,17 +8,9 @@ import PropTypes from "prop-types";
 import "styles/views/Game.scss";
 import { User } from "types";
 
-const Game = () => {
-  // use react-router-dom's hook to access navigation, more info: https://reactrouter.com/en/main/hooks/use-navigate
+const Lobby = () => {
   const navigate = useNavigate();
-
-  // define a state variable (using the state hook).
-  // if this variable changes, the component will re-render, but the variable will
-  // keep its value throughout render cycles.
-  // a component can have as many state variables as you like.
-  // more information can be found under https://react.dev/learn/state-a-components-memory and https://react.dev/reference/react/useState
   const [users, setUsers] = useState<User[]>(null);
-  const [id, setUserId] = useState<number>(null);
 
   const doProfile = (userId: number) => {
     navigate(`/profile/${userId}`);
@@ -33,36 +25,7 @@ const Game = () => {
   Player.propTypes = {
     user: PropTypes.object,
   };
-
-  const logout = async () => {
-    try {
-
-      // Call the backend API to update the user's status to "offline"
-      const requestBody = JSON.stringify({id});
-
-      await api.put("/logout", requestBody);
-
-      localStorage.removeItem("token");
-      localStorage.removeItem("id");
-
-      // Navigate to the login page
-      navigate("/login");
-    } catch (error) {
-      console.error("Error logging out:", error);
-      alert("Failed to logout. Please try again.");
-    }
-  }
-
-  // the effect hook can be used to react to change in your component.
-  // in this case, the effect hook is only run once, the first time the component is mounted
-  // this can be achieved by leaving the second argument an empty array.
-  // for more information on the effect hook, please see https://react.dev/reference/react/useEffect
   useEffect(() => {
-
-    const storedUserId = localStorage.getItem("id");
-    setUserId(storedUserId);
-
-    // effect callbacks are synchronous to prevent race conditions. So we put the async function inside:
     async function fetchData() {
       try {
         const response = await api.get("/users");
@@ -103,10 +66,10 @@ const Game = () => {
             </li>
           ))}
         </ul>
-        <Button width="100%" onClick={() => logout()}>
+        <Button width="100%">
           Create Lobby
         </Button>
-        <Button width="100%" onClick={() => logout()}>
+        <Button width="100%">
           Logout
         </Button>
       </div>
@@ -124,4 +87,4 @@ const Game = () => {
   );
 };
 
-export default Game;
+export default Lobby;
