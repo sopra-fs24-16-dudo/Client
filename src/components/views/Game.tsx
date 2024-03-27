@@ -18,6 +18,8 @@ const Game = () => {
 
       await api.put(`/lobby/user/${lobbyId}`, requestBody);
 
+      localStorage.setItem("lobbyId", lobbyId);
+
       navigate(`/lobby/${lobbyId}`);
     } catch (error) {
       alert(
@@ -33,7 +35,7 @@ const Game = () => {
       console.log("Response Data:", response.data); // Log response data
       const lobby = new Lobby (response.data);
 
-      localStorage.setItem("lobbyid", lobby.id);
+      localStorage.setItem("lobbyId", lobby.id);
 
       // Login successfully worked --> navigate to the route /game in the GameRouter
       navigate(`/lobby/${lobby.id}`);

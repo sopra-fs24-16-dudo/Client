@@ -1,88 +1,88 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { api, handleError } from "helpers/api";
-import { Spinner } from "components/ui/Spinner";
 import { Button } from "components/ui/Button";
-import {useNavigate} from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
-import PropTypes from "prop-types";
-import "styles/views/Game.scss";
-import { User } from "types";
+import { useNavigate, useParams } from "react-router-dom";
+import "styles/views/Lobby.scss";
 
 const Lobby = () => {
+  const [users, setUsers] = useState([]);
+  const [allReady, setAllReady] = useState(false);
   const navigate = useNavigate();
-  const [users, setUsers] = useState<User[]>(null);
 
-  const doProfile = (userId: number) => {
-    navigate(`/profile/${userId}`);
-  }
+  useEffect(() => { 
 
-  const Player = ({ user }: { user: User }) => (
-    <div className="player container" onClick={() => doProfile(user.id)}>
-      <div className="player username">{user.username}</div>
-    </div>
-  );
-
-  Player.propTypes = {
-    user: PropTypes.object,
-  };
-  useEffect(() => {
-    async function fetchData() {
+    async function fetchUsersInLobby () {
       try {
-        const response = await api.get("/users");
-
-        // delays continuous execution of an async operation for 1 second.
-        // This is just a fake async call, so that the spinner can be displayed
-        // feel free to remove it :)
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        // Get the returned users and update the state.
+        const lobbyId = localStorage.getItem("lobbyId");
+        console.log("LobbyID:", lobbyId);
+        const response = await api.get(`/lobby/user/${lobbyId}`);
         setUsers(response.data);
-
+        // Check if all users are ready
+        // const allReady = response.data.every((user) => user.ready);
+        // setAllReady(allReady);
       } catch (error) {
-        console.error(
-          `Something went wrong while fetching the users: \n${handleError(
-            error
-          )}`
-        );
-        console.error("Details:", error);
-        alert(
-          "Something went wrong while fetching the users! See the console for details."
-        );
+        console.error("Error fetching users in lobby:", error);
       }
-    }
-
-    fetchData();
+    };
+    fetchUsersInLobby();
   }, []);
 
-  let content = <Spinner />;
+  const toggleReadyStatus = async () => {
+    try {
+      const updatedUsers = users.map((user) =>
+        user.id === localStorage.getItem("id") ? { ...user, ready: !user.ready } : user
+      );
+      setUsers(updatedUsers);
+      // Check if all users are ready
+      const allReady = updatedUsers.every((user) => user.ready);
+      setAllReady(allReady);
+    } catch (error) {
+      console.error("Error toggling ready status:", error);
+    }
+  };
 
-  if (users) {
-    content = (
-      <div className="game">
-        <ul className="game user-list">
-          {users.map((user: User) => (
-            <li key={user.id} className="player list-item">
-              <Player user={user}/>
-            </li>
-          ))}
-        </ul>
-        <Button width="100%">
-          Create Lobby
-        </Button>
-        <Button width="100%">
-          Logout
-        </Button>
-      </div>
-    );
-  }
+  const leaveLobby = async () => {
+    try {
+      localStorage.removeItem("lobbyId");
+      //await api.delete(⁠ /lobby/user/${lobbyId}/${localStorage.getItem("id")} ⁠);
+      navigate("/game"); // Navigate back to the game page
+    } catch (error) {
+      alert(
+        `Failed to leave the lobby: \n${handleError(error)}`
+      );
+    }
+  };
+
+  const startGame = async () => {
+    try {
+      await api.post("/lobby/start");
+      // Optionally, navigate to the gameplay screen
+    } catch (error) {
+      alert(
+        `Failed to start the game: \n${handleError(error)}`
+      );
+    }
+  };
 
   return (
-    <BaseContainer className="game container">
-      <h2>Homepage</h2>
-      <p className="game paragraph">
-        All users:
-      </p>
-      {content}
+    <BaseContainer className="lobby container">
+      <h2>Lobby</h2>
+      <div className="user-list">
+        <h3>Users in Lobby:</h3>
+        <ul>
+          {users.map((user) => (
+            <li key={user.id}>{user.username}</li>
+          ))}
+        </ul>
+      </div>
+      <div className="button-container">
+        <Button onClick={toggleReadyStatus}>
+          {users.find((user) => user.id === localStorage.getItem("id"))?.ready ? "Unready" : "Ready"}
+        </Button>
+        <Button onClick={leaveLobby}>Leave Lobby</Button>
+        {allReady && <Button onClick={startGame}>Start Game</Button>}
+      </div>
     </BaseContainer>
   );
 };

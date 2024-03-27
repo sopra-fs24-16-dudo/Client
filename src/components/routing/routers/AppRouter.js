@@ -10,10 +10,7 @@ import {ProfileGuard} from "../routeProtectors/ProfileGuard";
 import EditProfile from "../../views/EditProfile";
 import {EditProfileGuard} from "../routeProtectors/EditProfileGuard";
 import Lobby from "../../views/Lobby";
-
-function LobbyGuard() {
-  return null;
-}
+import {LobbyGuard} from "../routeProtectors/LobbyGuard";
 
 /**
  * Main router of your application.
