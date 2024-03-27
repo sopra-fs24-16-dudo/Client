@@ -46,9 +46,8 @@ const Game = () => {
 
   const logout = async () => {
     try { 
-      
       // Call the backend API to update the user's status to "offline"
-      const requestBody = JSON.stringify(id);
+      const requestBody = JSON.stringify({id});
       console.log(requestBody);
 
       await api.put("/logout", requestBody);
