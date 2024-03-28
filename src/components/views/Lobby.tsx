@@ -9,6 +9,8 @@ const Lobby = () => {
   const [users, setUsers] = useState([]);
   const [allReady, setAllReady] = useState(false);
   const navigate = useNavigate();
+  const [showRulesModal, setShowRulesModal] = useState(false);
+  const [rules, setRules] = useState("");
 
   useEffect(() => { 
 
@@ -27,6 +29,20 @@ const Lobby = () => {
     };
     fetchUsersInLobby();
   }, []);
+
+  useEffect(() => {
+    async function fetchRules() {
+      try {
+        const response = await api.get("/rules");
+        setRules(response.data);
+      } catch (error) {
+        console.error("Error fetching rules:", error);
+      }
+    }
+    if (showRulesModal) {
+      fetchRules();
+    }
+  }, [showRulesModal]);
 
   const toggleReadyStatus = async () => {
     try {
@@ -65,6 +81,10 @@ const Lobby = () => {
     }
   };
 
+  const showRules = async () => {
+    setShowRulesModal(true)
+  };
+
   return (
     <BaseContainer className="lobby container">
       <h2>Lobby</h2>
@@ -75,6 +95,9 @@ const Lobby = () => {
             <li key={user.id}>{user.username}</li>
           ))}
         </ul>
+        <a href="#" className="question-image" onClick={showRules}>
+          <img src="/assets/Question.png" alt="Question" width="80px" height="80px" />
+        </a>
       </div>
       <div className="button-container">
         <Button onClick={toggleReadyStatus}>
@@ -83,6 +106,15 @@ const Lobby = () => {
         <Button onClick={leaveLobby}>Leave Lobby</Button>
         {allReady && <Button onClick={startGame}>Start Game</Button>}
       </div>
+      {showRulesModal && (
+        <div className="rules-modal">
+          <div className="rules-content">
+            <h2>Rules</h2>
+            <p>{rules}</p>
+            <Button onClick={() => setShowRulesModal(false)}>Close</Button>
+          </div>
+        </div>
+      )}
     </BaseContainer>
   );
 };
