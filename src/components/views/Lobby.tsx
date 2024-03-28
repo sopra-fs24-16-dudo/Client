@@ -46,7 +46,7 @@ const Lobby = () => {
     try {
       localStorage.removeItem("lobbyId");
       //await api.delete(⁠ /lobby/user/${lobbyId}/${localStorage.getItem("id")} ⁠);
-      navigate("/game"); // Navigate back to the game page
+      navigate("/homepage"); // Navigate back to the Homepage
     } catch (error) {
       alert(
         `Failed to leave the lobby: \n${handleError(error)}`

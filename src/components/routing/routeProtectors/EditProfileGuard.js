@@ -8,7 +8,7 @@ export const EditProfileGuard = () => {
     return <Outlet />;
   }
   
-  return <Navigate to="/game" replace />;
+  return <Navigate to="/homepage" replace />;
 };
 
 EditProfileGuard.propTypes = {
