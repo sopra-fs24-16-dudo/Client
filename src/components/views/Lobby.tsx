@@ -60,6 +60,11 @@ const Lobby = () => {
 
   const leaveLobby = async () => {
     try {
+      const lobbyId = localStorage.getItem("lobbyId");
+      const userId = localStorage.getItem("id");
+      const requestBody = JSON.stringify(userId);
+      await api.post(`/lobby/exit/${lobbyId}`, requestBody);
+
       localStorage.removeItem("lobbyId");
       //await api.delete(⁠ /lobby/user/${lobbyId}/${localStorage.getItem("id")} ⁠);
       navigate("/homepage"); // Navigate back to the Homepage

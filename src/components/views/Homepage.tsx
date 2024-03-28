@@ -31,7 +31,9 @@ const Homepage = () => {
   const createLobby = async ()  => {
 
     try {
-      const response = await api.post("/lobbies");
+      const requestBody = JSON.stringify(id);
+      
+      const response = await api.post("/lobbies", requestBody);
       console.log("Response Data:", response.data); // Log response data
       const lobby = new Lobby (response.data);
 
