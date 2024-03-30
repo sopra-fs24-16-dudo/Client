@@ -11,18 +11,19 @@ const Lobby = () => {
   const navigate = useNavigate();
   const [showRulesModal, setShowRulesModal] = useState(false);
   const [rules, setRules] = useState("");
+  const lobbyId = localStorage.getItem("lobbyId");
+  const userId = localStorage.getItem("id");
 
   useEffect(() => { 
 
     async function fetchUsersInLobby () {
       try {
-        const lobbyId = localStorage.getItem("lobbyId");
         console.log("LobbyID:", lobbyId);
         const response = await api.get(`/lobby/user/${lobbyId}`);
         setUsers(response.data);
-        // Check if all users are ready
-        // const allReady = response.data.every((user) => user.ready);
-        // setAllReady(allReady);
+        const allReady = response.data.every((user) => user.ready);
+        setAllReady(allReady);
+
       } catch (error) {
         console.error("Error fetching users in lobby:", error);
       }
@@ -46,13 +47,17 @@ const Lobby = () => {
 
   const toggleReadyStatus = async () => {
     try {
-      const updatedUsers = users.map((user) =>
-        user.id === localStorage.getItem("id") ? { ...user, ready: !user.ready } : user
-      );
-      setUsers(updatedUsers);
-      // Check if all users are ready
-      const allReady = updatedUsers.every((user) => user.ready);
-      setAllReady(allReady);
+      const requestBody = JSON.stringify(userId);
+      // Send request to update readiness status to the server
+      await api.put(`/lobby/user/${lobbyId}/ready`, requestBody);
+
+      // Check if all users are ready after the update
+      const response = await api.get(`/lobby/user/${lobbyId}/ready`);
+      setAllReady(response.data);
+
+      if (response.data) {
+        navigate("/game");
+      }
     } catch (error) {
       console.error("Error toggling ready status:", error);
     }
@@ -60,13 +65,10 @@ const Lobby = () => {
 
   const leaveLobby = async () => {
     try {
-      const lobbyId = localStorage.getItem("lobbyId");
-      const userId = localStorage.getItem("id");
       const requestBody = JSON.stringify(userId);
+
       await api.post(`/lobby/exit/${lobbyId}`, requestBody);
 
-      localStorage.removeItem("lobbyId");
-      //await api.delete(⁠ /lobby/user/${lobbyId}/${localStorage.getItem("id")} ⁠);
       navigate("/homepage"); // Navigate back to the Homepage
     } catch (error) {
       alert(
@@ -75,16 +77,6 @@ const Lobby = () => {
     }
   };
 
-  const startGame = async () => {
-    try {
-      await api.post("/lobby/start");
-      // Optionally, navigate to the gameplay screen
-    } catch (error) {
-      alert(
-        `Failed to start the game: \n${handleError(error)}`
-      );
-    }
-  };
 
   const showRules = async () => {
     setShowRulesModal(true)
@@ -97,7 +89,9 @@ const Lobby = () => {
         <h3>Users in Lobby:</h3>
         <ul>
           {users.map((user) => (
-            <li key={user.id}>{user.username}</li>
+            <li key={user.id}>{user.username}
+              {user.username} {user.ready ? "- Ready" : ""}
+            </li>
           ))}
         </ul>
         <a href="#" className="question-image" onClick={showRules}>
@@ -105,11 +99,8 @@ const Lobby = () => {
         </a>
       </div>
       <div className="button-container">
-        <Button onClick={toggleReadyStatus}>
-          {users.find((user) => user.id === localStorage.getItem("id"))?.ready ? "Unready" : "Ready"}
-        </Button>
+        <Button onClick={() => toggleReadyStatus()} >Ready</Button>
         <Button onClick={leaveLobby}>Leave Lobby</Button>
-        {allReady && <Button onClick={startGame}>Start Game</Button>}
       </div>
       {showRulesModal && (
         <div className="rules-modal">
