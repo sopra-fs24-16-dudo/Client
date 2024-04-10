@@ -43,3 +43,27 @@
     margin-bottom: 10px;
   }
 }
+
+.user-item.container {
+  position: relative; /* Add relative positioning */
+  /* Other styles */
+}
+
+.status-indicator {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+/* Add more specific styles for online and offline indicators */
+.status-indicator.online {
+  background-color: green;
+}
+
+.status-indicator.offline {
+  background-color: red;
+}

@@ -11,4 +11,5 @@ export const getDomain = () => {
   const devUrl = "http://localhost:8080"
 
   return isProduction() ? prodUrl : devUrl
+
 }

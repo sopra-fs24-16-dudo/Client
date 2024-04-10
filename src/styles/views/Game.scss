@@ -46,3 +46,39 @@
   flex-direction: column;
   gap: 10px; /* Adjust as needed */
 }
+.user-item.container {
+  background-color: #9C9C87;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+  transition: background-color 0.3s ease;
+  width: 100%;
+  max-width: 500px;
+}
+
+.user-item.container:hover {
+  background-color: #a5a592;
+}
+.user-item.container {
+  position: relative; /* Add relative positioning */
+  /* Other styles */
+}
+
+.status-indicator {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+/* Add more specific styles for online and offline indicators */
+.status-indicator.online {
+  background-color: green;
+}
+
+.status-indicator.offline {
+  background-color: red;
+}

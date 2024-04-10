@@ -10,6 +10,7 @@ import {ProfileGuard} from "../routeProtectors/ProfileGuard";
 import EditProfile from "../../views/EditProfile";
 import {EditProfileGuard} from "../routeProtectors/EditProfileGuard";
 import Lobby from "../../views/Lobby";
+import UserList from "../../views/UserList";
 
 function LobbyGuard() {
   return null;
@@ -49,6 +50,10 @@ const AppRouter = () => {
 
         <Route path="/lobby/:lobbyid" element={<LobbyGuard />}>
           <Route path="/lobby/:lobbyid" element={<Lobby/>} />
+        </Route>
+
+        <Route path="/userList" element={<GameGuard/>}>
+          <Route path="/userList" element={<UserList/>} />
         </Route>
 
         <Route path="/" element={
