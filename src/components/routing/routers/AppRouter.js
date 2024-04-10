@@ -1,7 +1,5 @@
 import React from "react";
 import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
-import {GameGuard} from "../routeProtectors/GameGuard";
-import GameRouter from "./GameRouter";
 import {LoginGuard} from "../routeProtectors/LoginGuard";
 import Login from "../../views/Login";
 import Registration from "../../views/Registration";
@@ -11,6 +9,8 @@ import EditProfile from "../../views/EditProfile";
 import {EditProfileGuard} from "../routeProtectors/EditProfileGuard";
 import Lobby from "../../views/Lobby";
 import UserList from "../../views/UserList";
+import { HomepageGuard } from "../routeProtectors/HomepageGuard";
+import Game from "../../views/Game";
 
 function LobbyGuard() {
   return null;
@@ -30,8 +30,8 @@ const AppRouter = () => {
     <BrowserRouter>
       <Routes>
 
-        <Route path="/game/*" element={<GameGuard />}>
-          <Route path="/game/*" element={<GameRouter base="/game"/>} />
+        <Route path="/game/*" element={<HomepageGuard />}>
+          <Route path="/game/*" element={<Game base="/game"/>} />
         </Route>
 
         <Route path="/profile/:userId" element={<ProfileGuard/>}>
@@ -52,7 +52,7 @@ const AppRouter = () => {
           <Route path="/lobby/:lobbyid" element={<Lobby/>} />
         </Route>
 
-        <Route path="/userList" element={<GameGuard/>}>
+        <Route path="/userList" element={<ProfileGuard/>}>
           <Route path="/userList" element={<UserList/>} />
         </Route>
 
