@@ -10,6 +10,7 @@ class User {
     this.status = null;
     this.creationDate = null;
     this.birthday = null;
+    this.readiness = false
     Object.assign(this, data);
   }
 }
