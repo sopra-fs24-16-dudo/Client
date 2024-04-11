@@ -64,10 +64,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 10000; /* Higher than any other content */
 }
 
 .rules-content {
-  background-color: white;
+  background-color: rgb(129, 163, 124);
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
@@ -81,6 +82,8 @@
 
 .rules-content p {
   margin-bottom: 20px;
+  color:rgb(255, 255, 255);
+  font-size: small;
 }
 
 .rules-content button {

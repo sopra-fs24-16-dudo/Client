@@ -30,7 +30,7 @@ const Lobby = () => {
   const [allReady, setAllReady] = useState(false);
   const navigate = useNavigate();
   const [showRulesModal, setShowRulesModal] = useState(false);
-  const [rules, setRules] = useState("");
+  const [rules, setRules] = useState([]);
   const lobbyId = localStorage.getItem("lobbyId");
   const userId = localStorage.getItem("id");
   const [message, setMessage] = useState("");
@@ -148,7 +148,11 @@ const Lobby = () => {
         <div className="rules-modal">
           <div className="rules-content">
             <h2>Rules</h2>
-            <p>{rules}</p>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              {rules.map((rule, index) => (
+                <p key={index}>{rule}</p>
+              ))}
+            </div>
             <Button onClick={() => setShowRulesModal(false)}>Close</Button>
           </div>
         </div>
