@@ -116,12 +116,12 @@ const Lobby = () => {
 
   const sendMessage = async () => {
     //try {
-     // const requestBody = { username: localStorage.getItem("username"), message: message };
+    // const requestBody = { username: localStorage.getItem("username"), message: message };
     //  await api.post(`/lobby/${lobbyId}/chat`, requestBody);
-      // Optionally, you can fetch the updated chat messages here if needed
-   // } catch (error) {
-     // console.error("Error sending message:", error);
-   // }
+    // Optionally, you can fetch the updated chat messages here if needed
+    // } catch (error) {
+    // console.error("Error sending message:", error);
+    // }
   };
 
   return (
