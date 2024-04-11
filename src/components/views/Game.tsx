@@ -63,18 +63,6 @@ const Game = () => {
       alert("Failed to logout. Please try again.");
     }
   }
-  const userList = async ()  => {
-
-    try {
-      const response = await api.get("/users");
-      console.log("Response Data:", response.data); // Log response data
-      navigate("/userList");
-    } catch (error) {
-      alert(
-        "Something went wrong while creating a lobby: \n${handleError(error)}"
-      );
-    }
-  };
   
   useEffect(() => {
 
@@ -100,9 +88,6 @@ const Game = () => {
           </Button>
           <Button width="100%" onClick={createLobby}>
             Create Lobby
-          </Button>
-          <Button width="100%" onClick={userList}>
-            Search Users
           </Button>
           <Button width="100%" onClick={logout}>
             Logout
