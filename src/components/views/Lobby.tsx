@@ -148,7 +148,7 @@ const Lobby = () => {
         <div className="rules-modal">
           <div className="rules-content">
             <h2>Rules</h2>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: "flex", flexDirection: "column" }}>
               {rules.map((rule, index) => (
                 <p key={index}>{rule}</p>
               ))}
