@@ -1,7 +1,7 @@
 import React from "react";
 import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
-import {GameGuard} from "../routeProtectors/GameGuard";
-import GameRouter from "./GameRouter";
+import {HomepageGuard} from "../routeProtectors/HomepageGuard";
+import HomepageRouter from "./HomepageRouter";
 import {LoginGuard} from "../routeProtectors/LoginGuard";
 import Login from "../../views/Login";
 import Registration from "../../views/Registration";
@@ -10,10 +10,7 @@ import {ProfileGuard} from "../routeProtectors/ProfileGuard";
 import EditProfile from "../../views/EditProfile";
 import {EditProfileGuard} from "../routeProtectors/EditProfileGuard";
 import Lobby from "../../views/Lobby";
-
-function LobbyGuard() {
-  return null;
-}
+import {LobbyGuard} from "../routeProtectors/LobbyGuard";
 
 /**
  * Main router of your application.
@@ -29,8 +26,8 @@ const AppRouter = () => {
     <BrowserRouter>
       <Routes>
 
-        <Route path="/game/*" element={<GameGuard />}>
-          <Route path="/game/*" element={<GameRouter base="/game"/>} />
+        <Route path="/homepage/*" element={<HomepageGuard />}>
+          <Route path="/homepage/*" element={<HomepageRouter base="/homepage"/>} />
         </Route>
 
         <Route path="/profile/:userId" element={<ProfileGuard/>}>
@@ -52,7 +49,7 @@ const AppRouter = () => {
         </Route>
 
         <Route path="/" element={
-          <Navigate to="/game" replace />
+          <Navigate to="/homepage" replace />
         }/>
 
       </Routes>
