@@ -11,6 +11,8 @@ import EditProfile from "../../views/EditProfile";
 import {EditProfileGuard} from "../routeProtectors/EditProfileGuard";
 import Lobby from "../../views/Lobby";
 import {LobbyGuard} from "../routeProtectors/LobbyGuard";
+import UsersList from "../../views/UsersList";
+import {UsersListGuard} from "../routeProtectors/UsersListGuard";
 
 /**
  * Main router of your application.
@@ -46,6 +48,10 @@ const AppRouter = () => {
 
         <Route path="/lobby/:lobbyid" element={<LobbyGuard />}>
           <Route path="/lobby/:lobbyid" element={<Lobby/>} />
+        </Route>
+
+        <Route path="/usersList" element={<UsersListGuard />}>
+          <Route path="/usersList" element={<UsersList/>} />
         </Route>
 
         <Route path="/" element={

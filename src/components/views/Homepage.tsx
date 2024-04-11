@@ -66,6 +66,9 @@ const Homepage = () => {
       alert("Failed to logout. Please try again.");
     }
   }
+  const navigateUserList = async () => {
+    navigate("/usersList");
+  }
   
   useEffect(() => {
 
@@ -91,6 +94,9 @@ const Homepage = () => {
           </Button>
           <Button width="100%" onClick={createLobby}>
             Create Lobby
+          </Button>
+          <Button width="100%" onClick={navigateUserList}>
+            User List
           </Button>
           <Button width="100%" onClick={logout}>
             Logout

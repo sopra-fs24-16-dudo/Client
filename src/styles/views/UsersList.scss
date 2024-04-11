@@ -1,0 +1,58 @@
+@import "../theme";
+
+.user-list {
+    &.container {
+      max-width: $DESKTOP_WIDTH;
+      background: $background;
+      padding: 1.5em;
+      border-radius: $borderRadius;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: $dropShadow;
+      min-width: 20em;
+    }
+
+    .user-item {
+      display: flex;
+      align-items: center;
+      transition: background-color 0.3s; /* Add transition for smoother hover effect */
+      border: 2px solid transparent; /* Add border with initial transparent color */
+      border-radius: $borderRadius; /* Use border radius from theme */
+      padding-left: 1em; /* Add padding to increase the size of each item */
+      padding-right: 1em; /* Add padding to increase the size of each item */
+      margin-bottom: 0.1em; /* Add margin between items */
+    }
+
+    .user-item:hover {
+      background-color: rgba(0, 0, 0, 0.1); /* Darken the background color on hover */
+      border-color: $accentDark; /* Use accentDark color for border on hover */
+    }
+
+    .status-circle {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-left: 5px;
+    }
+
+    .ONLINE {
+      background-color: green;
+    }
+
+    .OFFLINE {
+      background-color: red;
+    }
+
+  & p, h2 {
+    margin: 0.5em 0;
+  }
+
+  .button-container {
+    margin-top: -20px; /* Adjust as needed */
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Adjust as needed */
+  }
+}

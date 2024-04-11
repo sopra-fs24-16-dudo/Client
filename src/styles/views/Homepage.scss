@@ -19,14 +19,17 @@
     min-width: 20em;
   }
   &.user-list {
+    width: 100%;
     list-style: none;
-    padding-left: 0;
+    gap: 10px;
   }
   &.user-item {
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 10px;
   }
   & p,h2 {
     margin: 0.5em 0;
