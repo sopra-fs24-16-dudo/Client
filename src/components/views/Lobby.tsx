@@ -4,6 +4,26 @@ import { Button } from "components/ui/Button";
 import BaseContainer from "components/ui/BaseContainer";
 import { useNavigate, useParams } from "react-router-dom";
 import "styles/views/Lobby.scss";
+import PropTypes from "prop-types";
+
+const FormField = (props) => {
+  return (
+    <div className="chat field">
+      <input
+        className="chat input"
+        placeholder={props.placeholder}
+        value={props.value}
+        onChange={(e) => props.onChange(e.target.value)}
+      />
+    </div>
+  );
+};
+
+FormField.propTypes = {
+  placeholder: PropTypes.string,
+  value: PropTypes.string,
+  onChange: PropTypes.func,
+};
 
 const Lobby = () => {
   const [users, setUsers] = useState([]);
@@ -13,6 +33,7 @@ const Lobby = () => {
   const [rules, setRules] = useState("");
   const lobbyId = localStorage.getItem("lobbyId");
   const userId = localStorage.getItem("id");
+  const [message, setMessage] = useState("");
 
   useEffect(() => { 
 
@@ -82,6 +103,27 @@ const Lobby = () => {
     setShowRulesModal(true)
   };
 
+  const handleChange = (event) => {
+    setMessage(event.target.value);
+  };
+
+  const handleSubmit = () => {
+    if (message.trim() !== "") {
+      sendMessage();
+      setMessage(""); // Clear the input field after sending the message
+    }
+  };
+
+  const sendMessage = async () => {
+    //try {
+     // const requestBody = { username: localStorage.getItem("username"), message: message };
+    //  await api.post(`/lobby/${lobbyId}/chat`, requestBody);
+      // Optionally, you can fetch the updated chat messages here if needed
+   // } catch (error) {
+     // console.error("Error sending message:", error);
+   // }
+  };
+
   return (
     <BaseContainer className="lobby container">
       <h2>Lobby</h2>
@@ -99,7 +141,7 @@ const Lobby = () => {
         </a>
       </div>
       <div className="button-container">
-        <Button onClick={() => toggleReadyStatus()} >Ready</Button>
+        <Button onClick={() => toggleReadyStatus()}>Ready</Button>
         <Button onClick={leaveLobby}>Leave Lobby</Button>
       </div>
       {showRulesModal && (
@@ -111,6 +153,22 @@ const Lobby = () => {
           </div>
         </div>
       )}
+      <div className="chat container" >
+        {/* Other chat content */}
+        <FormField
+          placeholder="Type something..."
+          value={message}
+          onChange={(m) => setMessage(m)}
+        />
+        <Button
+          width="30%"
+          style={{ position: "absolute", bottom: "10", right: "0" }}
+          onClick={() => sendMessage()}
+          className="chat button"
+        >
+          Send
+        </Button>
+      </div>
     </BaseContainer>
   );
 };
