@@ -49,7 +49,7 @@ const Login = () => {
       localStorage.setItem("id", user.id);
 
 
-      navigate("/homepage");
+      navigate("/game");
     } catch (error) {
       alert(
         `Something went wrong during the login: \n${handleError(error)}`

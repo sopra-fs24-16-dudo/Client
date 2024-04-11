@@ -1,116 +1,88 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { api, handleError } from "helpers/api";
+import { Spinner } from "components/ui/Spinner";
 import { Button } from "components/ui/Button";
+import {useNavigate} from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
-import { useNavigate, useParams } from "react-router-dom";
-import "styles/views/Lobby.scss";
+import PropTypes from "prop-types";
+import "styles/views/Game.scss";
+import { User } from "types";
 
 const Lobby = () => {
-  const [users, setUsers] = useState([]);
-  const [allReady, setAllReady] = useState(false);
   const navigate = useNavigate();
-  const [showRulesModal, setShowRulesModal] = useState(false);
-  const [rules, setRules] = useState("");
-  const lobbyId = localStorage.getItem("lobbyId");
-  const userId = localStorage.getItem("id");
+  const [users, setUsers] = useState<User[]>(null);
 
-  useEffect(() => { 
+  const doProfile = (userId: number) => {
+    navigate(`/profile/${userId}`);
+  }
 
-    async function fetchUsersInLobby () {
+  const Player = ({ user }: { user: User }) => (
+    <div className="player container" onClick={() => doProfile(user.id)}>
+      <div className="player username">{user.username}</div>
+    </div>
+  );
+
+  Player.propTypes = {
+    user: PropTypes.object,
+  };
+  useEffect(() => {
+    async function fetchData() {
       try {
-        console.log("LobbyID:", lobbyId);
-        const response = await api.get(`/lobby/user/${lobbyId}`);
+        const response = await api.get("/users");
+
+        // delays continuous execution of an async operation for 1 second.
+        // This is just a fake async call, so that the spinner can be displayed
+        // feel free to remove it :)
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        // Get the returned users and update the state.
         setUsers(response.data);
-        const allReady = response.data.every((user) => user.ready);
-        setAllReady(allReady);
 
       } catch (error) {
-        console.error("Error fetching users in lobby:", error);
+        console.error(
+          `Something went wrong while fetching the users: \n${handleError(
+            error
+          )}`
+        );
+        console.error("Details:", error);
+        alert(
+          "Something went wrong while fetching the users! See the console for details."
+        );
       }
-    };
-    fetchUsersInLobby();
+    }
+
+    fetchData();
   }, []);
 
-  useEffect(() => {
-    async function fetchRules() {
-      try {
-        const response = await api.get("/rules");
-        setRules(response.data);
-      } catch (error) {
-        console.error("Error fetching rules:", error);
-      }
-    }
-    if (showRulesModal) {
-      fetchRules();
-    }
-  }, [showRulesModal]);
+  let content = <Spinner />;
 
-  const toggleReadyStatus = async () => {
-    try {
-      const requestBody = JSON.stringify(userId);
-      // Send request to update readiness status to the server
-      await api.put(`/lobby/user/${lobbyId}/ready`, requestBody);
-
-      // Check if all users are ready after the update
-      const response = await api.get(`/lobby/user/${lobbyId}/ready`);
-      setAllReady(response.data);
-
-      if (response.data) {
-        navigate("/game");
-      }
-    } catch (error) {
-      console.error("Error toggling ready status:", error);
-    }
-  };
-
-  const leaveLobby = async () => {
-    try {
-      const requestBody = JSON.stringify(userId);
-
-      await api.post(`/lobby/exit/${lobbyId}`, requestBody);
-
-      navigate("/homepage"); // Navigate back to the Homepage
-    } catch (error) {
-      alert(
-        `Failed to leave the lobby: \n${handleError(error)}`
-      );
-    }
-  };
-
-
-  const showRules = async () => {
-    setShowRulesModal(true)
-  };
-
-  return (
-    <BaseContainer className="lobby container">
-      <h2>Lobby</h2>
-      <div className="user-list">
-        <h3>Users in Lobby:</h3>
-        <ul>
-          {users.map((user) => (
-            <li key={user.id}>{user.username}
-              {user.username} {user.ready ? "- Ready" : ""}
+  if (users) {
+    content = (
+      <div className="game">
+        <ul className="game user-list">
+          {users.map((user: User) => (
+            <li key={user.id} className="player list-item">
+              <Player user={user}/>
             </li>
           ))}
         </ul>
-        <a href="#" className="question-image" onClick={showRules}>
-          <img src="/assets/Question.png" alt="Question" width="80px" height="80px" />
-        </a>
+        <Button width="100%">
+          Create Lobby
+        </Button>
+        <Button width="100%">
+          Logout
+        </Button>
       </div>
-      <div className="button-container">
-        <Button onClick={() => toggleReadyStatus()} >Ready</Button>
-        <Button onClick={leaveLobby}>Leave Lobby</Button>
-      </div>
-      {showRulesModal && (
-        <div className="rules-modal">
-          <div className="rules-content">
-            <h2>Rules</h2>
-            <p>{rules}</p>
-            <Button onClick={() => setShowRulesModal(false)}>Close</Button>
-          </div>
-        </div>
-      )}
+    );
+  }
+
+  return (
+    <BaseContainer className="game container">
+      <h2>Homepage</h2>
+      <p className="game paragraph">
+        All users:
+      </p>
+      {content}
     </BaseContainer>
   );
 };

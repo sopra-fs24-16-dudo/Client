@@ -90,7 +90,7 @@ const Profile = () => {
   }, []);
 
   const doHome = () => {
-    navigate("/homepage");
+    navigate("/game");
   };
 
   const doUserList = () => {

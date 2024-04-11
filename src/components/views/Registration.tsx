@@ -44,8 +44,8 @@ const Registration = () => {
       localStorage.setItem("token", user.token);
       localStorage.setItem("id", user.id);
 
-      // Login successfully worked --> navigate to the route /homepage in the HomepageRouter
-      navigate("/homepage");
+      // Login successfully worked --> navigate to the route /game in the GameRouter
+      navigate("/game");
     } catch (error) {
       alert(
         `Something went wrong during the registration: \n${handleError(error)}`
