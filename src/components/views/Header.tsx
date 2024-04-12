@@ -12,12 +12,12 @@ import "../../styles/views/Header.scss";
  */
 const Header = (props) => (
   <div className="header container" style={{ height: props.height }}>
-    <img src="/assets/Poker_Chips.png" alt="Poker_Chips" width="80px" height="70px" />
+    <img src="/Poker_Chips.png" alt="Poker_Chips" width="80px" height="70px" />
     <div>
       <h1 className="header title">Dudo</h1>
       <h2 className="header undertitle">Roll, Bid and Bluff your Way to Victory</h2>
     </div>
-    <img src="/assets/Dices.png" alt="Dices" width="100px" height="80px" />
+    <img src="/Dices.png" alt="Dices" width="100px" height="80px" />
   </div>
 );
 
