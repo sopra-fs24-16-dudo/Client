@@ -103,25 +103,18 @@ const Lobby = () => {
     setShowRulesModal(true)
   };
 
-  const handleChange = (event) => {
-    setMessage(event.target.value);
-  };
-
-  const handleSubmit = () => {
-    if (message.trim() !== "") {
-      sendMessage();
-      setMessage(""); // Clear the input field after sending the message
-    }
-  };
-
   const sendMessage = async () => {
-    //try {
-    // const requestBody = { username: localStorage.getItem("username"), message: message };
-    //  await api.post(`/lobby/${lobbyId}/chat`, requestBody);
-    // Optionally, you can fetch the updated chat messages here if needed
-    // } catch (error) {
-    // console.error("Error sending message:", error);
-    // }
+    try {
+      const requestBody = JSON.stringify({ message });
+      console.log(`/lobby/chat/${lobbyId}/${userId}`)
+      const response = await api.post(`/lobby/chat/${lobbyId}/${userId}`, requestBody);
+      console.log("Response:", response);
+      setMessage("");
+    } catch (error) {
+      alert(
+        `Something went wrong during the registration: \n${handleError(error)}`
+      );
+    }
   };
 
   return (
