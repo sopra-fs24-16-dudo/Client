@@ -14,8 +14,6 @@ import {LobbyGuard} from "../routeProtectors/LobbyGuard";
 import Game from "../../views/Game";
 import {GameGuard} from "../routeProtectors/GameGuard";
 
-
-
 /**
  * Main router of your application.
  * In the following class, different routes are rendered. In our case, there is a Login Route with matches the path "/login"
