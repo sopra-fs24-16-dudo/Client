@@ -8,23 +8,23 @@ import PropTypes from "prop-types";
 
 
 const FormField = (props) => {
-    return (
-      <div className="chat field">
-        <input
-          className="chat input"
-          placeholder={props.placeholder}
-          value={props.value}
-          onChange={(e) => props.onChange(e.target.value)}
-        />
-      </div>
-    );
-  };
+  return (
+    <div className="chat field">
+      <input
+        className="chat input"
+        placeholder={props.placeholder}
+        value={props.value}
+        onChange={(e) => props.onChange(e.target.value)}
+      />
+    </div>
+  );
+};
   
-  FormField.propTypes = {
-    placeholder: PropTypes.string,
-    value: PropTypes.string,
-    onChange: PropTypes.func,
-  };
+FormField.propTypes = {
+  placeholder: PropTypes.string,
+  value: PropTypes.string,
+  onChange: PropTypes.func,
+};
 
 const Game = () => {
   // Game state variables
@@ -35,8 +35,6 @@ const Game = () => {
   const [message, setMessage] = useState("");
   const gameId = localStorage.getItem("lobbyId");
   const userId = localStorage.getItem("id");
-
-
 
   // Functions to handle game actions
   // ... other game functions like sendMessage from Lobby
@@ -89,7 +87,7 @@ const Game = () => {
 
   const bid = async (oldBid) => {
     if(oldBid === "Dudo"){
-        oldBid = 0;
+      oldBid = 0;
     }
     setCurrentBid(oldBid += 1);
     //Add the bid functionality
@@ -107,8 +105,9 @@ const Game = () => {
 
   const biggerBid = () => {
     if(currentBid === "Dudo"){
-        return 1;
+      return 1;
     }
+
     return currentBid + 1;
     //Add the bid functionality
   };
@@ -122,8 +121,8 @@ const Game = () => {
             <div className="opponent" key={player.id}>
               <span className="opponent-name">{player.username}</span>
               <div className="opponent-chips">{player.chips}
-              {Array.from({ length: 2 /* TODO Instead of 2 put player.chips as soon as we have that in backend!! */}).map((_, index) => (
-                <img key={index} src="/images/poker_chip.png" alt="Chip" className="chip-image" />
+                {Array.from({ length: 2 /* TODO Instead of 2 put player.chips as soon as we have that in backend!! */}).map((_, index) => (
+                  <img key={index} src="/images/poker_chip.png" alt="Chip" className="chip-image" />
                 ))}
               </div>
             </div>
