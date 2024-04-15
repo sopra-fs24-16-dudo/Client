@@ -6,83 +6,127 @@
 
   for more information visit https://sass-lang.com/guide
  */
-
 .game {
   &.container {
-    background: $background;
-    padding: 1.5em;
-    border-radius: $borderRadius;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    box-shadow: $dropShadow;
-    min-width: 20em;
+    height: 100vh;
   }
-  &.user-list {
-    list-style: none;
-    padding-left: 0;
-  }
-  &.user-item {
+
+  &-header {
     display: flex;
-    flex-direction: column;
+    justify-content: space-around;
     align-items: center;
+    padding: 10px;
+    margin-top: 3em;
+  }
+
+  .current-bid {
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 2em;
+  }
+
+  .opponent-container {
+    display: flex; // Set the opponent container to display its children in a row
+    justify-content: space-around;
+    flex-grow: 1;
+    width: 100%; // Take up the full width
+
+    .opponent {
+      flex-grow: 1;
+      text-align: center;
+      margin: 0 10px; // Add some space between each opponent
+      // Rest of your .opponent styles...
+    }
+
+    .opponent-name {
+      font-size: 1.5em;
+      display:block;
+    }
+
+    .opponent-chips {
+      margin-top: 5px;
+      display: inline-block;
+
+      .chip-image {
+        width: 80px; // Your chip image's width
+        height: 60px; // Your chip image's height
+        margin: 0 2px; // Spacing between chips, adjust as necessary
+      }
+    }
+  }
+
+  &-main {
+    flex-grow: 1;
+    display: flex;
     justify-content: center;
+    align-items: center;
+    position: relative;
   }
-  & p,h2 {
-    margin: 0.5em 0;
+
+  .current-bid {
+    position: absolute;
+    top: 42%;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 2em;
+    z-index: 10; // Ensures it's above other elements
   }
-}
 
-.lobby-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+  &-footer {
+    display: flex;
+    justify-content: space-evenly;
+    padding: 20px;
 
-.button-container {
-  margin-top: -20px; /* Adjust as needed */
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px; /* Adjust as needed */
-}
+    .game-button {
+      padding: 10px 20px;
+      font-size: 1em;
+      color: white;
+      background-color: #4caf50; // Green button background as in the image
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      &:hover {
+        background-color: darken(#4caf50, 10%);
+      }
+    }
+  }
 
-.question-image {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  z-index: 9999; /* Ensure it's above other content */
-}
-
-.rules-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.rules-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  max-width: 80%;
-  overflow-y: auto; /* Enable scrolling if content exceeds modal height */
-}
-
-.rules-content h2 {
-  margin-top: 0;
-}
-
-.rules-content p {
-  margin-bottom: 20px;
-}
-
-.rules-content button {
-  margin-top: 10px;
+  .chat{
+    &.field {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+  
+    &.container{
+      position: fixed;
+      padding: 1.5em;
+      bottom: 20px; /* Adjust this value to change the distance from the bottom of the screen */
+      right: 20px; /* Adjust this value to change the distance from the right side of the screen */
+      width: 300px; /* Adjust this value to change the width of the container */
+      height: 300px; /* Adjust this value to change the height of the container */
+      background-color: $background;
+      border: 1px solid #ccc;
+      border-radius: $borderRadius;
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: first baseline;
+    }
+  
+    &.input {
+      height: 35px;
+      font-weight: 500;
+      padding-left: 15px;
+      margin-left: -4px;
+      border: none;
+      border-radius: 0.75em;
+      background: transparentize(rgb(62, 132, 216), 0.85);
+      color: $textColor;
+    }
+  }
 }

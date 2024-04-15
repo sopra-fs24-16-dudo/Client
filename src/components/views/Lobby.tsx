@@ -77,7 +77,7 @@ const Lobby = () => {
       setAllReady(response.data);
 
       if (response.data) {
-        navigate("/game");
+        navigate(`/game/${lobbyId}`);
       }
     } catch (error) {
       console.error("Error toggling ready status:", error);
@@ -97,7 +97,6 @@ const Lobby = () => {
       );
     }
   };
-
 
   const showRules = async () => {
     setShowRulesModal(true)
