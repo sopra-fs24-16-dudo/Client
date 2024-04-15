@@ -130,7 +130,7 @@ const Lobby = () => {
           ))}
         </ul>
         <a href="#" className="question-image" onClick={showRules}>
-          <img src="/question.png" alt="Question" width="80px" height="80px" />
+          <img src="/images/question.png" alt="Question" width="80px" height="80px" />
         </a>
       </div>
       <div className="button-container">
