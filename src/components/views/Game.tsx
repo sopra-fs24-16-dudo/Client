@@ -28,7 +28,7 @@ const DudoGame = () => {
     try {
       // Implement logic to start the game
     } catch (error) {
-      console.error('Error starting the game:', error);
+      console.error("Error starting the game:", error);
     }
   };
 
@@ -36,7 +36,7 @@ const DudoGame = () => {
     try {
       // Implement logic to make a bid
     } catch (error) {
-      console.error('Error making a bid:', error);
+      console.error("Error making a bid:", error);
     }
   };
 
@@ -44,7 +44,7 @@ const DudoGame = () => {
     try {
       // Implement logic to call Dudo
     } catch (error) {
-      console.error('Error calling Dudo:', error);
+      console.error("Error calling Dudo:", error);
     }
   };
 
@@ -54,7 +54,7 @@ const DudoGame = () => {
       const response = await api.get("/rules");
       setRules(response.data.join("\n"));
     } catch (error) {
-      console.error('Error fetching rules:', error);
+      console.error("Error fetching rules:", error);
     }
   };
 

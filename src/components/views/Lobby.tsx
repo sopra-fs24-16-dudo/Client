@@ -14,7 +14,7 @@ const Lobby = () => {
   const lobbyId = localStorage.getItem("lobbyId");
   const userId = localStorage.getItem("id");
 
-  useEffect(() => { 
+  useEffect(() => {
 
     async function fetchUsersInLobby () {
       try {
@@ -27,7 +27,7 @@ const Lobby = () => {
       } catch (error) {
         console.error("Error fetching users in lobby:", error);
       }
-    };
+    }
     fetchUsersInLobby();
   }, []);
 
