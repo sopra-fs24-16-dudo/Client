@@ -5,7 +5,7 @@ import BaseContainer from "components/ui/BaseContainer";
 import { useNavigate, useParams } from "react-router-dom";
 import "styles/views/Lobby.scss";
 import PropTypes from "prop-types";
-import AgoraRTC from 'agora-rtc-sdk';
+import AgoraRTC from "agora-rtc-sdk";
 
 const FormField = (props) => {
   return (
@@ -36,11 +36,11 @@ interface UserType {
 }
 
 interface MediaType {
-  type: 'audio' | 'video'; // Media type
+  type: "audio" | "video"; // Media type
   track: any; // The media track object
 }
 
-type AgoraEvent = 'user-published' | 'user-unpublished';
+type AgoraEvent = "user-published" | "user-unpublished";
 
 const Lobby = () => {
   const [users, setUsers] = useState([]);
@@ -86,26 +86,27 @@ const Lobby = () => {
   }, [showRulesModal]);
   useEffect(() => {
     const initializeAgora = async () => {
-      const appId = 'b33a2021ed144a9386270ca92a266f62';
-      const client: any = AgoraRTC.createClient({ mode: 'rtc', codec: 'h264' });
+      const appId = "b33a2021ed144a9386270ca92a266f62";
+      const client: any = AgoraRTC.createClient({ mode: "rtc", codec: "h264" });
 
-      client.on('user-published', async (user: any, mediaType: any) => {
+      client.on("user-published", async (user: any, mediaType: any) => {
         await client.subscribe(user, mediaType.type);
-        if (mediaType.type === 'audio') {
+        if (mediaType.type === "audio") {
           // Here you can use the audio stream
         }
       });
 
       try {
         if (!voiceChannel) {
-          console.error('Voice channel not set.');
+          console.error("Voice channel not set.");
+
           return;
         }
 
         await client.join(appId, voiceChannel, userId);
-        console.log('Successfully joined the voice channel');
+        console.log("Successfully joined the voice channel");
       } catch (error) {
-        console.error('Failed to join the voice channel:', error);
+        console.error("Failed to join the voice channel:", error);
       }
     };
 
@@ -123,7 +124,7 @@ const Lobby = () => {
       setAllReady(response.data);
 
       if (response.data) {
-        navigate('/game/${lobbyId}');
+        navigate("/game/${lobbyId}");
       }
     } catch (error) {
       console.error("Error toggling ready status:", error);
@@ -153,7 +154,7 @@ const Lobby = () => {
   const joinVoiceChannel = async () => {
     try {
 
-      const response = await api.post('/lobby/voice-channel/join', { userId, lobbyId });
+      const response = await api.post("/lobby/voice-channel/join", { userId, lobbyId });
 
       // If join request is successful, set the voice channel state
       if (response.status === 200) {
@@ -170,7 +171,7 @@ const Lobby = () => {
   const leaveVoiceChannel = async () => {
     try {
       // Make a POST request to the server endpoint to leave voice channel
-      const response = await api.post('/lobby/voice-channel/leave', { userId, lobbyId });
+      const response = await api.post("/lobby/voice-channel/leave", { userId, lobbyId });
 
       // If leave request is successful, reset the voice channel state
       if (response.status === 200) {
