@@ -20,7 +20,7 @@ const DudoGame = () => {
       const response = await api.get(`/dudo/game/${lobbyId}`);
       setGameState(response.data);
     } catch (error) {
-      console.error('Error fetching game state:', error);
+      console.error("Error fetching game state:", error);
     }
   };
 
