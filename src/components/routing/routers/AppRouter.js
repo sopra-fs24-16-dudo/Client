@@ -13,6 +13,8 @@ import Lobby from "../../views/Lobby";
 import {LobbyGuard} from "../routeProtectors/LobbyGuard";
 import UsersList from "../../views/UsersList";
 import {UsersListGuard} from "../routeProtectors/UsersListGuard";
+import Game from "../../views/Game";
+import { GameGuard } from "../routeProtectors/GameGuard";
 
 /**
  * Main router of your application.
@@ -48,6 +50,10 @@ const AppRouter = () => {
 
         <Route path="/lobby/:lobbyid" element={<LobbyGuard />}>
           <Route path="/lobby/:lobbyid" element={<Lobby/>} />
+        </Route>
+
+        <Route path="/game/:gameId" element={<GameGuard />}>
+          <Route path="/game/:gameId" element={<Game/>} />
         </Route>
 
         <Route path="/usersList" element={<UsersListGuard />}>

@@ -56,7 +56,8 @@ const Lobby = () => {
       setAllReady(response.data);
 
       if (response.data) {
-        navigate("/game");
+        // Navigate to the specific game for this lobby
+        navigate("/game/${lobbyId}`");
       }
     } catch (error) {
       console.error("Error toggling ready status:", error);
