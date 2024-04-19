@@ -122,13 +122,13 @@ const Game = () => {
               <span className="opponent-name">{player.username}</span>
               <div className="opponent-chips">{player.chips}
                 {Array.from({ length: 2 /* TODO Instead of 2 put player.chips as soon as we have that in backend!! */}).map((_, index) => (
-                  <img key={index} src="/images/poker_chip.png" alt="Chip" className="chip-image" />
+                  <img key={index} src="/src/images/poker_chip.png" alt="Chip" className="chip-image" />
                 ))}
               </div>
             </div>
           ))}
           <a href="#" className="question-image" onClick={showRules}>
-            <img src="/images/question.png" alt="Question" width="80px" height="80px" />
+            <img src="/src/images/question.png" alt="Question" width="80px" height="80px" />
           </a>
         </div>
       </div>
