@@ -5,6 +5,8 @@ import BaseContainer from "components/ui/BaseContainer";
 import { useNavigate, useParams } from "react-router-dom";
 import "styles/views/Game.scss";
 import PropTypes from "prop-types";
+import question from "../../images/question.png";
+
 
 
 const FormField = (props) => {
@@ -128,7 +130,7 @@ const Game = () => {
             </div>
           ))}
           <a href="#" className="question-image" onClick={showRules}>
-            <img src="/src/images/question.png" alt="Question" width="80px" height="80px" />
+            <img src={question} alt="Question" width="80px" height="80px" />
           </a>
         </div>
       </div>

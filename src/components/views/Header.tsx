@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import "../../styles/views/Header.scss";
 import chips from "../../images/poker_chips.png";
+import dices from "../../images/dices.png";
 
 
 /**
@@ -19,7 +20,7 @@ const Header = (props) => (
       <h1 className="header title">Dudo</h1>
       <h2 className="header undertitle">Roll, Bid and Bluff your Way to Victory</h2>
     </div>
-    <img src={"/images/dices.png"} alt="Dices" width="100px" height="80px" />
+    <img src={dices} alt="Dices" width="100px" height="80px" />
   </div>
 );
 
