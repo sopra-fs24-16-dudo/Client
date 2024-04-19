@@ -7,8 +7,6 @@ import "styles/views/Game.scss";
 import PropTypes from "prop-types";
 import question from "../../images/question.png";
 
-
-
 const FormField = (props) => {
   return (
     <div className="chat field">
