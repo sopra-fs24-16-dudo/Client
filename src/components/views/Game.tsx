@@ -6,6 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import "styles/views/Game.scss";
 import PropTypes from "prop-types";
 import question from "../../images/question.png";
+import chips from "../../images/poker_chip.png";
 
 const FormField = (props) => {
   return (
@@ -122,7 +123,7 @@ const Game = () => {
               <span className="opponent-name">{player.username}</span>
               <div className="opponent-chips">{player.chips}
                 {Array.from({ length: 2 /* TODO Instead of 2 put player.chips as soon as we have that in backend!! */}).map((_, index) => (
-                  <img key={index} src="/src/images/poker_chip.png" alt="Chip" className="chip-image" />
+                  <img key={index} src={chips} alt="Chip" className="chip-image" />
                 ))}
               </div>
             </div>
