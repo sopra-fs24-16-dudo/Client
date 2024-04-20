@@ -126,7 +126,8 @@ const Lobby = () => {
       setAllReady(response.data);
 
       if (response.data) {
-        navigate("/game/${lobbyId}");
+        await api.post(`/lobby/start/${lobbyId}`);
+        navigate(`/game/${lobbyId}`);
       }
     } catch (error) {
       console.error("Error toggling ready status:", error);
