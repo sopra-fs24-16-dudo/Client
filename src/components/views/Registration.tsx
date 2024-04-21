@@ -43,6 +43,7 @@ const Registration = () => {
       // Store the token into the local storage.
       localStorage.setItem("token", user.token);
       localStorage.setItem("id", user.id);
+      localStorage.setItem("currentPlayerId", user.id);
 
       // Login successfully worked --> navigate to the route /homepage in the HomepageRouter
       navigate("/homepage");

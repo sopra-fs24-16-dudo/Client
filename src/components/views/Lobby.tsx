@@ -5,7 +5,9 @@ import BaseContainer from "components/ui/BaseContainer";
 import { useNavigate, useParams } from "react-router-dom";
 import "styles/views/Lobby.scss";
 import PropTypes from "prop-types";
-import AgoraRTC from "agora-rtc-sdk-ng";
+import AgoraRTC from "agora-rtc-sdk";
+import question from "../../images/question.png";
+
 
 const FormField = (props) => {
   return (
@@ -138,7 +140,8 @@ const Lobby = () => {
       setAllReady(response.data);
 
       if (response.data) {
-        navigate("/game/${lobbyId}");
+        await api.post(`/lobby/start/${lobbyId}`);
+        navigate(`/game/${lobbyId}`);
       }
     } catch (error) {
       console.error("Error toggling ready status:", error);
@@ -219,13 +222,13 @@ const Lobby = () => {
         <h3>Users in Lobby:</h3>
         <ul>
           {users.map((user) => (
-            <li key={user.id}>{user.username}
+            <li key={user.id}>
               {user.username} {user.ready ? "- Ready" : ""}
             </li>
           ))}
         </ul>
         <a href="#" className="question-image" onClick={showRules}>
-          <img src="/images/question.png" alt="Question" width="80px" height="80px" />
+          <img src={question} alt="Question" width="80px" height="80px" />
         </a>
       </div>
       <div className="button-container">

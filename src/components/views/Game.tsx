@@ -5,7 +5,8 @@ import BaseContainer from "components/ui/BaseContainer";
 import { useNavigate, useParams } from "react-router-dom";
 import "styles/views/Game.scss";
 import PropTypes from "prop-types";
-
+import question from "../../images/question.png";
+import chips from "../../images/poker_chip.png";
 
 const FormField = (props) => {
   return (
@@ -43,9 +44,11 @@ const Game = () => {
   const [showRulesModal, setShowRulesModal] = useState(false);
   const [rules, setRules] = useState([]);
   const [message, setMessage] = useState("");
+  const lobbyId = localStorage.getItem("lobbyId");
   const [hand, setHand] = useState([]);
   const gameId = localStorage.getItem("lobbyId");
   const userId = localStorage.getItem("id");
+  const currentPlayerId = parseInt(localStorage.getItem("currentPlayerId"));
 
   //dice
   const [die1, setDie1] = useState({ suit: "NINE" });
@@ -61,9 +64,10 @@ const Game = () => {
 
     async function fetchUsersInLobby () {
       try {
-        console.log("LobbyID:", gameId);
-        const response = await api.get(`/lobby/user/${gameId}`);
+        console.log("LobbyID:", lobbyId);
+        const response = await api.get(`/games/players/${lobbyId}`);
         setPlayers(response.data);
+        console.log(currentPlayerId)
       } catch (error) {
         console.error("Error fetching users in lobby:", error);
       }
@@ -92,8 +96,8 @@ const Game = () => {
   const sendMessage = async () => {
     try {
       const requestBody = JSON.stringify({ message });
-      console.log(`/lobby/chat/${gameId}/${userId}`)
-      const response = await api.post(`/lobby/chat/${gameId}/${userId}`, requestBody);
+      console.log(`/lobby/chat/${lobbyId}/${userId}`)
+      const response = await api.post(`/lobby/chat/${lobbyId}/${userId}`, requestBody);
       console.log("Response:", response);
       setMessage("");
     } catch (error) {
@@ -157,22 +161,33 @@ const Game = () => {
       <div className="game-header">
         {/* Players at the top */}
         <div className="opponent-container">
-          {players.map((player) => (
+          {players.filter(player => player.id !== currentPlayerId).map((player) => (
             <div className="opponent" key={player.id}>
               <span className="opponent-name">{player.username}</span>
-              <div className="opponent-chips">{player.chips}
-                {Array.from({ length: 2 /* TODO Instead of 2 put player.chips as soon as we have that in backend!! */ }).map((_, index) => (
-                  <img key={index} src="/images/poker_chip.png" alt="Chip" className="chip-image" />
+              <div className="opponent-chips">
+                {Array.from({ length: player.chips - 1 }).map((_, index) => (
+                  <img key={index} src={chips} alt="Chip" className="chip-image" />
                 ))}
               </div>
             </div>
           ))}
           <a href="#" className="question-image" onClick={showRules}>
-            <img src="/images/question.png" alt="Question" width="80px" height="80px" />
+            <img src={question} alt="Question" width="80px" height="80px" />
           </a>
         </div>
       </div>
-
+      <div className="current-player-container">
+        {players.filter(player => player.id === currentPlayerId).map((player) => (
+          <div className="current-player" key={player.id}>
+            <span className="current-player-name">{player.username}</span>
+            <div className="current-player-chips">
+              {Array.from({ length: player.chips - 1 }).map((_, index) => (
+                <img key={index} src={chips} alt="Chip" className="chip-image" />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
       <div className="game-main">
         <div className="current-bid">Current Bid: {currentBid}</div>
 

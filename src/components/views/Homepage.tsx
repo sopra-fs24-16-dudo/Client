@@ -58,6 +58,7 @@ const Homepage = () => {
       
       localStorage.removeItem("token");
       localStorage.removeItem("id");
+      localStorage.removeItem("currentPlayerId");
 
       // Navigate to the login page
       navigate("/login");

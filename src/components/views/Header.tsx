@@ -1,6 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 import "../../styles/views/Header.scss";
+import chips from "../../images/poker_chips.png";
+import dices from "../../images/dices.png";
+
 
 /**
  * This is an example of a Functional and stateless component (View) in React. Functional components are not classes and thus don't handle internal state changes.
@@ -12,12 +15,12 @@ import "../../styles/views/Header.scss";
  */
 const Header = (props) => (
   <div className="header container" style={{ height: props.height }}>
-    <img src={"/images/poker_chips.png"} alt="Poker_Chips" width="80px" height="70px" />
+    <img src={chips} alt="Poker_Chips" width="80px" height="70px" />
     <div>
       <h1 className="header title">Dudo</h1>
       <h2 className="header undertitle">Roll, Bid and Bluff your Way to Victory</h2>
     </div>
-    <img src={"/images/dices.png"} alt="Dices" width="100px" height="80px" />
+    <img src={dices} alt="Dices" width="100px" height="80px" />
   </div>
 );
 
