@@ -117,17 +117,14 @@ const Game = () => {
   };
 
   const animateDice = () => {
-    const diceElements = document.querySelectorAll('.die-image');
+    const diceElements = document.querySelectorAll(".die-image");
     diceElements.forEach((die) => {
-      die.classList.remove('rotate-animation'); // Remove the class first
+      die.classList.remove("rotate-animation"); // Remove the class first
       setTimeout(() => {
-        die.classList.add('rotate-animation'); // Add the class after a short delay
+        die.classList.add("rotate-animation"); // Add the class after a short delay
       }, 10); // Wait for 10 milliseconds
     });
   };
-
-
-
 
   const bid = async (oldBid) => {
     if(oldBid === "Dudo"){
