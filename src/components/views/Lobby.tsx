@@ -5,7 +5,7 @@ import BaseContainer from "components/ui/BaseContainer";
 import { useNavigate, useParams } from "react-router-dom";
 import "styles/views/Lobby.scss";
 import PropTypes from "prop-types";
-import AgoraRTC from "agora-rtc-sdk";
+import AgoraRTC from "agora-rtc-sdk-ng";
 
 const FormField = (props) => {
   return (
@@ -92,8 +92,14 @@ const Lobby = () => {
       client.on("user-published", async (user: any, mediaType: any) => {
         await client.subscribe(user, mediaType.type);
         if (mediaType.type === "audio") {
-          // Here you can use the audio stream
+          // Play the received audio track
+          const audioTrack = user.audioTrack;
+          audioTrack.play();
         }
+      });
+
+      client.on("user-unpublished", (user: any) => {
+        // Handle user unpublish event
       });
 
       try {
@@ -109,8 +115,16 @@ const Lobby = () => {
         console.error("Failed to join the voice channel:", error);
       }
     };
+    if (voiceChannel && userId) {
+      initializeAgora();
+    }
 
-    initializeAgora();
+    return () => {
+      // Cleanup logic when the component unmounts
+      if (voiceChannel) {
+        leaveVoiceChannel();
+      }
+    };
   }, [voiceChannel, userId]);
 
   const toggleReadyStatus = async () => {
@@ -154,12 +168,12 @@ const Lobby = () => {
   const joinVoiceChannel = async () => {
     try {
 
-      const response = await api.post("/lobby/voice-channel/join", { userId, lobbyId });
+      const response = await api.post("/lobby/${lobbyId}/${userId}/voice-channel/join", { userId, lobbyId });
 
       // If join request is successful, set the voice channel state
       if (response.status === 200) {
         setVoiceChannelJoined(true);
-        setVoiceChannel(lobbyId);
+        setVoiceChannel(response.data.voiceChannel);
       } else {
         console.error("Error joining voice channel:", response.statusText);
       }
@@ -171,7 +185,7 @@ const Lobby = () => {
   const leaveVoiceChannel = async () => {
     try {
       // Make a POST request to the server endpoint to leave voice channel
-      const response = await api.post("/lobby/voice-channel/leave", { userId, lobbyId });
+      const response = await api.post("/lobby/${lobbyId}/${userId}/voice-channel/leave", { userId, lobbyId });
 
       // If leave request is successful, reset the voice channel state
       if (response.status === 200) {

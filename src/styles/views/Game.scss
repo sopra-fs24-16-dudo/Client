@@ -29,17 +29,59 @@
     font-size: 2em;
   }
 
+  .rotate-animation {
+    animation: rotate 2s;
+  }
+
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+
+  .hand-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20em;
+    flex-grow: 1;
+
+    .die-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-left: 60px;
+      width: 100%;
+
+      .die {
+        width: 50px;
+        height: 50px;
+        margin-top: 10px;
+        margin-left: 60px;
+      }
+
+      .die-image {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+
   .opponent-container {
-    display: flex; // Set the opponent container to display its children in a row
+    display: flex;
     justify-content: space-around;
     flex-grow: 1;
-    width: 100%; // Take up the full width
+    width: 100%;
 
     .opponent {
       flex-grow: 1;
       text-align: center;
-      margin: 0 10px; // Add some space between each opponent
-      // Rest of your .opponent styles...
+      margin: 0 10px;
     }
 
     .opponent-name {
@@ -47,14 +89,15 @@
       display:block;
     }
 
+
     .opponent-chips {
       margin-top: 5px;
       display: inline-block;
 
       .chip-image {
-        width: 80px; // Your chip image's width
-        height: 60px; // Your chip image's height
-        margin: 0 2px; // Spacing between chips, adjust as necessary
+        width: 80px;
+        height: 60px;
+        margin: 0 2px;
       }
     }
   }

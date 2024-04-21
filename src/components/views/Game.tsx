@@ -26,6 +26,16 @@ FormField.propTypes = {
   onChange: PropTypes.func,
 };
 
+const suitImages = {
+  NINE: "/images/dice/nine.png",
+  TEN: "/images/dice/ten.png",
+  JACK: "/images/dice/jack.png",
+  QUEEN: "/images/dice/queen.png",
+  KING: "/images/dice/king.png",
+  ACE: "/images/dice/ace.png",
+  JOKER: "/images/dice/joker.png"
+};
+
 const Game = () => {
   // Game state variables
   const [players, setPlayers] = useState([]); // You'll update this with actual player data
@@ -33,8 +43,16 @@ const Game = () => {
   const [showRulesModal, setShowRulesModal] = useState(false);
   const [rules, setRules] = useState([]);
   const [message, setMessage] = useState("");
+  const [hand, setHand] = useState([]);
   const gameId = localStorage.getItem("lobbyId");
   const userId = localStorage.getItem("id");
+
+  //dice
+  const [die1, setDie1] = useState({ suit: "NINE" });
+  const [die2, setDie2] = useState({ suit: "TEN" });
+  const [die3, setDie3] = useState({ suit: "JACK" });
+  const [die4, setDie4] = useState({ suit: "QUEEN" });
+  const [die5, setDie5] = useState({ suit: "KING" });
 
   // Functions to handle game actions
   // ... other game functions like sendMessage from Lobby
@@ -84,6 +102,28 @@ const Game = () => {
       );
     }
   };
+  const rollHand = async () => {
+    try {
+      const response = await api.post(`/game/hand/${userId}`);
+      setHand(response.data.dices);
+      animateDice();
+    } catch (error) {
+      console.error("Error rolling the hand:", error);
+    }
+  };
+
+  const animateDice = () => {
+    const diceElements = document.querySelectorAll('.die-image');
+    diceElements.forEach((die) => {
+      die.classList.remove('rotate-animation'); // Remove the class first
+      setTimeout(() => {
+        die.classList.add('rotate-animation'); // Add the class after a short delay
+      }, 10); // Wait for 10 milliseconds
+    });
+  };
+
+
+
 
   const bid = async (oldBid) => {
     if(oldBid === "Dudo"){
@@ -121,7 +161,7 @@ const Game = () => {
             <div className="opponent" key={player.id}>
               <span className="opponent-name">{player.username}</span>
               <div className="opponent-chips">{player.chips}
-                {Array.from({ length: 2 /* TODO Instead of 2 put player.chips as soon as we have that in backend!! */}).map((_, index) => (
+                {Array.from({ length: 2 /* TODO Instead of 2 put player.chips as soon as we have that in backend!! */ }).map((_, index) => (
                   <img key={index} src="/images/poker_chip.png" alt="Chip" className="chip-image" />
                 ))}
               </div>
@@ -135,6 +175,34 @@ const Game = () => {
 
       <div className="game-main">
         <div className="current-bid">Current Bid: {currentBid}</div>
+
+        <div className="hand-container">
+          <div className="die-row">
+            {hand.slice(0, 2).map((die, index) => (
+              <div key={index} className="die">
+                <img src={suitImages[die.suit]} alt={die.suit} className="die-image" />
+              </div>
+            ))}
+          </div>
+          <div className="die-row">
+            <div className="die">
+              <img src={suitImages[hand[2]?.suit || ""]} alt={hand[2]?.suit} className="die-image" />
+            </div>
+          </div>
+          <div className="die-row">
+            {hand.slice(3, 5).map((die, index) => (
+              <div key={index} className="die">
+                <img src={suitImages[die.suit]} alt={die.suit} className="die-image" />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Roll Dice Button */}
+        <Button onClick={rollHand} className="roll-button">
+          Roll Dice
+        </Button>
+
         {/* Game board, dice, etc. */}
       </div>
 
@@ -144,7 +212,7 @@ const Game = () => {
         <Button onClick={() => bidDudo()}>Dudo</Button>
       </div>
 
-      <div className="chat container" >
+      <div className="chat container">
         <FormField
           placeholder="Type something..."
           value={message}
