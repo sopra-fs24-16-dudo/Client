@@ -159,7 +159,7 @@ const Lobby = () => {
 
       //if (voiceChannel) {
       //  await leaveVoiceChannel();
-     // }
+      // }
 
       navigate("/homepage"); // Navigate back to the Homepage
     } catch (error) {
@@ -188,8 +188,6 @@ const Lobby = () => {
       console.error("Error joining voice channel:", error);
     }
   };
-
-
 
   const leaveVoiceChannel = async () => {
     try {

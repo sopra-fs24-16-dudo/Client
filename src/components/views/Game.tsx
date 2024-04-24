@@ -70,7 +70,7 @@ const Game = () => {
         const rr = await api.get(`/lobby/players/${lobbyId}`);
         console.log("users: ", rr.data);
         setPlayers(response.data);
-        console.log('players: ', players);
+        console.log("players: ", players);
         console.log(currentPlayerId);
       } catch (error) {
         console.error("Error fetching users in lobby:", error);
