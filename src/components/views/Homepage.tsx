@@ -16,7 +16,7 @@ const Homepage = () => {
     try {
       const requestBody = JSON.stringify(id);
 
-      await api.put(`/lobby/user/${lobbyId}`, requestBody);
+      await api.put(`/lobby/players/${lobbyId}`, requestBody);
 
       localStorage.setItem("lobbyId", lobbyId);
 

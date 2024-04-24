@@ -66,8 +66,12 @@ const Game = () => {
       try {
         console.log("LobbyID:", lobbyId);
         const response = await api.get(`/games/players/${lobbyId}`);
+        console.log("response", response.data);
+        const rr = await api.get(`/lobby/players/${lobbyId}`);
+        console.log("users: ", rr.data);
         setPlayers(response.data);
-        console.log(currentPlayerId)
+        console.log('players: ', players);
+        console.log(currentPlayerId);
       } catch (error) {
         console.error("Error fetching users in lobby:", error);
       }

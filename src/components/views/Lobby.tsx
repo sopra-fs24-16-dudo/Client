@@ -52,8 +52,8 @@ const Lobby = () => {
   const [rules, setRules] = useState([]);
   const lobbyId = localStorage.getItem("lobbyId");
   const userId = localStorage.getItem("id");
-  const [voiceChannel, setVoiceChannel] = useState(null);
-  const [voiceChannelJoined, setVoiceChannelJoined] = useState(false);
+  //const [voiceChannel, setVoiceChannel] = useState(null);
+  //const [voiceChannelJoined, setVoiceChannelJoined] = useState(false);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -61,7 +61,7 @@ const Lobby = () => {
     async function fetchUsersInLobby () {
       try {
         console.log("LobbyID:", lobbyId);
-        const response = await api.get(`/lobby/user/${lobbyId}`);
+        const response = await api.get(`/lobby/players/${lobbyId}`);
         setUsers(response.data);
         const allReady = response.data.every((user) => user.ready);
         setAllReady(allReady);
@@ -86,6 +86,7 @@ const Lobby = () => {
       fetchRules();
     }
   }, [showRulesModal]);
+  /*
   useEffect(() => {
     const initializeAgora = async () => {
       const appId = "b33a2021ed144a9386270ca92a266f62";
@@ -129,14 +130,16 @@ const Lobby = () => {
     };
   }, [voiceChannel, userId]);
 
+   */
+
   const toggleReadyStatus = async () => {
     try {
       const requestBody = JSON.stringify(userId);
       // Send request to update readiness status to the server
-      await api.put(`/lobby/user/${lobbyId}/ready`, requestBody);
+      await api.put(`/lobby/player/${lobbyId}/ready`, requestBody);
 
       // Check if all users are ready after the update
-      const response = await api.get(`/lobby/user/${lobbyId}/ready`);
+      const response = await api.get(`/lobby/player/${lobbyId}/ready`);
       setAllReady(response.data);
 
       if (response.data) {
@@ -154,9 +157,9 @@ const Lobby = () => {
 
       await api.post(`/lobby/exit/${lobbyId}`, requestBody);
 
-      if (voiceChannel) {
-        await leaveVoiceChannel();
-      }
+      //if (voiceChannel) {
+      //  await leaveVoiceChannel();
+     // }
 
       navigate("/homepage"); // Navigate back to the Homepage
     } catch (error) {
@@ -168,6 +171,7 @@ const Lobby = () => {
   const showRules = async () => {
     setShowRulesModal(true)
   };
+  /*
   const joinVoiceChannel = async () => {
     try {
 
@@ -185,6 +189,8 @@ const Lobby = () => {
     }
   };
 
+
+
   const leaveVoiceChannel = async () => {
     try {
       // Make a POST request to the server endpoint to leave voice channel
@@ -201,6 +207,8 @@ const Lobby = () => {
       console.error("Error leaving voice channel:", error);
     }
   };
+
+   */
   const sendMessage = async () => {
     try {
       const requestBody = JSON.stringify({ message });
@@ -235,12 +243,13 @@ const Lobby = () => {
         <Button onClick={() => toggleReadyStatus()}>Ready</Button>
         <Button onClick={leaveLobby}>Leave Lobby</Button>
       </div>
-      <div className="voice-channels">
+      <div/* className="voice-channels">
         {voiceChannelJoined ? (
           <Button onClick={leaveVoiceChannel}>Leave Voice Chat</Button>
         ) : (
           <Button onClick={joinVoiceChannel}>Join Voice Chat</Button>
         )}
+      </div>*/>
       </div>
       {showRulesModal && (
         <div className="rules-modal">
