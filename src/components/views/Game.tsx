@@ -67,16 +67,14 @@ const Game = () => {
         console.log("LobbyID:", lobbyId);
         const response = await api.get(`/games/players/${lobbyId}`);
         console.log("response", response.data);
-        const rr = await api.get(`/lobby/players/${lobbyId}`);
-        console.log("users: ", rr.data);
         setPlayers(response.data);
         console.log("players: ", players);
-        console.log(currentPlayerId);
       } catch (error) {
         console.error("Error fetching users in lobby:", error);
       }
     };
     fetchUsersInLobby();
+    rollHand();
   }, []);
 
   useEffect(() => {
@@ -112,9 +110,15 @@ const Game = () => {
   };
   const rollHand = async () => {
     try {
-      const response = await api.post(`/game/hand/${userId}`);
-      setHand(response.data.dices);
-      animateDice();
+      const requestBody = JSON.stringify(userId);
+      const response = await api.post(`/games/hand/${lobbyId}`, requestBody);
+      setTimeout(() => {
+        setHand(response.data.dices);
+        animateDice();
+      }, 3000);
+
+      //wait 3 seconds
+
     } catch (error) {
       console.error("Error rolling the hand:", error);
     }
@@ -213,12 +217,6 @@ const Game = () => {
             ))}
           </div>
         </div>
-
-        {/* Roll Dice Button */}
-        <Button onClick={rollHand} className="roll-button">
-          Roll Dice
-        </Button>
-
         {/* Game board, dice, etc. */}
       </div>
 
