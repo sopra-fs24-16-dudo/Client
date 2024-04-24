@@ -45,10 +45,13 @@ const Game = () => {
   const [rules, setRules] = useState([]);
   const [message, setMessage] = useState("");
   const lobbyId = localStorage.getItem("lobbyId");
-  const [hand, setHand] = useState([]);
   const gameId = localStorage.getItem("lobbyId");
   const userId = localStorage.getItem("id");
   const currentPlayerId = parseInt(localStorage.getItem("currentPlayerId"));
+
+  const [hand, setHand] = useState([]);
+  const [roundInProgress, setRoundInProgress] = useState(false);
+  const [isRolling, setIsRolling] = useState(false);
 
   //dice
   const [die1, setDie1] = useState({ suit: "NINE" });
@@ -60,14 +63,18 @@ const Game = () => {
   // Functions to handle game actions
   // ... other game functions like sendMessage from Lobby
 
-  useEffect(() => { 
+  useEffect(() => {
 
     async function fetchUsersInLobby () {
       try {
         console.log("LobbyID:", lobbyId);
         const response = await api.get(`/games/players/${lobbyId}`);
-        setPlayers(response.data);
-        console.log(currentPlayerId)
+        const initializedPlayers = response.data.map((player) => ({
+          ...player,
+          rolled: false,
+        }));
+        setPlayers(initializedPlayers);
+        console.log(currentPlayerId);
       } catch (error) {
         console.error("Error fetching users in lobby:", error);
       }
@@ -106,13 +113,28 @@ const Game = () => {
       );
     }
   };
+
   const rollHand = async () => {
-    try {
-      const response = await api.post(`/game/hand/${userId}`);
-      setHand(response.data.dices);
-      animateDice();
-    } catch (error) {
-      console.error("Error rolling the hand:", error);
+    if (!roundInProgress && !isRolling) {
+      setIsRolling(true); // Setze isRolling auf true, um den Button zu deaktivieren
+      try {
+        const response = await api.post(`/game/hand/${userId}`);
+        setHand(response.data.dices);
+        setPlayers((initializedPlayers) =>
+          initializedPlayers.map((player) =>
+            player.id === userId ? { ...player, rolled: true } : player
+          )
+        );
+        animateDice();
+        const allPlayersRolled = players.every((player) => player.rolled);
+        if (allPlayersRolled) {
+          setRoundInProgress(true);
+        }
+      } catch (error) {
+        console.error("Error rolling the hand:", error);
+      } finally {
+        setIsRolling(false); // Setze isRolling auf false, um den Button zu aktivieren
+      }
     }
   };
 
@@ -189,6 +211,7 @@ const Game = () => {
         <div className="current-bid">Current Bid: {currentBid}</div>
 
         <div className="hand-container">
+
           <div className="die-row">
             {hand.slice(0, 2).map((die, index) => (
               <div key={index} className="die">
@@ -208,15 +231,21 @@ const Game = () => {
               </div>
             ))}
           </div>
+          {/* Roll Dice Button */}
+          {!roundInProgress && (
+            <Button onClick={rollHand} className="roll-button">
+              Roll Dice
+            </Button>
+          )}
         </div>
 
-        {/* Roll Dice Button */}
-        <Button onClick={rollHand} className="roll-button">
-          Roll Dice
-        </Button>
 
         {/* Game board, dice, etc. */}
       </div>
+
+      <div className="round-status">
+        {roundInProgress ? "Round in Progress" : "No Round in Progress"}
+      </div>;
 
       <div className="game-footer">
         <Button onClick={() => bid(currentBid)}>Bid {biggerBid()} Jacks</Button>
