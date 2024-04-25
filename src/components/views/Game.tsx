@@ -45,7 +45,9 @@ const suitImages = {
 const Game = () => {
   // Game state variables
   const [players, setPlayers] = useState([]); // You'll update this with actual player data
-  const [currentBid, setCurrentBid] = useState(1); // Example initial state
+  const [currentBid, setCurrentBid] = useState(null);
+  const [nextBid, setNextBid] = useState(null);
+  const [validBids, setValidBids] = useState([]);
   const [showRulesModal, setShowRulesModal] = useState(false);
   const [rules, setRules] = useState([]);
   const [message, setMessage] = useState("");
@@ -53,7 +55,8 @@ const Game = () => {
   const [hand, setHand] = useState([]);
   const gameId = localStorage.getItem("lobbyId");
   const userId = localStorage.getItem("id");
-  const currentPlayerId = parseInt(localStorage.getItem("currentPlayerId"));
+  const playerId = parseInt(localStorage.getItem("currentPlayerId"));
+  const [currentPlayerId, setCurrentPlayerId] = useState(null);
 
   //dice
   const [die1, setDie1] = useState({ suit: "NINE" });
@@ -74,6 +77,20 @@ const Game = () => {
         console.log("response", response.data);
         setPlayers(response.data);
         console.log("players: ", players);
+        const nextBid = await api.get(`/games/nextBid/${lobbyId}`)
+        setNextBid(nextBid.data);
+        console.log("nextBid: ", nextBid);
+        const validBids = await api.get(`/games/validBids/${lobbyId}`)
+        setValidBids(validBids.data);
+        console.log("validBids: ", validBids);
+        const currentBid = await api.get(`/games/currentBid/${lobbyId}`);
+        console.log("Current Bid: ", currentBid.data);
+        setCurrentBid(currentBid.data);
+        const currentPlayerId = await api.get(`/games/currentPlayer/${lobbyId}`);
+        setCurrentPlayerId(currentPlayerId.data);
+        console.log("Current Player ID: ", currentPlayerId.data);
+        const lastPlayerId = await api.get(`/games/lastPlayer/${lobbyId}`);
+        console.log("Last Player ID: ", lastPlayerId.data);
       } catch (error) {
         console.error("Error fetching users in lobby:", error);
       }
@@ -139,11 +156,12 @@ const Game = () => {
     });
   };
 
-  const bid = async (oldBid) => {
-    if(oldBid === "Dudo"){
-      oldBid = 0;
-    }
-    setCurrentBid(oldBid += 1);
+  const bid = async () => {
+    const requestBody = JSON.stringify(nextBid);
+    console.log("requestBody: ", requestBody);
+    const response = await api.post(`/games/placeBid/${lobbyId}`, requestBody);
+    console.log("responseEEEE: ", response);
+
     //Add the bid functionality
   };
 
@@ -153,25 +171,34 @@ const Game = () => {
   };
 
   const bidDudo = async () => {
-    setCurrentBid("Dudo");
-    //Add the bidDudo functionality!
-  };
-
-  const biggerBid = () => {
-    if(currentBid === "Dudo"){
-      return 1;
+    await api.put(`/games/dudo/${lobbyId}`);
+    const loser = await api.get(`/games/loser/${lobbyId}`);
+    console.log("loser: ", loser.data);
+    const winner = await api.get(`/games/winnerCheck/${lobbyId}`);
+    console.log("winner: ", winner.data);
+    if (!winner.data) {
+      const newRound = await api.put(`/games/round/${lobbyId}`);
+      console.log("newRound: ", newRound.data);
+      alert(`Loser: ${loser.data.username}`);
+      setTimeout(() => {
+        window.location.reload(); // This will refresh the page after 5 seconds, effectively closing the alert box
+      }, 5000);
+    }else {
+      const w = await api.get(`/games/winner/${lobbyId}`);
+      alert(`Winner: ${w.data.username}`);
+      setTimeout(() => {
+        window.location.reload(); // This will refresh the page after 5 seconds, effectively closing the alert box
+      }, 5000);
     }
-
-    return currentBid + 1;
-    //Add the bid functionality
   };
+
 
   return (
     <BaseContainer className="game container">
       <div className="game-header">
         {/* Players at the top */}
         <div className="opponent-container">
-          {players.filter(player => player.id !== currentPlayerId).map((player) => (
+          {players.filter(player => player.id !== playerId).map((player) => (
             <div className="opponent" key={player.id}>
               <span className="opponent-name">{player.username}</span>
               <div className="opponent-chips">
@@ -187,7 +214,7 @@ const Game = () => {
         </div>
       </div>
       <div className="current-player-container">
-        {players.filter(player => player.id === currentPlayerId).map((player) => (
+        {players.filter(player => player.id === playerId).map((player) => (
           <div className="current-player" key={player.id}>
             <span className="current-player-name">{player.username}</span>
             <div className="current-player-chips">
@@ -199,7 +226,9 @@ const Game = () => {
         ))}
       </div>
       <div className="game-main">
-        <div className="current-bid">Current Bid: {currentBid}</div>
+        <div className="current-bid">
+          Current Bid: {currentBid === null || currentBid.includes("null") ? "No current bid" : currentBid}
+        </div>
 
         <div className="hand-container">
           <div className="die-row">
@@ -226,9 +255,9 @@ const Game = () => {
       </div>
 
       <div className="game-footer">
-        <Button onClick={() => bid(currentBid)}>Bid {biggerBid()} Jacks</Button>
-        <Button onClick={() => bidOther(currentBid)}>Bid Other</Button>
-        <Button onClick={() => bidDudo()}>Dudo</Button>
+        <Button onClick={() => bid()}>Bid {nextBid} </Button>
+        <Button onClick={() => bidOther(currentBid)} disabled = {playerId !== currentPlayerId} >Bid Other</Button>
+        <Button onClick={() => bidDudo()} >Dudo</Button>
       </div>
 
       <div className="chat container">
