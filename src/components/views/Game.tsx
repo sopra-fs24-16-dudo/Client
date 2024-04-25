@@ -89,6 +89,8 @@ const Game = () => {
         const currentPlayerId = await api.get(`/games/currentPlayer/${lobbyId}`);
         setCurrentPlayerId(currentPlayerId.data);
         console.log("Current Player ID: ", currentPlayerId.data);
+        const counter = await api.get(`/games/counter/${lobbyId}`);
+        console.log("Counter: ", counter.data);
         const lastPlayerId = await api.get(`/games/lastPlayer/${lobbyId}`);
         console.log("Last Player ID: ", lastPlayerId.data);
       } catch (error) {
@@ -161,6 +163,8 @@ const Game = () => {
     console.log("requestBody: ", requestBody);
     const response = await api.post(`/games/placeBid/${lobbyId}`, requestBody);
     console.log("responseEEEE: ", response);
+    const allHands = await api.get(`/games/hands/${lobbyId}`);
+    console.log("All Hands: ", allHands.data);
 
     //Add the bid functionality
   };
