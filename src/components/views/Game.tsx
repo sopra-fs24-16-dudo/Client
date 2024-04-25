@@ -7,6 +7,12 @@ import "styles/views/Game.scss";
 import PropTypes from "prop-types";
 import question from "../../images/question.png";
 import chips from "../../images/poker_chip.png";
+import nine from "../../images/dice/nine.png";
+import ten from "../../images/dice/ten.png";
+import jack from "../../images/dice/jack.png";
+import queen from "../../images/dice/queen.png";
+import king from "../../images/dice/king.png";
+import ace from "../../images/dice/ace.png";
 
 const FormField = (props) => {
   return (
@@ -28,13 +34,12 @@ FormField.propTypes = {
 };
 
 const suitImages = {
-  NINE: "/images/dice/nine.png",
-  TEN: "/images/dice/ten.png",
-  JACK: "/images/dice/jack.png",
-  QUEEN: "/images/dice/queen.png",
-  KING: "/images/dice/king.png",
-  ACE: "/images/dice/ace.png",
-  JOKER: "/images/dice/joker.png"
+  NINE: nine,
+  TEN: ten,
+  JACK: jack,
+  QUEEN: queen,
+  KING: king,
+  ACE: ace,
 };
 
 const Game = () => {
