@@ -6,6 +6,7 @@ import BaseContainer from "components/ui/BaseContainer";
 import "styles/views/Homepage.scss";
 import Lobby from "models/Lobby";
 
+
 const Homepage = () => {
   const navigate = useNavigate();
   const [lobbyId, setLobbyId] = useState<string>("");
@@ -16,7 +17,7 @@ const Homepage = () => {
     try {
       const requestBody = JSON.stringify(id);
 
-      await api.put(`/lobby/user/${lobbyId}`, requestBody);
+      await api.put(`/lobby/players/${lobbyId}`, requestBody);
 
       localStorage.setItem("lobbyId", lobbyId);
 
@@ -87,13 +88,13 @@ const Homepage = () => {
           onChange={(e) => setLobbyId(e.target.value)}
         />
         <div className="button-container">
-          <Button width="100%" onClick={joinLobby}>
+          <Button onClick={joinLobby}>
             Join Lobby
           </Button>
-          <Button width="100%" onClick={createLobby}>
+          <Button onClick={createLobby}>
             Create Lobby
           </Button>
-          <Button width="100%" onClick={logout}>
+          <Button onClick={logout}>
             Logout
           </Button>
         </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { api, handleError } from "helpers/api";
+import { api, handleError, client } from "helpers/api";
 import { Button } from "components/ui/Button";
 import BaseContainer from "components/ui/BaseContainer";
 import { useNavigate, useParams } from "react-router-dom";
@@ -7,7 +7,6 @@ import "styles/views/Lobby.scss";
 import PropTypes from "prop-types";
 import AgoraRTC from "agora-rtc-sdk";
 import question from "../../images/question.png";
-
 
 const FormField = (props) => {
   return (
@@ -50,18 +49,50 @@ const Lobby = () => {
   const navigate = useNavigate();
   const [showRulesModal, setShowRulesModal] = useState(false);
   const [rules, setRules] = useState([]);
+  const [message, setMessage] = useState("");
   const lobbyId = localStorage.getItem("lobbyId");
   const userId = localStorage.getItem("id");
-  const [voiceChannel, setVoiceChannel] = useState(null);
-  const [voiceChannelJoined, setVoiceChannelJoined] = useState(false);
-  const [message, setMessage] = useState("");
+  //const [voiceChannel, setVoiceChannel] = useState(null);
+  //const [voiceChannelJoined, setVoiceChannelJoined] = useState(false);
+
 
   useEffect(() => {
+    // Subscribe to the lobby channel when the component mounts
+    const subscribeToLobbyChannel = () => {
+      client.connect({}, () => {
+        // Successful connection callback
+        console.log('Connected to Stomp server');
+        // Subscribe to the lobby channel
+        client.subscribe(`/topic/lobby/${lobbyId}`, (message) => {
+          // Handle incoming messages from the lobby channel
+          console.log('Received message from lobby channel:', message.body);
+          // You can update the state or perform any other actions based on the incoming message
+        });
+      }, (error) => {
+        // Error callback
+        console.error('Error connecting to Stomp server:', error);
+      });
+    };
 
+    // Call the function to subscribe to the lobby channel
+    subscribeToLobbyChannel();
+
+    // Cleanup function
+    return () => {
+      // Disconnect from the Stomp server when the component unmounts
+      if (client && client.connected) {
+        client.disconnect(() => {
+          console.log('Disconnected from Stomp server');
+        });
+      }
+    };
+  }, [lobbyId]);
+
+  useEffect(() => {
     async function fetchUsersInLobby () {
       try {
         console.log("LobbyID:", lobbyId);
-        const response = await api.get(`/lobby/user/${lobbyId}`);
+        const response = await api.get(`/lobby/players/${lobbyId}`);
         setUsers(response.data);
         const allReady = response.data.every((user) => user.ready);
         setAllReady(allReady);
@@ -71,7 +102,7 @@ const Lobby = () => {
       }
     };
     fetchUsersInLobby();
-  }, []);
+  }, [lobbyId]);
 
   useEffect(() => {
     async function fetchRules() {
@@ -86,6 +117,7 @@ const Lobby = () => {
       fetchRules();
     }
   }, [showRulesModal]);
+  /*
   useEffect(() => {
     const initializeAgora = async () => {
       const appId = "b33a2021ed144a9386270ca92a266f62";
@@ -129,20 +161,22 @@ const Lobby = () => {
     };
   }, [voiceChannel, userId]);
 
+   */
+
   const toggleReadyStatus = async () => {
     try {
       const requestBody = JSON.stringify(userId);
       // Send request to update readiness status to the server
-      await api.put(`/lobby/user/${lobbyId}/ready`, requestBody);
+      await api.put(`/lobby/player/${lobbyId}/ready`, requestBody);
 
       // Check if all users are ready after the update
-      const response = await api.get(`/lobby/user/${lobbyId}/ready`);
-      setAllReady(response.data);
+      //const response = await api.get(`/lobby/player/${lobbyId}/ready`);
+      //setAllReady(response.data);
 
-      if (response.data) {
-        await api.post(`/lobby/start/${lobbyId}`);
-        navigate(`/game/${lobbyId}`);
-      }
+      //if (response.data) {
+        //await api.post(`/lobby/start/${lobbyId}`);
+        //navigate(`/game/${lobbyId}`);
+      //}
     } catch (error) {
       console.error("Error toggling ready status:", error);
     }
@@ -154,9 +188,9 @@ const Lobby = () => {
 
       await api.post(`/lobby/exit/${lobbyId}`, requestBody);
 
-      if (voiceChannel) {
-        await leaveVoiceChannel();
-      }
+      //if (voiceChannel) {
+      //  await leaveVoiceChannel();
+      // }
 
       navigate("/homepage"); // Navigate back to the Homepage
     } catch (error) {
@@ -168,6 +202,7 @@ const Lobby = () => {
   const showRules = async () => {
     setShowRulesModal(true)
   };
+  /*
   const joinVoiceChannel = async () => {
     try {
 
@@ -201,6 +236,8 @@ const Lobby = () => {
       console.error("Error leaving voice channel:", error);
     }
   };
+
+   */
   const sendMessage = async () => {
     try {
       const requestBody = JSON.stringify({ message });
@@ -235,12 +272,13 @@ const Lobby = () => {
         <Button onClick={() => toggleReadyStatus()}>Ready</Button>
         <Button onClick={leaveLobby}>Leave Lobby</Button>
       </div>
-      <div className="voice-channels">
+      <div/* className="voice-channels">
         {voiceChannelJoined ? (
           <Button onClick={leaveVoiceChannel}>Leave Voice Chat</Button>
         ) : (
           <Button onClick={joinVoiceChannel}>Join Voice Chat</Button>
         )}
+      </div>*/>
       </div>
       {showRulesModal && (
         <div className="rules-modal">
@@ -262,14 +300,7 @@ const Lobby = () => {
           value={message}
           onChange={(m) => setMessage(m)}
         />
-        <Button
-          width="30%"
-          style={{ position: "absolute", bottom: "10", right: "0" }}
-          onClick={() => sendMessage()}
-          className="chat button"
-        >
-          Send
-        </Button>
+        <Button onClick={() => sendMessage()}> Send </Button>
       </div>
     </BaseContainer>
   );
