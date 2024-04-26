@@ -10,7 +10,7 @@
   &.container {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: auto;
   }
 
   &-header {
@@ -42,36 +42,6 @@
     }
   }
 
-
-  .hand-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-top: 20em;
-    flex-grow: 1;
-
-    .die-row {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-left: 60px;
-      width: 100%;
-
-      .die {
-        width: 50px;
-        height: 50px;
-        margin-top: 10px;
-        margin-left: 60px;
-      }
-
-      .die-image {
-        width: 100%;
-        height: 100%;
-      }
-    }
-  }
-
   .opponent-container {
     display: flex;
     justify-content: space-around;
@@ -86,7 +56,7 @@
 
     .opponent-name {
       font-size: 1.5em;
-      display:block;
+      display: block;
     }
 
 
@@ -100,42 +70,18 @@
         margin: 0 2px;
       }
     }
+
+    .out-text {
+      color: BROWN;
+      font-size: 20px;
+      font-weight: bold;
+    }
   }
 
-  .current-player-container {
-    position: absolute;
-    bottom: 0;
-    width: 80%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 5em;
-  }
-  
-  .current-player {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .current-player-name {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 10px;
-  }
-  
-  .current-player-chips {
-    display: flex;
-    gap: 10px;
-  }
-  
-  .chip-image {
-    width: 30px;
-    height: 30px;
-  }
 
   &-main {
-    flex-grow: 1;
+    height: 20%;
+    margin-top: 10%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -155,7 +101,7 @@
   &-footer {
     display: flex;
     justify-content: space-evenly;
-    padding: 20px;
+    padding: 5%;
 
     .game-button {
       padding: 10px 20px;
@@ -165,20 +111,21 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
+
       &:hover {
         background-color: darken(#4caf50, 10%);
       }
     }
   }
 
-  .chat{
+  .chat {
     &.field {
       display: flex;
       flex-direction: column;
       justify-content: center;
     }
-  
-    &.container{
+
+    &.container {
       position: fixed;
       padding: 1.5em;
       bottom: 20px; /* Adjust this value to change the distance from the bottom of the screen */
@@ -192,7 +139,7 @@
       flex-direction: column-reverse;
       align-items: first baseline;
     }
-  
+
     &.input {
       height: 35px;
       font-weight: 500;
@@ -202,6 +149,212 @@
       border-radius: 0.75em;
       background: transparentize(rgb(62, 132, 216), 0.85);
       color: $textColor;
+    }
+  }
+
+  .bid-other-modal {
+    position: fixed;
+    z-index: 500;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+  }
+
+  .bid-other-content {
+    background-color: $background; // Use the background color from your theme
+    margin: auto;
+    padding: 15px;
+    width: 90%; // Increase the width of the container
+    max-width: 600px; // Increase the maximum width of the container
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 20px; // Use the border radius from your theme
+    h1 {
+      font-size: 2em; // Increase the size of the text
+      font-weight: bold; // Make the text bold
+      color: $textColor; // Use the text color from your theme
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); // Add a text shadow to give the text depth
+      text-transform: uppercase; // Make the text uppercase
+      -webkit-text-stroke: 1px black; // Keep the black border around the text
+      text-stroke: 1px black; // Keep the black border around the text
+    }
+
+
+    button {
+      border-radius: 7px;
+      background-color: BROWN; // Use the button color from your theme
+      color: WHITE; // Use the button text color from your theme
+      margin: 5px;
+      height: 60px;
+
+    }
+
+    .bid-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); // This will create a responsive grid of buttons
+      gap: 10px;
+    }
+
+    .suit-image {
+      width: 50px;
+      height: 50px;
+    }
+
+    .close-button {
+      border-radius: 10px;
+      height: 30px;
+      width: 70px;
+    }
+
+    .button-container {
+      margin-top: 1px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: row;
+    }
+
+    .amount-button {
+      background-color: BROWN;
+      color: $textColor;
+      margin: 5px;
+      border-radius: 20px; // Increase this value to make the edges smoother
+      height: 40px;
+      width: 40px;
+      transition: all 0.3s ease;
+      margin-bottom: 20px;
+
+      &:hover {
+        background-color: darken(BROWN, 10%);
+        transform: scale(1.1);
+      }
+    }
+
+    .suit-image {
+      width: 50px;
+      height: 50px;
+      margin-bottom: 30px;
+    }
+
+
+  }
+
+  .winner-modal {
+    position: fixed;
+    z-index: 500;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .winner-content {
+    background-color: $background; // Use the background color from your theme
+    margin: auto;
+    padding: 15px;
+    width: 90%; // Increase the width of the container
+    max-width: 600px; // Increase the maximum width of the container
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 20px; // Use the border radius from your theme
+    h1 {
+      font-size: 2em; // Increase the size of the text
+      font-weight: bold; // Make the text bold
+      color: $textColor; // Use the text color from your theme
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); // Add a text shadow to give the text depth
+      text-transform: uppercase; // Make the text uppercase
+      -webkit-text-stroke: 1px black; // Keep the black border around the text
+      text-stroke: 1px black; // Keep the black border around the text
+    }
+
+    p {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: $textColor;
+      text-transform: uppercase;
+    }
+  }
+
+  .player-hand-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 40%;
+    margin-left: 30%;
+    margin-top: 10%;
+    //margin: auto;
+
+    .current-player-container {
+      flex: 1;
+    }
+
+    .out-text {
+      color: BROWN;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .current-player {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 25%;
+    }
+
+    .current-player-name {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .current-player-chips {
+      display: flex;
+      gap: 10px;
+    }
+
+    .chip-image {
+      width: 80px;
+      height: 60px;
+    }
+
+    .hand-container {
+      flex: 1;
+    }
+
+    .die-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      //margin-left: 60px;
+      width: 100%;
+
+      .die {
+        width: 50px;
+        height: 50px;
+        margin-top: 10px;
+        margin-left: 60px;
+      }
+
+      .die-image {
+        width: 100%;
+        height: 100%;
+      }
     }
   }
 }

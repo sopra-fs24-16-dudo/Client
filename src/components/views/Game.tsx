@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { api, handleError } from "helpers/api";
 import { Button } from "components/ui/Button";
 import BaseContainer from "components/ui/BaseContainer";
-import { useNavigate, useParams } from "react-router-dom";
 import "styles/views/Game.scss";
+import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import question from "../../images/question.png";
 import chips from "../../images/poker_chip.png";
@@ -26,7 +26,7 @@ const FormField = (props) => {
     </div>
   );
 };
-  
+
 FormField.propTypes = {
   placeholder: PropTypes.string,
   value: PropTypes.string,
@@ -48,7 +48,6 @@ const Game = () => {
   const [currentBid, setCurrentBid] = useState(null);
   const [nextBid, setNextBid] = useState(null);
   const [validBids, setValidBids] = useState([]);
-  const [showRulesModal, setShowRulesModal] = useState(false);
   const [rules, setRules] = useState([]);
   const [message, setMessage] = useState("");
   const lobbyId = localStorage.getItem("lobbyId");
@@ -57,6 +56,15 @@ const Game = () => {
   const userId = localStorage.getItem("id");
   const playerId = parseInt(localStorage.getItem("currentPlayerId"));
   const [currentPlayerId, setCurrentPlayerId] = useState(null);
+  const [selectedSuit, setSelectedSuit] = useState(null);
+  const [stage, setStage] = useState("selectSuit");
+  const uniqueSuits = Array.from(new Set(validBids.map(bid => bid.suit)));
+  const [winner, setWinner] = useState(null);
+  const navigate = useNavigate();
+
+  const [showBidOtherModal, setShowBidOtherModal] = useState(false);
+  const [showRulesModal, setShowRulesModal] = useState(false);
+  const [showWinnerModal, setShowWinnerModal] = useState(false);
 
   //dice
   const [die1, setDie1] = useState({ suit: "NINE" });
@@ -68,21 +76,22 @@ const Game = () => {
   // Functions to handle game actions
   // ... other game functions like sendMessage from Lobby
 
-  useEffect(() => { 
+  useEffect(() => {
 
-    async function fetchUsersInLobby () {
+    async function fetchUsersInLobby() {
       try {
         console.log("LobbyID:", lobbyId);
         const response = await api.get(`/games/players/${lobbyId}`);
         console.log("response", response.data);
         setPlayers(response.data);
         console.log("players: ", players);
-        const nextBid = await api.get(`/games/nextBid/${lobbyId}`)
+        const nextBid = await api.get(`/games/nextBid/${lobbyId}`);
         setNextBid(nextBid.data);
         console.log("nextBid: ", nextBid);
-        const validBids = await api.get(`/games/validBids/${lobbyId}`)
+        const validBids = await api.get(`/games/validBids/${lobbyId}`);
         setValidBids(validBids.data);
         console.log("validBids: ", validBids);
+        console.log("Bid type: ", typeof validBids.data);
         const currentBid = await api.get(`/games/currentBid/${lobbyId}`);
         console.log("Current Bid: ", currentBid.data);
         setCurrentBid(currentBid.data);
@@ -110,25 +119,30 @@ const Game = () => {
         console.error("Error fetching rules:", error);
       }
     }
+
     if (showRulesModal) {
       fetchRules();
     }
   }, [showRulesModal]);
 
+  const navigatToLobby = () => {
+    navigate(`/lobby/${lobbyId}`);
+  };
+
   const showRules = async () => {
-    setShowRulesModal(true)
+    setShowRulesModal(true);
   };
 
   const sendMessage = async () => {
     try {
       const requestBody = JSON.stringify({ message });
-      console.log(`/lobby/chat/${lobbyId}/${userId}`)
+      console.log(`/lobby/chat/${lobbyId}/${userId}`);
       const response = await api.post(`/lobby/chat/${lobbyId}/${userId}`, requestBody);
       console.log("Response:", response);
       setMessage("");
     } catch (error) {
       alert(
-        `Something went wrong during the registration: \n${handleError(error)}`
+        `Something went wrong during the registration: \n${handleError(error)}`,
       );
     }
   };
@@ -158,20 +172,20 @@ const Game = () => {
     });
   };
 
-  const bid = async () => {
-    const requestBody = JSON.stringify(nextBid);
+  const bid = async (inputBid) => {
+    console.log("inputBid: ", inputBid);
+    console.log("type of bid: ", typeof inputBid);
+    const requestBody = JSON.stringify(inputBid);
     console.log("requestBody: ", requestBody);
     const response = await api.post(`/games/placeBid/${lobbyId}`, requestBody);
     console.log("responseEEEE: ", response);
-    const allHands = await api.get(`/games/hands/${lobbyId}`);
-    console.log("All Hands: ", allHands.data);
-
-    //Add the bid functionality
+    //const allHands = await api.get(`/games/hands/${lobbyId}`);
+    //console.log("All Hands: ", allHands.data);
+    setShowBidOtherModal(false);
   };
 
-  const bidOther = async (inputBid) => {
-    //Add the Bid Other functionality!
-    setCurrentBid(inputBid);
+  const showBidOther = () => {
+    setShowBidOtherModal(true);
   };
 
   const bidDudo = async () => {
@@ -187,12 +201,10 @@ const Game = () => {
       setTimeout(() => {
         window.location.reload(); // This will refresh the page after 5 seconds, effectively closing the alert box
       }, 5000);
-    }else {
+    } else {
       const w = await api.get(`/games/winner/${lobbyId}`);
-      alert(`Winner: ${w.data.username}`);
-      setTimeout(() => {
-        window.location.reload(); // This will refresh the page after 5 seconds, effectively closing the alert box
-      }, 5000);
+      setWinner(w.data);
+      setShowWinnerModal(true);
     }
   };
 
@@ -206,9 +218,13 @@ const Game = () => {
             <div className="opponent" key={player.id}>
               <span className="opponent-name">{player.username}</span>
               <div className="opponent-chips">
-                {Array.from({ length: player.chips - 1 }).map((_, index) => (
-                  <img key={index} src={chips} alt="Chip" className="chip-image" />
-                ))}
+                {player.chips === 0 ? (
+                  <span className="out-text">OUT</span>
+                ) : (
+                  Array.from({ length: player.chips - 1 }).map((_, index) => (
+                    <img key={index} src={chips} alt="Chip" className="chip-image" />
+                  ))
+                )}
               </div>
             </div>
           ))}
@@ -217,23 +233,29 @@ const Game = () => {
           </a>
         </div>
       </div>
-      <div className="current-player-container">
-        {players.filter(player => player.id === playerId).map((player) => (
-          <div className="current-player" key={player.id}>
-            <span className="current-player-name">{player.username}</span>
-            <div className="current-player-chips">
-              {Array.from({ length: player.chips - 1 }).map((_, index) => (
-                <img key={index} src={chips} alt="Chip" className="chip-image" />
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
       <div className="game-main">
         <div className="current-bid">
           Current Bid: {currentBid === null || currentBid.includes("null") ? "No current bid" : currentBid}
         </div>
-
+        {/* Game board, dice, etc. */}
+      </div>
+      <div className="player-hand-container">
+        <div className="current-player-container">
+          {players.filter(player => player.id === playerId).map((player) => (
+            <div className="current-player" key={player.id}>
+              <span className="current-player-name">{player.username}</span>
+              <div className="current-player-chips">
+                {player.chips === 0 ? (
+                  <span className="out-text">OUT</span>
+                ) : (
+                  Array.from({ length: player.chips - 1 }).map((_, index) => (
+                    <img key={index} src={chips} alt="Chip" className="chip-image" />
+                  ))
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
         <div className="hand-container">
           <div className="die-row">
             {hand.slice(0, 2).map((die, index) => (
@@ -255,30 +277,53 @@ const Game = () => {
             ))}
           </div>
         </div>
-        {/* Game board, dice, etc. */}
       </div>
+
 
       <div className="game-footer">
-        <Button onClick={() => bid()}>Bid {nextBid} </Button>
-        <Button onClick={() => bidOther(currentBid)} disabled = {playerId !== currentPlayerId} >Bid Other</Button>
-        <Button onClick={() => bidDudo()} >Dudo</Button>
+        <Button onClick={() => bid(nextBid)}>Bid {nextBid} </Button>
+        <Button onClick={showBidOther} disabled={playerId !== currentPlayerId}>Bid Other</Button>
+        <Button onClick={() => bidDudo()}>Dudo</Button>
       </div>
 
-      <div className="chat container">
-        <FormField
-          placeholder="Type something..."
-          value={message}
-          onChange={(m) => setMessage(m)}
-        />
-        <Button
-          width="30%"
-          style={{ position: "absolute", bottom: "10", right: "0" }}
-          onClick={() => sendMessage()}
-          className="chat button"
-        >
-          Send
-        </Button>
-      </div>
+
+      {showBidOtherModal && (
+        <div className="bid-other-modal">
+          <div className="bid-other-content">
+            <h1>Select a bid</h1>
+            {stage === "selectAmount" && (
+              <img src={suitImages[selectedSuit.toString()]} alt={selectedSuit} className="suit-image" />
+            )}
+            <div className="bid-grid">
+              {stage === "selectSuit" && uniqueSuits.map((suit, index) => (
+                <Button key={index} onClick={() => {
+                  setSelectedSuit(suit);
+                  setStage("selectAmount");
+                }}>
+                  <img src={suitImages[suit.toString()]} alt={suit} className="suit-image" />
+                </Button>
+              ))}
+              {stage === "selectAmount" && validBids.filter(bids => bids.suit === selectedSuit).map((bids, index) => (
+                <Button className="amount-button" key={index} onClick={() => {
+                  bid(`${bids.amount} ${bids.suit}`);
+                  setShowBidOtherModal(false);
+                }}>
+                  {bids.amount}
+                </Button>
+              ))}
+            </div>
+            <div className="button-container">
+              {stage === "selectAmount" &&
+                <Button className="close-button" onClick={() => setStage("selectSuit")}>Back</Button>}
+              <Button className="close-button" onClick={() => {
+                setShowBidOtherModal(false);
+                setStage("selectSuit");
+                setSelectedSuit(null);
+              }}>Close</Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showRulesModal && (
         <div className="rules-modal">
@@ -290,6 +335,19 @@ const Game = () => {
               ))}
             </div>
             <Button onClick={() => setShowRulesModal(false)}>Close</Button>
+          </div>
+        </div>
+      )}
+
+      {showWinnerModal && (
+        <div className="winner-modal">
+          <div className="winner-content">
+            <h1>Congratulations {winner.username}!</h1>
+            <p>You are the winner!</p>
+            <Button onClick={() => {
+              setShowWinnerModal(false);
+              navigatToLobby(); // This will redirect the user back to the lobby page
+            }}>Back to Lobby</Button>
           </div>
         </div>
       )}
