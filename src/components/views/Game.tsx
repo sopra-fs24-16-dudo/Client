@@ -238,8 +238,7 @@ const Game = () => {
           {currentBid === null || currentBid.includes("null") ? " No current bid" :
             <>
               {currentBid.split(" ")[0] + " "}
-              <img src={suitImages[currentBid.split(" ")[1]]} alt={currentBid.split(" ")[1]} width="40px"
-                   height="35px" />
+              <img src={suitImages[currentBid.split(" ")[1]]} alt={currentBid.split(" ")[1]} width="40px" height="35px" />
             </>
           }
         </div>
@@ -288,9 +287,10 @@ const Game = () => {
 
 
       <div className="game-footer">
-        <Button onClick={() => bid(nextBid)}disabled={playerId !== currentPlayerId}>Bid {nextBid} </Button>
+        <Button onClick={() => bid(nextBid)} disabled={playerId !== currentPlayerId}>Bid {nextBid} </Button>
         <Button onClick={showBidOther} disabled={playerId !== currentPlayerId}>Bid Other</Button>
-        <Button onClick={() => bidDudo()} disabled={playerId !== currentPlayerId || currentBid.includes("null") || currentBid.suit}>Dudo</Button>
+        <Button onClick={() => bidDudo()}
+                disabled={playerId !== currentPlayerId || currentBid.includes("null") || currentBid.suit}>Dudo</Button>
       </div>
 
 
