@@ -289,8 +289,7 @@ const Game = () => {
       <div className="game-footer">
         <Button onClick={() => bid(nextBid)} disabled={playerId !== currentPlayerId}>Bid {nextBid} </Button>
         <Button onClick={showBidOther} disabled={playerId !== currentPlayerId}>Bid Other</Button>
-        <Button onClick={() => bidDudo()}
-                disabled={playerId !== currentPlayerId || currentBid.includes("null") || currentBid.suit}>Dudo</Button>
+        <Button onClick={() => bidDudo()} disabled={playerId !== currentPlayerId || currentBid.includes("null") || currentBid.suit}>Dudo</Button>
       </div>
 
 
