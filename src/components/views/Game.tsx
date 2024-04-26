@@ -150,10 +150,8 @@ const Game = () => {
     try {
       const requestBody = JSON.stringify(userId);
       const response = await api.post(`/games/hand/${lobbyId}`, requestBody);
-      setTimeout(() => {
-        setHand(response.data.dices);
-        animateDice();
-      }, 3000);
+      setHand(response.data.dices);
+      animateDice();
 
       //wait 3 seconds
 
@@ -216,7 +214,8 @@ const Game = () => {
         <div className="opponent-container">
           {players.filter(player => player.id !== playerId).map((player) => (
             <div className="opponent" key={player.id}>
-              <span className="opponent-name">{player.username}</span>
+              <span
+                className={`opponent-name ${player.id === currentPlayerId ? "current" : ""}`}>{player.username}</span>
               <div className="opponent-chips">
                 {player.chips === 0 ? (
                   <span className="out-text">OUT</span>
@@ -235,7 +234,14 @@ const Game = () => {
       </div>
       <div className="game-main">
         <div className="current-bid">
-          Current Bid: {currentBid === null || currentBid.includes("null") ? "No current bid" : currentBid}
+          Current Bid:
+          {currentBid === null || currentBid.includes("null") ? " No current bid" :
+            <>
+              {currentBid.split(" ")[0] + " "}
+              <img src={suitImages[currentBid.split(" ")[1]]} alt={currentBid.split(" ")[1]} width="40px"
+                   height="35px" />
+            </>
+          }
         </div>
         {/* Game board, dice, etc. */}
       </div>
@@ -243,7 +249,8 @@ const Game = () => {
         <div className="current-player-container">
           {players.filter(player => player.id === playerId).map((player) => (
             <div className="current-player" key={player.id}>
-              <span className="current-player-name">{player.username}</span>
+              <span
+                className={`current-player-name ${player.id === currentPlayerId ? "current" : ""}`}>{player.username}</span>
               <div className="current-player-chips">
                 {player.chips === 0 ? (
                   <span className="out-text">OUT</span>
@@ -281,9 +288,9 @@ const Game = () => {
 
 
       <div className="game-footer">
-        <Button onClick={() => bid(nextBid)}>Bid {nextBid} </Button>
+        <Button onClick={() => bid(nextBid)}disabled={playerId !== currentPlayerId}>Bid {nextBid} </Button>
         <Button onClick={showBidOther} disabled={playerId !== currentPlayerId}>Bid Other</Button>
-        <Button onClick={() => bidDudo()}>Dudo</Button>
+        <Button onClick={() => bidDudo()} disabled={playerId !== currentPlayerId || currentBid.includes("null") || currentBid.suit}>Dudo</Button>
       </div>
 
 
