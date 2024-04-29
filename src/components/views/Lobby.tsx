@@ -56,7 +56,7 @@ const Lobby = () => {
   //const [voiceChannelJoined, setVoiceChannelJoined] = useState(false);
 
 
-  useEffect(() => {
+ /* useEffect(() => {
     // Subscribe to the lobby channel when the component mounts
     const subscribeToLobbyChannel = () => {
       client.connect({}, () => {
@@ -86,7 +86,7 @@ const Lobby = () => {
         });
       }
     };
-  }, [lobbyId]);
+  }, [lobbyId]); */
 
   useEffect(() => {
     async function fetchUsersInLobby () {

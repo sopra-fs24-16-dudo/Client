@@ -22,6 +22,10 @@ const Player = ({ user, isCurrentUser }: { user: User, isCurrentUser: boolean })
         <div className="player info-item">Birthday: {user.birthday}</div>
         <div className="player info-item">Creation Date: {user.creationDate}</div>
         <div className="player info-item">Status: {user.status}</div>
+        <div className="player info-item">Games played: {user.gamesPlayed}</div>
+        <div className="player info-item">Wins: {user.gamesWon}</div>
+        <div className="player info-item">Win Ratio: {user.winRatio}</div>
+
 
         {isCurrentUser && (
           <div className="player info-item">
@@ -47,7 +51,8 @@ const Profile = () => {
   useEffect(() => {
     async function fetchUserData() {
       try {
-        const response = await api.get(`/users/${userId}`);
+        const id = localStorage.getItem("id");
+        const response = await api.get(`/users/${id}`);
         setUser(response.data);
       } catch (error) {
         console.error(`Error fetching user data: \n${handleError(error)}`);
@@ -72,11 +77,12 @@ const Profile = () => {
       <div className="profile container">
         <div className="profile form">
           <ul className="profile user-list">
+            <h2>Profile</h2>
             <li className="player list-item">
               <Player user={user} isCurrentUser={userId === currentUser.id} />
             </li>
           </ul>
-          <Button style={{ marginBottom: "35px" }} width="100%" onClick={() => doHome()}>
+          <Button onClick={() => doHome()}>
             Back to Homepage
           </Button>
         </div>

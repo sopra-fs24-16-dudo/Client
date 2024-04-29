@@ -48,6 +48,9 @@ const Homepage = () => {
       );
     }
   };
+  const goToProfile = () => {
+    navigate("/profile");
+  };
 
   const logout = async () => {
     try { 
@@ -93,6 +96,9 @@ const Homepage = () => {
           </Button>
           <Button onClick={createLobby}>
             Create Lobby
+          </Button>
+          <Button onClick={goToProfile}>
+            Go to Profile
           </Button>
           <Button onClick={logout}>
             Logout

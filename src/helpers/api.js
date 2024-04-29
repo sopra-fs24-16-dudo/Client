@@ -37,7 +37,7 @@ export const handleError = error => {
   }
 };
 
-const websocket = new SockJS(`${getDomain()}/ws`);
+/*const websocket = new SockJS(`${getDomain()}/ws`);
 
 websocket.onopen = () => {
   console.log('Connected to websocket server');
@@ -52,3 +52,5 @@ websocket.onerror = function (event) {
 };
 
 export const client = Stomp.over(websocket);
+
+ */
