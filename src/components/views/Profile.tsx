@@ -19,13 +19,8 @@ const Player = ({ user, isCurrentUser }: { user: User, isCurrentUser: boolean })
     <div className="player container">
       <div className="player info">
         <div className="player info-item">Username: {user.username}</div>
-        <div className="player info-item">Birthday: {user.birthday}</div>
-        <div className="player info-item">Creation Date: {user.creationDate}</div>
         <div className="player info-item">Status: {user.status}</div>
         <div className="player info-item">Games played: {user.gamesPlayed}</div>
-        <div className="player info-item">Wins: {user.gamesWon}</div>
-        <div className="player info-item">Win Ratio: {user.winRatio}</div>
-
 
         {isCurrentUser && (
           <div className="player info-item">

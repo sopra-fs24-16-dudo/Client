@@ -7,8 +7,6 @@ import Login from "../../views/Login";
 import Registration from "../../views/Registration";
 import Profile from "../../views/Profile";
 import {ProfileGuard} from "../routeProtectors/ProfileGuard";
-import EditProfile from "../../views/EditProfile";
-import {EditProfileGuard} from "../routeProtectors/EditProfileGuard";
 import Lobby from "../../views/Lobby";
 import {LobbyGuard} from "../routeProtectors/LobbyGuard";
 import Game from "../../views/Game";
@@ -42,10 +40,6 @@ const AppRouter = () => {
 
         <Route path="/Profile" element={<ProfileGuard/>}>
           <Route path="/Profile" element={<Profile/>} />
-        </Route>
-
-        <Route path="/editProfile" element={<EditProfileGuard/>}>
-          <Route path="/editProfile" element={<EditProfile/>} />
         </Route>
 
         <Route path="/login" element={<LoginGuard />}>

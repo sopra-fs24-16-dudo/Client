@@ -217,6 +217,10 @@ const Game = () => {
     } else {
       const w = await api.get(`/games/winner/${lobbyId}`);
       setWinner(w.data);
+      console.log("winner id: ", w.id);
+      console.log("winner data id: ", w.data.id);
+      console.log (typeof w.data.id)
+      await api.put(`/lobby/winner/${lobbyId}`);
     }
   };
   useEffect(() => {
@@ -316,8 +320,8 @@ const Game = () => {
 
 
       <div className="game-footer">
-        <Button onClick={() => bid(nextBid)} disabled={playerId !== currentPlayerId}>Bid {nextBid} </Button>
-        <Button onClick={showBidOther} disabled={playerId !== currentPlayerId}>Bid Other</Button>
+        <Button onClick={() => bid(nextBid)}>Bid {nextBid} </Button>
+        <Button onClick={showBidOther}>Bid Other</Button>
         <Button onClick={() => bidDudo()}
                 disabled={playerId !== currentPlayerId || currentBid.includes("null") || currentBid.suit}>Dudo</Button>
         {winner !== null && (

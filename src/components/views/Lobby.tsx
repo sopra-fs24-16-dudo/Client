@@ -301,7 +301,7 @@ const Lobby = () => {
               <thead>
               <tr>
                 <th>Player</th>
-                <th>Wins</th>
+                <th>Points</th>
               </tr>
               </thead>
               <tbody>
