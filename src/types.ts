@@ -5,4 +5,7 @@ export type User = {
   creationDate: string;
   birthday: string;
   status: string;
+  gamesPlayed: number;
+  gamesWon: number;
+  winRatio: number;
 };

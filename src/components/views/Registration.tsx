@@ -13,7 +13,7 @@ const FormField = (props) => {
       <input
         className="registration input"
         placeholder={props.placeholder}
-        value={props.value}
+        value={props.value || ""}
         onChange={(e) => props.onChange(e.target.value)}
         maxLength={25}
       />
@@ -29,8 +29,8 @@ FormField.propTypes = {
 
 const Registration = () => {
   const navigate = useNavigate();
-  const [name, setName] = useState<string>(null);
-  const [username, setUsername] = useState<string>(null);
+  const [name, setName] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
 
   const doRegistration = async () => {
     try {
@@ -75,13 +75,11 @@ const Registration = () => {
           <div className="registration button-container">
             <Button
               disabled={!username || !name}
-              width="100%"
               onClick={() => doRegistration()}
             >
               Create Account
             </Button>
             <Button
-              width="100%"
               onClick={() => doLogin()}
               className="secondary-button"
             >

@@ -10,7 +10,7 @@ const Homepage = () => {
   const navigate = useNavigate();
   const [lobbyId, setLobbyId] = useState<string>("");
   const [id, setUserId] = useState<number>(null);
-  
+  const [users, setUsers] = useState([]);
 
   const joinLobby = async () => {
     try {
@@ -20,6 +20,8 @@ const Homepage = () => {
 
       localStorage.setItem("lobbyId", lobbyId);
 
+      //subscribeToLobbyChannel(lobbyId);
+
       navigate(`/lobby/${lobbyId}`);
     } catch (error) {
       alert(
@@ -28,16 +30,19 @@ const Homepage = () => {
     }
   };
 
-  const createLobby = async ()  => {
-
+  const createLobby = async () => {
     try {
       const requestBody = JSON.stringify(id);
-      
+
       const response = await api.post("/lobbies", requestBody);
       console.log("Response Data:", response.data); // Log response data
-      const lobby = new Lobby (response.data);
+      const lobby = new Lobby(response.data);
 
       localStorage.setItem("lobbyId", lobby.id);
+
+      // Subscribe to the lobby channel immediately after creating the lobby
+      //subscribeToLobbyChannel(lobbyId);
+
 
       // Login successfully worked --> navigate to the route /game in the GameRouter
       navigate(`/lobby/${lobby.id}`);
@@ -48,14 +53,18 @@ const Homepage = () => {
     }
   };
 
+  const goToProfile = () => {
+    navigate("/profile");
+  };
+
   const logout = async () => {
-    try { 
+    try {
       // Call the backend API to update the user's status to "offline"
       const requestBody = JSON.stringify({id});
       console.log(requestBody);
 
       await api.put("/logout", requestBody);
-      
+
       localStorage.removeItem("token");
       localStorage.removeItem("id");
       localStorage.removeItem("currentPlayerId");
@@ -67,12 +76,10 @@ const Homepage = () => {
       alert("Failed to logout. Please try again.");
     }
   }
-  
+
   useEffect(() => {
-
     const storedUserId = localStorage.getItem("id");
-    setUserId(storedUserId);  
-
+    setUserId(storedUserId);
   }, []);
 
   return (
@@ -87,13 +94,16 @@ const Homepage = () => {
           onChange={(e) => setLobbyId(e.target.value)}
         />
         <div className="button-container">
-          <Button width="100%" onClick={joinLobby}>
+          <Button onClick={joinLobby}>
             Join Lobby
           </Button>
-          <Button width="100%" onClick={createLobby}>
+          <Button onClick={createLobby}>
             Create Lobby
           </Button>
-          <Button width="100%" onClick={logout}>
+          <Button onClick={goToProfile}>
+            Go to Profile
+          </Button>
+          <Button onClick={logout}>
             Logout
           </Button>
         </div>

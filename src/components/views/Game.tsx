@@ -14,6 +14,9 @@ import queen from "../../images/dice/queen.png";
 import king from "../../images/dice/king.png";
 import ace from "../../images/dice/ace.png";
 
+import { getDomain } from 'helpers/getDomain';
+import SockJS from 'sockjs-client';
+import Stomp from 'stompjs';
 const FormField = (props) => {
   return (
     <div className="chat field">
@@ -77,7 +80,50 @@ const Game = () => {
   // ... other game functions like sendMessage from Lobby
 
   useEffect(() => {
+    const websocket = new SockJS(`${getDomain()}/ws`);
+    const stompClient = Stomp.over(websocket);
 
+    stompClient.connect({}, () => {
+      console.log('Connected to Stomp server');
+
+      stompClient.subscribe(`/topic/game/player/${lobbyId}`, (message) => {
+        console.log('Received message from lobby channel:', message.body);
+        const parsedMessage = JSON.parse(message.body);
+        setPlayers(parsedMessage);
+      });
+      stompClient.subscribe(`/topic/game/nextbid/${lobbyId}`, (message) => {
+        console.log('Received message from lobby channel:', message.body);
+        const parsedMessage = JSON.parse(message.body);
+        setNextBid(parsedMessage);
+      });
+      stompClient.subscribe(`/topic/game/currentbid/${lobbyId}`, (message) => {
+        console.log('Received message from lobby channel:', message.body);
+        const parsedMessage = JSON.parse(message.body);
+        setCurrentBid(parsedMessage);
+      });
+      stompClient.subscribe(`/topic/game/currentplayer/${lobbyId}`, (message) => {
+        console.log('Received message from lobby channel:', message.body);
+        const parsedMessage = JSON.parse(message.body);
+        setCurrentPlayerId(parsedMessage);
+      });
+      stompClient.subscribe(`/topic/end/${lobbyId}`, (message) => {
+        console.log('Game ended:', message.body);
+        window.location.href = `/lobby/` + lobbyId;
+      });
+    }, (error) => {
+      console.error('Error connecting to Stomp server:', error);
+    });
+
+    // Cleanup-Funktion
+    return () => {
+      stompClient.disconnect(() => {
+        console.log('Disconnected from Stomp server');
+      });
+      websocket.close();
+    };
+  }, [lobbyId]);
+
+  useEffect(() => {
     async function fetchUsersInLobby() {
       try {
         console.log("LobbyID:", lobbyId);
@@ -202,7 +248,21 @@ const Game = () => {
     } else {
       const w = await api.get(`/games/winner/${lobbyId}`);
       setWinner(w.data);
+    }
+  };
+  useEffect(() => {
+    if (winner !== null) {
       setShowWinnerModal(true);
+      endGame()
+    }
+  }, [winner]);
+
+  const endGame = async () => {
+    try {
+      await api.put(`/games/end/${lobbyId}`);
+      console.log("update user", userId)
+    } catch (error) {
+      console.error("Error ending the game:", error);
     }
   };
 
@@ -289,9 +349,12 @@ const Game = () => {
       <div className="game-footer">
         <Button onClick={() => bid(nextBid)} disabled={playerId !== currentPlayerId}>Bid {nextBid} </Button>
         <Button onClick={showBidOther} disabled={playerId !== currentPlayerId}>Bid Other</Button>
-        <Button onClick={() => bidDudo()} disabled={playerId !== currentPlayerId || currentBid.includes("null") || currentBid.suit}>Dudo</Button>
+        <Button onClick={() => bidDudo()}
+                disabled={playerId !== currentPlayerId || currentBid.includes("null") || currentBid.suit}>Dudo</Button>
+        {winner !== null && (
+          <Button onClick={endGame}>End Game</Button>
+        )}
       </div>
-
 
       {showBidOtherModal && (
         <div className="bid-other-modal">
