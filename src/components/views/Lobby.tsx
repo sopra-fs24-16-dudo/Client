@@ -8,6 +8,9 @@ import PropTypes from "prop-types";
 import AgoraRTC from "agora-rtc-sdk";
 import question from "../../images/question.png";
 
+import { getDomain } from 'helpers/getDomain';
+import SockJS from 'sockjs-client';
+import Stomp from 'stompjs';
 const FormField = (props) => {
   return (
     <div className="chat field">
@@ -55,38 +58,36 @@ const Lobby = () => {
   //const [voiceChannel, setVoiceChannel] = useState(null);
   //const [voiceChannelJoined, setVoiceChannelJoined] = useState(false);
 
+  useEffect(() => {
+    const websocket = new SockJS(`${getDomain()}/ws`);
+    const stompClient = Stomp.over(websocket);
 
- /* useEffect(() => {
-    // Subscribe to the lobby channel when the component mounts
-    const subscribeToLobbyChannel = () => {
-      client.connect({}, () => {
-        // Successful connection callback
-        console.log('Connected to Stomp server');
-        // Subscribe to the lobby channel
-        client.subscribe(`/topic/lobby/${lobbyId}`, (message) => {
-          // Handle incoming messages from the lobby channel
-          console.log('Received message from lobby channel:', message.body);
-          // You can update the state or perform any other actions based on the incoming message
-        });
-      }, (error) => {
-        // Error callback
-        console.error('Error connecting to Stomp server:', error);
+    stompClient.connect({}, () => {
+      console.log('Connected to Stomp server');
+
+      stompClient.subscribe(`/topic/lobby/${lobbyId}`, (message) => {
+        console.log('Received message from lobby channel:', message.body);
+        const parsedMessage = JSON.parse(message.body);
+        const updatedUserList = parsedMessage.players;
+        setUsers(updatedUserList);
       });
-    };
+      stompClient.subscribe(`/topic/start/${lobbyId}`, (message) => {
+        console.log('Game started:', message.body);
+        window.location.href = `/game/` + lobbyId;
+      });
+    }, (error) => {
+      console.error('Error connecting to Stomp server:', error);
+    });
 
-    // Call the function to subscribe to the lobby channel
-    subscribeToLobbyChannel();
-
-    // Cleanup function
+    // Cleanup-Funktion
     return () => {
-      // Disconnect from the Stomp server when the component unmounts
-      if (client && client.connected) {
-        client.disconnect(() => {
-          console.log('Disconnected from Stomp server');
-        });
-      }
+      stompClient.disconnect(() => {
+        console.log('Disconnected from Stomp server');
+      });
+      websocket.close();
     };
-  }, [lobbyId]); */
+  }, [lobbyId, setUsers]);
+
 
   useEffect(() => {
     async function fetchUsersInLobby () {
@@ -169,18 +170,25 @@ const Lobby = () => {
       // Send request to update readiness status to the server
       await api.put(`/lobby/player/${lobbyId}/ready`, requestBody);
 
-      // Check if all users are ready after the update
-      //const response = await api.get(`/lobby/player/${lobbyId}/ready`);
-      //setAllReady(response.data);
+      // Fetch updated readiness status of all users
+      const response = await api.get(`/lobby/players/${lobbyId}`);
+      const updatedUsers = response.data;
 
-      //if (response.data) {
-        //await api.post(`/lobby/start/${lobbyId}`);
-        //navigate(`/game/${lobbyId}`);
-      //}
+      // Check if all users are ready after the update
+      const allReady = updatedUsers.every((user) => user.ready);
+
+      // Check if there are at least two players in the lobby
+      const enoughPlayers = updatedUsers.length >= 2;
+
+      if (allReady && enoughPlayers) {
+        // If all users are ready and there are at least two players, start the game
+        await api.post(`/lobby/start/${lobbyId}`);
+      }
     } catch (error) {
       console.error("Error toggling ready status:", error);
     }
   };
+
 
   const leaveLobby = async () => {
     try {
@@ -238,7 +246,7 @@ const Lobby = () => {
   };
 
    */
-  const sendMessage = async () => {
+  const sendMessages = async () => {
     try {
       const requestBody = JSON.stringify({ message });
       console.log(`/lobby/chat/${lobbyId}/${userId}`)
@@ -300,8 +308,9 @@ const Lobby = () => {
           value={message}
           onChange={(m) => setMessage(m)}
         />
-        <Button onClick={() => sendMessage()}> Send </Button>
+        <Button onClick={() => sendMessages()}> Send </Button>
       </div>
+
     </BaseContainer>
   );
 };
