@@ -17,24 +17,7 @@ import ace from "../../images/dice/ace.png";
 import { getDomain } from 'helpers/getDomain';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
-const FormField = (props) => {
-  return (
-    <div className="chat field">
-      <input
-        className="chat input"
-        placeholder={props.placeholder}
-        value={props.value}
-        onChange={(e) => props.onChange(e.target.value)}
-      />
-    </div>
-  );
-};
 
-FormField.propTypes = {
-  placeholder: PropTypes.string,
-  value: PropTypes.string,
-  onChange: PropTypes.func,
-};
 
 const suitImages = {
   NINE: nine,
@@ -52,7 +35,6 @@ const Game = () => {
   const [nextBid, setNextBid] = useState(null);
   const [validBids, setValidBids] = useState([]);
   const [rules, setRules] = useState([]);
-  const [message, setMessage] = useState("");
   const lobbyId = localStorage.getItem("lobbyId");
   const [hand, setHand] = useState([]);
   const gameId = localStorage.getItem("lobbyId");
@@ -179,19 +161,6 @@ const Game = () => {
     setShowRulesModal(true);
   };
 
-  const sendMessage = async () => {
-    try {
-      const requestBody = JSON.stringify({ message });
-      console.log(`/lobby/chat/${lobbyId}/${userId}`);
-      const response = await api.post(`/lobby/chat/${lobbyId}/${userId}`, requestBody);
-      console.log("Response:", response);
-      setMessage("");
-    } catch (error) {
-      alert(
-        `Something went wrong during the registration: \n${handleError(error)}`,
-      );
-    }
-  };
   const rollHand = async () => {
     try {
       const requestBody = JSON.stringify(userId);

@@ -134,39 +134,6 @@
     }
   }
 
-  .chat {
-    &.field {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    &.container {
-      position: fixed;
-      padding: 1.5em;
-      bottom: 20px; /* Adjust this value to change the distance from the bottom of the screen */
-      right: 20px; /* Adjust this value to change the distance from the right side of the screen */
-      width: 300px; /* Adjust this value to change the width of the container */
-      height: 300px; /* Adjust this value to change the height of the container */
-      background-color: $background;
-      border: 1px solid #ccc;
-      border-radius: $borderRadius;
-      display: flex;
-      flex-direction: column-reverse;
-      align-items: first baseline;
-    }
-
-    &.input {
-      height: 35px;
-      font-weight: 500;
-      padding-left: 15px;
-      margin-left: -4px;
-      border: none;
-      border-radius: 0.75em;
-      background: transparentize(rgb(62, 132, 216), 0.85);
-      color: $textColor;
-    }
-  }
 
   .bid-other-modal {
     position: fixed;

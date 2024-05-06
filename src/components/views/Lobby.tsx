@@ -7,28 +7,12 @@ import "styles/views/Lobby.scss";
 import PropTypes from "prop-types";
 import AgoraRTC from "agora-rtc-sdk";
 import question from "../../images/question.png";
+import leaderboard from "../../images/leaderboard.png";
 
 import { getDomain } from 'helpers/getDomain';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
-const FormField = (props) => {
-  return (
-    <div className="chat field">
-      <input
-        className="chat input"
-        placeholder={props.placeholder}
-        value={props.value}
-        onChange={(e) => props.onChange(e.target.value)}
-      />
-    </div>
-  );
-};
 
-FormField.propTypes = {
-  placeholder: PropTypes.string,
-  value: PropTypes.string,
-  onChange: PropTypes.func,
-};
 interface UserInfo {
   userId: string;
   token: string;
@@ -55,6 +39,8 @@ const Lobby = () => {
   const [message, setMessage] = useState("");
   const lobbyId = localStorage.getItem("lobbyId");
   const userId = localStorage.getItem("id");
+  const [showLeaderboardModal, setShowLeaderboardModal] = useState(false);
+  const [leaderboardData, setLeaderboardData] = useState([]);
   //const [voiceChannel, setVoiceChannel] = useState(null);
   //const [voiceChannelJoined, setVoiceChannelJoined] = useState(false);
 
@@ -210,6 +196,21 @@ const Lobby = () => {
   const showRules = async () => {
     setShowRulesModal(true)
   };
+
+  const showLeaderboard = async () => {
+    try {
+      const response = await api.get(`/leaderboard/${lobbyId}`);
+      const leaderboardData = response.data.split(',').map(playerData => {
+        const [username, points] = playerData.split(' ');
+        return { username, points: points ? parseInt(points) : 0 };
+      });
+      leaderboardData.sort((a, b) => b.points - a.points);
+      setLeaderboardData(leaderboardData);
+      setShowLeaderboardModal(true);
+    } catch (error) {
+      console.error("Error fetching leaderboard:", error);
+    }
+  }
   /*
   const joinVoiceChannel = async () => {
     try {
@@ -246,19 +247,7 @@ const Lobby = () => {
   };
 
    */
-  const sendMessages = async () => {
-    try {
-      const requestBody = JSON.stringify({ message });
-      console.log(`/lobby/chat/${lobbyId}/${userId}`)
-      const response = await api.post(`/lobby/chat/${lobbyId}/${userId}`, requestBody);
-      console.log("Response:", response);
-      setMessage("");
-    } catch (error) {
-      alert(
-        `Something went wrong during the registration: \n${handleError(error)}`
-      );
-    }
-  };
+
 
   return (
     <BaseContainer className="lobby container">
@@ -274,6 +263,9 @@ const Lobby = () => {
         </ul>
         <a href="#" className="question-image" onClick={showRules}>
           <img src={question} alt="Question" width="80px" height="80px" />
+        </a>
+        <a href="#" className="leaderboard-image" onClick={showLeaderboard}>
+          <img src={leaderboard} alt="Leaderboard" width="110px" height="110px" />
         </a>
       </div>
       <div className="button-container">
@@ -301,15 +293,30 @@ const Lobby = () => {
           </div>
         </div>
       )}
-      <div className="chat container">
-        {/* Other chat content */}
-        <FormField
-          placeholder="Type something..."
-          value={message}
-          onChange={(m) => setMessage(m)}
-        />
-        <Button onClick={() => sendMessages()}> Send </Button>
-      </div>
+      {showLeaderboardModal && (
+        <div className="leaderboard-modal">
+          <div className="leaderboard-content">
+            <h2>Leaderboard</h2>
+            <table>
+              <thead>
+              <tr>
+                <th>Player</th>
+                <th>Wins</th>
+              </tr>
+              </thead>
+              <tbody>
+              {leaderboardData.map((player, index) => (
+                <tr key={index}>
+                  <td>{player.username}</td>
+                  <td>{player.points}</td>
+                </tr>
+              ))}
+              </tbody>
+            </table>
+            <Button onClick={() => setShowLeaderboardModal(false)}>Close</Button>
+          </div>
+        </div>
+      )}
 
     </BaseContainer>
   );
