@@ -18,6 +18,10 @@ import { getDomain } from 'helpers/getDomain';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 
+//Imports for the Voice chat API
+import AgoraRTC from "agora-rtc-sdk-ng";
+import AgoraRTM from "agora-rtm-sdk";
+
 
 const suitImages = {
   NINE: nine,
@@ -57,6 +61,65 @@ const Game = () => {
   const [die3, setDie3] = useState({ suit: "JACK" });
   const [die4, setDie4] = useState({ suit: "QUEEN" });
   const [die5, setDie5] = useState({ suit: "KING" });
+
+  //Voice chat
+  const APP_ID = "cd2162615d2f426da1c1b565bb447f17"; //agora app id from website hosting the website
+  const TEMP_TOKEN = null // token for security
+  const [rtc, setRtc] = useState({
+    client: null,
+    localAudioTrack: null
+  });
+  const [activeSpeaker, setActiveSpeaker] = useState(null);
+  const [isMuted, setIsMuted] = useState(false);
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////AGORA////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+
+  useEffect(() => {
+    async function initAgora() {
+      const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+      setRtc(prevState => ({ ...prevState, client }));
+
+      try {
+        await client.join(APP_ID, lobbyId, TEMP_TOKEN, userId);  // Adjust 'userId' to be the current user
+        console.log(`User Joined: ${userId}`)
+        const localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+        await client.publish(localAudioTrack);
+        setRtc(prevState => ({ ...prevState, localAudioTrack }));
+
+        client.enableAudioVolumeIndicator();
+        client.on("volume-indicator", (volumes) => {
+          volumes.forEach(({uid, level}) => {
+            console.log(`UID: ${uid}, Level: ${level}`);
+            if (level > 5) {
+              setActiveSpeaker(uid);
+            }
+          });
+        });
+
+        console.log("Publish success!");
+      } catch (error) {
+        console.error("AgoraRTC client join failed", error);
+      }
+    }
+
+    initAgora();
+
+    return () => {
+      rtc.localAudioTrack?.close();
+      rtc.client?.leave();
+    };
+  }, []); // Empty dependency array means this effect only runs once after initial render
+  const toggleMute = async () => {
+    if (rtc.localAudioTrack) {
+      const newMutedState = !isMuted;
+      await rtc.localAudioTrack.setMuted(newMutedState);
+      setIsMuted(newMutedState);
+    }
+  };
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////////
 
   // Functions to handle game actions
   // ... other game functions like sendMessage from Lobby
@@ -152,7 +215,6 @@ const Game = () => {
       fetchRules();
     }
   }, [showRulesModal]);
-
   const navigatToLobby = () => {
     navigate(`/lobby/${lobbyId}`);
   };
@@ -246,7 +308,11 @@ const Game = () => {
         {/* Players at the top */}
         <div className="opponent-container">
           {players.filter(player => player.id !== playerId).map((player) => (
-            <div className="opponent" key={player.id}>
+            <div className="opponent" key={player.id} style={{
+              border: player.id === activeSpeaker ? '2px solid #4CAF50' : 'none',
+              fontWeight: player.id === activeSpeaker ? 'bold' : 'normal',
+              fontColor: player.id === activeSpeaker ? 'green' : 'white'
+            }}>
               <span
                 className={`opponent-name ${player.id === currentPlayerId ? "current" : ""}`}>{player.username}</span>
               <div className="opponent-chips">
@@ -320,6 +386,7 @@ const Game = () => {
 
 
       <div className="game-footer">
+        <Button onClick={toggleMute}>{isMuted ? "Unmute" : "Mute"}</Button>
         <Button onClick={() => bid(nextBid)}>Bid {nextBid} </Button>
         <Button onClick={showBidOther}>Bid Other</Button>
         <Button onClick={() => bidDudo()}
