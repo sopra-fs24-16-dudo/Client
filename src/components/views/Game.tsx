@@ -390,7 +390,7 @@ const Game = () => {
         <Button onClick={() => bid(nextBid)}>Bid {nextBid} </Button>
         <Button onClick={showBidOther}>Bid Other</Button>
         <Button onClick={() => bidDudo()}
-                disabled={playerId !== currentPlayerId || currentBid.includes("null") || currentBid.suit}>Dudo</Button>
+        disabled={playerId !== currentPlayerId || currentBid.includes("null") || currentBid.suit}>Dudo</Button>
         {winner !== null && (
           <Button onClick={endGame}>End Game</Button>
         )}
