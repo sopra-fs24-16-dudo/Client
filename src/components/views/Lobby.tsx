@@ -202,6 +202,7 @@ const Lobby = () => {
       const response = await api.get(`/leaderboard/${lobbyId}`);
       const leaderboardData = response.data.split(",").map(playerData => {
         const [username, points] = playerData.split(" ");
+
         return { username, points: points ? parseInt(points) : 0 };
       });
       leaderboardData.sort((a, b) => b.points - a.points);
