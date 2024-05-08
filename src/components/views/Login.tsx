@@ -7,6 +7,7 @@ import "styles/views/Login.scss";
 import Header from "components/views/Header";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
+import showPasswordIMG from "images/show_password.png"
 
 /*
 It is possible to add multiple components inside a single file,
@@ -17,12 +18,26 @@ specific components that belong to the main one in the same file.
 const FormField = (props) => {
   return (
     <div className="login field">
-      <input
-        className="login input"
-        placeholder={props.placeholder}
-        value={props.value}
-        onChange={(e) => props.onChange(e.target.value)}
-      />
+      <div className="input-container">
+        <input
+          className="registration input"
+          placeholder={props.placeholder}
+          value={props.value || ""}
+          onChange={(e) => props.onChange(e.target.value)}
+          maxLength={25}
+          type={props.type || "text"}
+        />
+        {props.imgSrc && (
+          <img
+            src={props.imgSrc}
+            alt=""
+            width="25"
+            height="25"
+            onClick={props.onImgClick}
+            className="input-image"
+          />
+        )}
+    </div>
     </div>
   );
 };
@@ -31,12 +46,16 @@ FormField.propTypes = {
   placeholder: PropTypes.string,
   value: PropTypes.string,
   onChange: PropTypes.func,
+  type: PropTypes.string,
+  imgSrc: PropTypes.string,
+  onImgClick: PropTypes.func, // Add this line
 };
 
 const Login = () => {
   const navigate = useNavigate();
   const [name, setName] = useState<string>(null);
   const [username, setUsername] = useState<string>(null);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const doLogin = async () => {
     try {
@@ -75,6 +94,9 @@ const Login = () => {
             placeholder="Password"
             value={name}
             onChange={(n) => setName(n)}
+            type={showPassword ? "text" : "password"}
+            imgSrc={showPasswordIMG}
+            onImgClick={() => setShowPassword(!showPassword)}
           />
           <div className="login button-container">
             <Button

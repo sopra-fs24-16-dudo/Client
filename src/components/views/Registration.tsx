@@ -6,31 +6,50 @@ import { Button } from "components/ui/Button";
 import "styles/views/Registration.scss";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
+import showPasswordIMG from "images/show_password.png"
 
 const FormField = (props) => {
   return (
     <div className="registration field">
-      <input
-        className="registration input"
-        placeholder={props.placeholder}
-        value={props.value || ""}
-        onChange={(e) => props.onChange(e.target.value)}
-        maxLength={25}
-      />
+      <div className="input-container">
+        <input
+          className="registration input"
+          placeholder={props.placeholder}
+          value={props.value || ""}
+          onChange={(e) => props.onChange(e.target.value)}
+          maxLength={25}
+          type={props.type || "text"}
+        />
+        {props.imgSrc && (
+          <img
+            src={props.imgSrc}
+            alt=""
+            width="25"
+            height="25"
+            onClick={props.onImgClick}
+            className="input-image"
+          />
+        )}
+      </div>
     </div>
   );
 };
-  
+
 FormField.propTypes = {
   placeholder: PropTypes.string,
   value: PropTypes.string,
   onChange: PropTypes.func,
+  type: PropTypes.string,
+  imgSrc: PropTypes.string,
+  onImgClick: PropTypes.func, // Add this line
 };
 
 const Registration = () => {
   const navigate = useNavigate();
   const [name, setName] = useState<string>("");
   const [username, setUsername] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+
 
   const doRegistration = async () => {
     try {
@@ -71,6 +90,9 @@ const Registration = () => {
             placeholder="Password"
             value={name}
             onChange={(n) => setName(n)}
+            type={showPassword ? "text" : "password"}
+            imgSrc={showPasswordIMG}
+            onImgClick={() => setShowPassword(!showPassword)}
           />
           <div className="registration button-container">
             <Button

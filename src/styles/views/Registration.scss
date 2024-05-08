@@ -45,4 +45,30 @@
     flex-direction: column;
     justify-content: center;
   }
+  .input-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    width: 100%;
+  }
+
+  .registration.input {
+    width: 100%; /* Subtract the width of the image */
+  }
+
+  .input-image {
+    position: absolute;
+    right: 10px; /* Position the image 10px from the right */
+    top: 50%;
+    transform: translateY(-110%); /* Center the image vertically */
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-110%) scale(1.1);
+    }
+  }
+
 }
