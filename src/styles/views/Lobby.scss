@@ -114,6 +114,7 @@
       background-color: BROWN;
     }
   }
+}
 
 
 .rules-modal {
@@ -152,11 +153,10 @@
   margin-top: 10px;
 }
 
-&.button {
+.button {
     display: flex;
     flex-direction: column;
     justify-content: center;
     flex: 0 0 20%;
     height: 35px;
-  }
 }

@@ -74,18 +74,12 @@ const Game = () => {
   const [activeSpeaker, setActiveSpeaker] = useState(null);
   const [isMuted, setIsMuted] = useState(false);
 
-
-
   const audioRef = useRef(null);
 
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = 0.1;
-    }
-    }, []);
-
-
-
+    }}, []);
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////AGORA////////////////////////////////////////////////////////////
@@ -401,8 +395,6 @@ const Game = () => {
           </div>
         </div>
       </div>
-
-
       <div className="game-footer">
         <Button onClick={toggleMute}>{isMuted ? "Unmute" : "Mute"}</Button>
         <Button onClick={() => bid(nextBid)} disabled={nextBid === "Null"}>
@@ -415,14 +407,11 @@ const Game = () => {
           <Button onClick={endGame}>End Game</Button>
         )}
       </div>
-
       {showBidOtherModal && (
         <div className="bid-other-modal">
           <div className="bid-other-content">
             <h1>Select a bid</h1>
-            {stage === "selectAmount" && (
-              <img src={suitImages[selectedSuit.toString()]} alt={selectedSuit} className="suit-image" />
-            )}
+            {stage === "selectAmount" && (<img src={suitImages[selectedSuit.toString()]} alt={selectedSuit} className="suit-image" />)}
             <div className="bid-grid">
               {stage === "selectSuit" && uniqueSuits.map((suit, index) => (
                 <Button key={index} onClick={() => {
