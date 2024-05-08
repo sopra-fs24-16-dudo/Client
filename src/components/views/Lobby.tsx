@@ -277,6 +277,9 @@ const Lobby = () => {
         {voiceChannelJoined ? (
           <Button onClick={leaveVoiceChannel}>Leave Voice Chat</Button>
         ) : (
+
+        <Button onClick={() => toggleReadyStatus()} disabled={users.length < 2}>Ready</Button>
+
           <Button onClick={joinVoiceChannel}>Join Voice Chat</Button>
         )}
       </div>*/>

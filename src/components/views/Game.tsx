@@ -387,8 +387,10 @@ const Game = () => {
 
       <div className="game-footer">
         <Button onClick={toggleMute}>{isMuted ? "Unmute" : "Mute"}</Button>
-        <Button onClick={() => bid(nextBid)}>Bid {nextBid} </Button>
-        <Button onClick={showBidOther}>Bid Other</Button>
+        <Button onClick={() => bid(nextBid)} disabled={nextBid === "Null"}>
+          {nextBid === "Null" ? "Bid" : `Bid ${nextBid}`}
+        </Button>
+        <Button onClick={showBidOther} disabled={validBids.length === 0 }>Bid Other</Button>
         <Button onClick={() => bidDudo()}
           disabled={playerId !== currentPlayerId || currentBid.includes("null") || currentBid.suit}>Dudo</Button>
         {winner !== null && (

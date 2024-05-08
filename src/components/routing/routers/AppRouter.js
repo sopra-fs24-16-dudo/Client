@@ -2,7 +2,6 @@ import React from "react";
 import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 import {HomepageGuard} from "../routeProtectors/HomepageGuard";
 import HomepageRouter from "./HomepageRouter";
-import {LoginGuard} from "../routeProtectors/LoginGuard";
 import Login from "../../views/Login";
 import Registration from "../../views/Registration";
 import Profile from "../../views/Profile";
@@ -42,9 +41,7 @@ const AppRouter = () => {
           <Route path="/Profile" element={<Profile/>} />
         </Route>
 
-        <Route path="/login" element={<LoginGuard />}>
-          <Route path="/login" element={<Login/>} />
-        </Route>
+        <Route path="/login" element={<Login/>} />
         
         <Route path="/registration" element={<Registration/>} />
 
