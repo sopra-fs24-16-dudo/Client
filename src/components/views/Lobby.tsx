@@ -252,7 +252,7 @@ const Lobby = () => {
 
   return (
     <BaseContainer className="lobby container">
-      <h2>Lobby</h2>
+      <h2>Lobby id: {lobbyId}</h2>
       <div className="user-list">
         <h3>Users in Lobby:</h3>
         <ul>
