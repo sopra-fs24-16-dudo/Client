@@ -37,7 +37,7 @@ const FormField = (props) => {
             className="input-image"
           />
         )}
-    </div>
+      </div>
     </div>
   );
 };
