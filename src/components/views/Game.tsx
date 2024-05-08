@@ -153,7 +153,7 @@ const Game = () => {
       });
       stompClient.subscribe(`/topic/end/${lobbyId}`, (message) => {
         console.log("Game ended:", message.body);
-        window.location.href = `/lobby/` + lobbyId;
+        window.location.href = "/lobby/" + lobbyId;
       });
     }, (error) => {
       console.error("Error connecting to Stomp server:", error);
