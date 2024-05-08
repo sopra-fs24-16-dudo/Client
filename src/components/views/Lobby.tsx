@@ -311,7 +311,7 @@ const Lobby = () => {
                     <td>{player.username}</td>
                     <td>{player.points}</td>
                   </tr>
-              ))}
+                ))}
               </tbody>
             </table>
             <Button onClick={() => setShowLeaderboardModal(false)}>Close</Button>
