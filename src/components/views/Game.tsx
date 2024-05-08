@@ -14,9 +14,9 @@ import queen from "../../images/dice/queen.png";
 import king from "../../images/dice/king.png";
 import ace from "../../images/dice/ace.png";
 
-import { getDomain } from 'helpers/getDomain';
-import SockJS from 'sockjs-client';
-import Stomp from 'stompjs';
+import { getDomain } from "helpers/getDomain";
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
 
 //Imports for the Voice chat API
 import AgoraRTC from "agora-rtc-sdk-ng";
@@ -129,40 +129,40 @@ const Game = () => {
     const stompClient = Stomp.over(websocket);
 
     stompClient.connect({}, () => {
-      console.log('Connected to Stomp server');
+      console.log("Connected to Stomp server");
 
       stompClient.subscribe(`/topic/game/player/${lobbyId}`, (message) => {
-        console.log('Received message from lobby channel:', message.body);
+        console.log("Received message from lobby channel:", message.body);
         const parsedMessage = JSON.parse(message.body);
         setPlayers(parsedMessage);
       });
       stompClient.subscribe(`/topic/game/nextbid/${lobbyId}`, (message) => {
-        console.log('Received message from lobby channel:', message.body);
+        console.log("Received message from lobby channel:", message.body);
         const parsedMessage = JSON.parse(message.body);
         setNextBid(parsedMessage);
       });
       stompClient.subscribe(`/topic/game/currentbid/${lobbyId}`, (message) => {
-        console.log('Received message from lobby channel:', message.body);
+        console.log("Received message from lobby channel:", message.body);
         const parsedMessage = JSON.parse(message.body);
         setCurrentBid(parsedMessage);
       });
       stompClient.subscribe(`/topic/game/currentplayer/${lobbyId}`, (message) => {
-        console.log('Received message from lobby channel:', message.body);
+        console.log("Received message from lobby channel:", message.body);
         const parsedMessage = JSON.parse(message.body);
         setCurrentPlayerId(parsedMessage);
       });
       stompClient.subscribe(`/topic/end/${lobbyId}`, (message) => {
-        console.log('Game ended:', message.body);
+        console.log("Game ended:", message.body);
         window.location.href = `/lobby/` + lobbyId;
       });
     }, (error) => {
-      console.error('Error connecting to Stomp server:', error);
+      console.error("Error connecting to Stomp server:", error);
     });
 
     // Cleanup-Funktion
     return () => {
       stompClient.disconnect(() => {
-        console.log('Disconnected from Stomp server');
+        console.log("Disconnected from Stomp server");
       });
       websocket.close();
     };
@@ -309,9 +309,9 @@ const Game = () => {
         <div className="opponent-container">
           {players.filter(player => player.id !== playerId).map((player) => (
             <div className="opponent" key={player.id} style={{
-              border: player.id === activeSpeaker ? '2px solid #4CAF50' : 'none',
-              fontWeight: player.id === activeSpeaker ? 'bold' : 'normal',
-              fontColor: player.id === activeSpeaker ? 'green' : 'white'
+              border: player.id === activeSpeaker ? "2px solid #4CAF50" : "none",
+              fontWeight: player.id === activeSpeaker ? "bold" : "normal",
+              fontColor: player.id === activeSpeaker ? "green" : "white"
             }}>
               <span
                 className={`opponent-name ${player.id === currentPlayerId ? "current" : ""}`}>{player.username}</span>
