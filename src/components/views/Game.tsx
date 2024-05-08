@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+
 import { api, handleError } from "helpers/api";
 import { Button } from "components/ui/Button";
 import BaseContainer from "components/ui/BaseContainer";
@@ -13,6 +14,7 @@ import jack from "../../images/dice/jack.png";
 import queen from "../../images/dice/queen.png";
 import king from "../../images/dice/king.png";
 import ace from "../../images/dice/ace.png";
+import jazz from "../../sounds/GameJazzMusic.mp3";
 
 import { getDomain } from "helpers/getDomain";
 import SockJS from "sockjs-client";
@@ -71,6 +73,19 @@ const Game = () => {
   });
   const [activeSpeaker, setActiveSpeaker] = useState(null);
   const [isMuted, setIsMuted] = useState(false);
+
+
+
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = 0.1;
+    }
+    }, []);
+
+
+
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////AGORA////////////////////////////////////////////////////////////
@@ -304,6 +319,9 @@ const Game = () => {
 
   return (
     <BaseContainer className="game container">
+      <div>
+        <audio ref={audioRef} src={jazz} autoPlay loop/>
+      </div>
       <div className="game-header">
         {/* Players at the top */}
         <div className="opponent-container">
@@ -390,10 +408,10 @@ const Game = () => {
         <Button onClick={() => bid(nextBid)} disabled={nextBid === "Null"}>
           {nextBid === "Null" ? "Bid" : `Bid ${nextBid}`}
         </Button>
-        <Button onClick={showBidOther} disabled={validBids.length === 0 }>Bid Other</Button>
+        <Button onClick={showBidOther} disabled={validBids.length === 0}>Bid Other</Button>
         <Button onClick={() => bidDudo()}
-          disabled={playerId !== currentPlayerId || currentBid.includes("null") || currentBid.suit}>Dudo</Button>
-        {winner !== null && (
+                disabled={playerId !== currentPlayerId || currentBid.includes("null") || currentBid.suit}>Dudo</Button>
+          {winner !== null && (
           <Button onClick={endGame}>End Game</Button>
         )}
       </div>
