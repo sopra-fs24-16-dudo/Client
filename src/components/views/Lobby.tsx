@@ -299,13 +299,13 @@ const Lobby = () => {
           <div className="leaderboard-content">
             <h2>Leaderboard</h2>
             <table>
-                <thead>
+              <thead>
                 <tr>
                   <th>Player</th>
                   <th>Points</th>
                 </tr>
-                </thead>
-                <tbody>
+              </thead>
+              <tbody>
                 {leaderboardData.map((player, index) => (
                   <tr key={index}>
                     <td>{player.username}</td>
