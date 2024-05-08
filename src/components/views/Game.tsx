@@ -401,9 +401,8 @@ const Game = () => {
           {nextBid === "Null" ? "Bid" : `Bid ${nextBid}`}
         </Button>
         <Button onClick={showBidOther} disabled={validBids.length === 0}>Bid Other</Button>
-        <Button onClick={() => bidDudo()}
-                disabled={playerId !== currentPlayerId || currentBid.includes("null") || currentBid.suit}>Dudo</Button>
-          {winner !== null && (
+        <Button onClick={() => bidDudo()} disabled={playerId !== currentPlayerId || currentBid.includes("null") || currentBid.suit}>Dudo</Button>
+        {winner !== null && (
           <Button onClick={endGame}>End Game</Button>
         )}
       </div>
