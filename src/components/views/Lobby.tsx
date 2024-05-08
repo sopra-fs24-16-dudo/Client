@@ -9,9 +9,9 @@ import AgoraRTC from "agora-rtc-sdk";
 import question from "../../images/question.png";
 import leaderboard from "../../images/leaderboard.png";
 
-import { getDomain } from 'helpers/getDomain';
-import SockJS from 'sockjs-client';
-import Stomp from 'stompjs';
+import { getDomain } from "helpers/getDomain";
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
 
 interface UserInfo {
   userId: string;
@@ -49,26 +49,26 @@ const Lobby = () => {
     const stompClient = Stomp.over(websocket);
 
     stompClient.connect({}, () => {
-      console.log('Connected to Stomp server');
+      console.log("Connected to Stomp server");
 
       stompClient.subscribe(`/topic/lobby/${lobbyId}`, (message) => {
-        console.log('Received message from lobby channel:', message.body);
+        console.log("Received message from lobby channel:", message.body);
         const parsedMessage = JSON.parse(message.body);
         const updatedUserList = parsedMessage.players;
         setUsers(updatedUserList);
       });
       stompClient.subscribe(`/topic/start/${lobbyId}`, (message) => {
-        console.log('Game started:', message.body);
+        console.log("Game started:", message.body);
         window.location.href = `/game/` + lobbyId;
       });
     }, (error) => {
-      console.error('Error connecting to Stomp server:', error);
+      console.error("Error connecting to Stomp server:", error);
     });
 
     // Cleanup-Funktion
     return () => {
       stompClient.disconnect(() => {
-        console.log('Disconnected from Stomp server');
+        console.log("Disconnected from Stomp server");
       });
       websocket.close();
     };
@@ -200,8 +200,8 @@ const Lobby = () => {
   const showLeaderboard = async () => {
     try {
       const response = await api.get(`/leaderboard/${lobbyId}`);
-      const leaderboardData = response.data.split(',').map(playerData => {
-        const [username, points] = playerData.split(' ');
+      const leaderboardData = response.data.split(",").map(playerData => {
+        const [username, points] = playerData.split(" ");
         return { username, points: points ? parseInt(points) : 0 };
       });
       leaderboardData.sort((a, b) => b.points - a.points);
