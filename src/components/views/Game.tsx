@@ -84,6 +84,9 @@ const Game = () => {
   /////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////AGORA////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////////
+  /*useEffect(() => {
+    AgoraRTC.setLogLevel(AgoraRTC["Logger"].DEBUG);
+  }, []);*/
 
   useEffect(() => {
     async function initAgora() {
@@ -92,15 +95,16 @@ const Game = () => {
 
       try {
         await client.join(APP_ID, lobbyId, TEMP_TOKEN, userId);  // Adjust 'userId' to be the current user
-        console.log(`User Joined: ${userId}`)
+        console.log(`User Joined: UserId=${userId}, LobbyId=${lobbyId}`);
         const localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
         await client.publish(localAudioTrack);
+        console.log("Audio track published successfully");
         setRtc(prevState => ({ ...prevState, localAudioTrack }));
 
         client.enableAudioVolumeIndicator();
         client.on("volume-indicator", (volumes) => {
           volumes.forEach(({uid, level}) => {
-            console.log(`UID: ${uid}, Level: ${level}`);
+            console.log(`UID:=${uid}, Level:=${level}`);
             if (level > 5) {
               setActiveSpeaker(uid);
             }
@@ -127,6 +131,24 @@ const Game = () => {
       setIsMuted(newMutedState);
     }
   };
+  useEffect(() => {
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then((stream) => {
+        console.log("Microphone permissions granted and audio stream created");
+      })
+      .catch((error) => {
+        console.error("Microphone permissions denied or audio stream creation failed", error);
+      });
+  }, []);
+
+  useEffect(() => {
+    AgoraRTC.getDevices().then(devices => {
+      const audioOutputDevices = devices.filter(device => device.kind === "audiooutput");
+      if (audioOutputDevices.length > 0) {
+        console.log("Audio Output Devices:", audioOutputDevices);
+      }
+    });
+  }, []);
   /////////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
