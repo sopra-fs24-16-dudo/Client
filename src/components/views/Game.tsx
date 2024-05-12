@@ -102,8 +102,8 @@ const Game = () => {
         setRtc(prevState => ({ ...prevState, localAudioTrack }));
 
         // Listen for other users publishing their streams and subscribe to them
-        client.on('user-published', async (user, mediaType) => {
-          if (mediaType === 'audio') {
+        client.on("user-published", async (user, mediaType) => {
+          if (mediaType === "audio") {
             await client.subscribe(user, mediaType);
             user.audioTrack.play();
             console.log(`Subscribed to audio track from user ${user.uid}`);
