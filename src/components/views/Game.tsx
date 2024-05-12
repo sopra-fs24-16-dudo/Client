@@ -21,8 +21,17 @@ import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
 //Imports for the Voice chat API
-import AgoraRTC from "agora-rtc-sdk-ng";
+import AgoraRTC, { IRemoteAudioTrack } from "agora-rtc-sdk-ng";
 import AgoraRTM from "agora-rtm-sdk";
+
+interface AudioSubscription {
+  track: IRemoteAudioTrack;
+  isPlaying: boolean; // This flag will indicate if the audio is currently being played
+}
+
+interface AudioSubscriptions {
+  [userId: string]: AudioSubscription;
+}
 
 
 const suitImages = {
@@ -73,6 +82,7 @@ const Game = () => {
   });
   const [activeSpeaker, setActiveSpeaker] = useState(null);
   const [isMuted, setIsMuted] = useState(false);
+  const [audioSubscriptions, setAudioSubscriptions] = useState<AudioSubscriptions>({});
 
   const audioRef = useRef(null);
 
@@ -105,8 +115,13 @@ const Game = () => {
         client.on("user-published", async (user, mediaType) => {
           if (mediaType === "audio") {
             await client.subscribe(user, mediaType);
-            user.audioTrack.play();
-            console.log(`Subscribed to audio track from user ${user.uid}`);
+            const audioTrack = user.audioTrack;
+            audioTrack.play();  // Start playing by default
+            setAudioSubscriptions(prev => ({
+              ...prev,
+              [user.uid]: { track: audioTrack, isPlaying: true }
+            }));
+            console.log(`Subscribed and started playing audio from user ${user.uid}`);
           }
         });
 
@@ -129,16 +144,39 @@ const Game = () => {
     initAgora();
 
     return () => {
+      Object.values(audioSubscriptions).forEach((subscription: AudioSubscription) => {
+        subscription.track.stop();
+      });
       rtc.localAudioTrack?.close();
       rtc.client?.leave();
     };
-  }, []); // Empty dependency array means this effect only runs once after initial render
+  }, [audioSubscriptions]); // Empty dependency array means this effect only runs once after initial render
   const toggleMute = async () => {
     if (rtc.localAudioTrack) {
       const newMutedState = !isMuted;
       await rtc.localAudioTrack.setMuted(newMutedState);
       setIsMuted(newMutedState);
     }
+  };
+  const toggleAudioPlay = (userId) => {
+    setAudioSubscriptions(prev => {
+      const currentSubscription = prev[userId];
+      if (currentSubscription) {
+        const newIsPlaying = !currentSubscription.isPlaying;
+        if (newIsPlaying) {
+          currentSubscription.track.play();
+        } else {
+          currentSubscription.track.stop();
+        }
+
+        return {
+          ...prev,
+          [userId]: { ...currentSubscription, isPlaying: newIsPlaying }
+        };
+      }
+
+      return prev;
+    });
   };
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ audio: true })
@@ -358,6 +396,9 @@ const Game = () => {
             }}>
               <span
                 className={`opponent-name ${player.id === currentPlayerId ? "current" : ""}`}>{player.username}</span>
+              <Button onClick={() => toggleAudioPlay(player.id)}>
+                {audioSubscriptions[player.id]?.isPlaying ? "Stop Listening" : "Start Listening"}
+              </Button>
               <div className="opponent-chips">
                 {player.chips === 0 ? (
                   <span className="out-text">OUT</span>
