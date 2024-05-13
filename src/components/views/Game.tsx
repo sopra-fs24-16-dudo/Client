@@ -123,6 +123,7 @@ const Game = () => {
       }
     }
     initAgora();
+
     return () => {
       Object.values(audioSubscriptions).forEach((subscription: AudioSubscription) => {
         subscription.track.stop();
@@ -163,7 +164,6 @@ const Game = () => {
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-
   const playersToArray = (playersObj) => {
     return Object.values(playersObj);
   };
@@ -194,6 +194,7 @@ const Game = () => {
       console.error("Error connecting to Stomp server:", error);
     });
     // Cleanup-Funktion
+
     return () => {
       stompClient.disconnect(() => {
         console.log("Disconnected from Stomp server");
@@ -388,7 +389,7 @@ const Game = () => {
             <>
               {currentBid.amount + " "}
               <img src={suitImages[currentBid.suit]} alt={currentBid.suit} width="40px"
-                   height="35px" />
+                height="35px" />
             </>
           }
         </div>
@@ -507,4 +508,5 @@ const Game = () => {
     </BaseContainer>
   );
 };
+
 export default Game;
