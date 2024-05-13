@@ -258,6 +258,7 @@ const Lobby = () => {
         <ul>
           {Object.keys(users).map((id) => {
             const player = users[id];
+
             return (
               <li key={id}>
                 {player.username} {player.ready ? "- Ready" : ""}
@@ -306,18 +307,18 @@ const Lobby = () => {
             <h2>Leaderboard</h2>
             <table>
               <thead>
-              <tr>
-                <th>Player</th>
-                <th>Points</th>
-              </tr>
+                <tr>
+                  <th>Player</th>
+                  <th>Points</th>
+                </tr>
               </thead>
               <tbody>
-              {leaderboardData.map((player, index) => (
-                <tr key={index}>
-                  <td>{player.username}</td>
-                  <td>{player.points}</td>
-                </tr>
-              ))}
+                {leaderboardData.map((player, index) => (
+                  <tr key={index}>
+                    <td>{player.username}</td>
+                    <td>{player.points}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
             <Button onClick={() => setShowLeaderboardModal(false)}>Close</Button>
