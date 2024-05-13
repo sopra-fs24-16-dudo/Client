@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from "react";
-
 import { api, handleError } from "helpers/api";
 import { Button } from "components/ui/Button";
 import BaseContainer from "components/ui/BaseContainer";
@@ -15,24 +14,12 @@ import queen from "../../images/dice/queen.png";
 import king from "../../images/dice/king.png";
 import ace from "../../images/dice/ace.png";
 import jazz from "../../sounds/GameJazzMusic.mp3";
-
 import { getDomain } from "helpers/getDomain";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
-
 //Imports for the Voice chat API
 import AgoraRTC, { IRemoteAudioTrack } from "agora-rtc-sdk-ng";
 import AgoraRTM from "agora-rtm-sdk";
-
-interface AudioSubscription {
-  track: IRemoteAudioTrack;
-  isPlaying: boolean; // This flag will indicate if the audio is currently being played
-}
-
-interface AudioSubscriptions {
-  [userId: string]: AudioSubscription;
-}
-
 
 const suitImages = {
   NINE: nine,
@@ -43,9 +30,18 @@ const suitImages = {
   ACE: ace,
 };
 
+
+interface AudioSubscription {
+  track: IRemoteAudioTrack;
+  isPlaying: boolean; // This flag will indicate if the audio is currently being played
+}
+
+interface AudioSubscriptions {
+  [userId: string]: AudioSubscription;
+}
 const Game = () => {
   // Game state variables
-  const [players, setPlayers] = useState([]); // You'll update this with actual player data
+  const [players, setPlayers] = useState([]);
   const [currentBid, setCurrentBid] = useState(null);
   const [nextBid, setNextBid] = useState(null);
   const [validBids, setValidBids] = useState([]);
@@ -61,18 +57,15 @@ const Game = () => {
   const uniqueSuits = Array.from(new Set(validBids.map(bid => bid.suit)));
   const [winner, setWinner] = useState(null);
   const navigate = useNavigate();
-
   const [showBidOtherModal, setShowBidOtherModal] = useState(false);
   const [showRulesModal, setShowRulesModal] = useState(false);
   const [showWinnerModal, setShowWinnerModal] = useState(false);
-
   //dice
   const [die1, setDie1] = useState({ suit: "NINE" });
   const [die2, setDie2] = useState({ suit: "TEN" });
   const [die3, setDie3] = useState({ suit: "JACK" });
   const [die4, setDie4] = useState({ suit: "QUEEN" });
   const [die5, setDie5] = useState({ suit: "KING" });
-
   //Voice chat
   const APP_ID = "cd2162615d2f426da1c1b565bb447f17"; //agora app id from website hosting the website
   const TEMP_TOKEN = null // token for security
@@ -83,35 +76,26 @@ const Game = () => {
   const [activeSpeaker, setActiveSpeaker] = useState(null);
   const [isMuted, setIsMuted] = useState(false);
   const [audioSubscriptions, setAudioSubscriptions] = useState<AudioSubscriptions>({});
-
   const audioRef = useRef(null);
-
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = 0.1;
     }}, []);
 
+
   /////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////AGORA////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////////
-  /*useEffect(() => {
-    AgoraRTC.setLogLevel(AgoraRTC["Logger"].DEBUG);
-  }, []);*/
-
   useEffect(() => {
     async function initAgora() {
       const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
       setRtc(prevState => ({ ...prevState, client }));
-
       try {
         await client.join(APP_ID, lobbyId, TEMP_TOKEN, userId);  // Adjust 'userId' to be the current user
-        console.log(`User Joined: UserId=${userId}, LobbyId=${lobbyId}`);
+        //  console.log(`User Joined: ${userId}`)
         const localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
         await client.publish(localAudioTrack);
-        console.log("Audio track published successfully");
         setRtc(prevState => ({ ...prevState, localAudioTrack }));
-
-        // Listen for other users publishing their streams and subscribe to them
         client.on("user-published", async (user, mediaType) => {
           if (mediaType === "audio") {
             await client.subscribe(user, mediaType);
@@ -124,25 +108,21 @@ const Game = () => {
             console.log(`Subscribed and started playing audio from user ${user.uid}`);
           }
         });
-
         client.enableAudioVolumeIndicator();
         client.on("volume-indicator", (volumes) => {
           volumes.forEach(({uid, level}) => {
-            console.log(`UID:=${uid}, Level:=${level}`);
+            //console.log(`UID: ${uid}, Level: ${level}`);
             if (level > 5) {
               setActiveSpeaker(uid);
             }
           });
         });
-
-        console.log("Publish success!");
+        //  console.log("Publish success!");
       } catch (error) {
-        console.error("AgoraRTC client join failed", error);
+        //  console.error("AgoraRTC client join failed", error);
       }
     }
-
     initAgora();
-
     return () => {
       Object.values(audioSubscriptions).forEach((subscription: AudioSubscription) => {
         subscription.track.stop();
@@ -158,6 +138,7 @@ const Game = () => {
       setIsMuted(newMutedState);
     }
   };
+
   const toggleAudioPlay = (userId) => {
     setAudioSubscriptions(prev => {
       const currentSubscription = prev[userId];
@@ -178,65 +159,40 @@ const Game = () => {
       return prev;
     });
   };
-  useEffect(() => {
-    navigator.mediaDevices.getUserMedia({ audio: true })
-      .then((stream) => {
-        console.log("Microphone permissions granted and audio stream created");
-      })
-      .catch((error) => {
-        console.error("Microphone permissions denied or audio stream creation failed", error);
-      });
-  }, []);
-
-  useEffect(() => {
-    AgoraRTC.getDevices().then(devices => {
-      const audioOutputDevices = devices.filter(device => device.kind === "audiooutput");
-      if (audioOutputDevices.length > 0) {
-        console.log("Audio Output Devices:", audioOutputDevices);
-      }
-    });
-  }, []);
   /////////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+
+  const playersToArray = (playersObj) => {
+    return Object.values(playersObj);
+  };
   // Functions to handle game actions
   // ... other game functions like sendMessage from Lobby
-
   useEffect(() => {
     const websocket = new SockJS(`${getDomain()}/ws`);
     const stompClient = Stomp.over(websocket);
-
     stompClient.connect({}, () => {
       console.log("Connected to Stomp server");
-
-      stompClient.subscribe(`/topic/game/player/${lobbyId}`, (message) => {
+      stompClient.subscribe(`/topic/lobby/${lobbyId}`, (message) => {
         console.log("Received message from lobby channel:", message.body);
         const parsedMessage = JSON.parse(message.body);
-        setPlayers(parsedMessage);
-      });
-      stompClient.subscribe(`/topic/game/nextbid/${lobbyId}`, (message) => {
-        console.log("Received message from lobby channel:", message.body);
-        const parsedMessage = JSON.parse(message.body);
-        setNextBid(parsedMessage);
-      });
-      stompClient.subscribe(`/topic/game/currentbid/${lobbyId}`, (message) => {
-        console.log("Received message from lobby channel:", message.body);
-        const parsedMessage = JSON.parse(message.body);
-        setCurrentBid(parsedMessage);
-      });
-      stompClient.subscribe(`/topic/game/currentplayer/${lobbyId}`, (message) => {
-        console.log("Received message from lobby channel:", message.body);
-        const parsedMessage = JSON.parse(message.body);
-        setCurrentPlayerId(parsedMessage);
-      });
-      stompClient.subscribe(`/topic/end/${lobbyId}`, (message) => {
-        console.log("Game ended:", message.body);
-        window.location.href = "/lobby/" + lobbyId;
+        console.log("players object in message:", parsedMessage.players);
+        const playersArray = playersToArray(parsedMessage.players);
+        setPlayers(playersArray);
+        console.log("playersArray:", playersArray);
+        //const playersMap = new Map(Object.entries(parsedMessage.players));
+        //setPlayers(parsedMessage);
+        //console.log("playersMap:", playersMap);
+        console.log("type of players: ", typeof players);
+        setNextBid(parsedMessage.nextBid.amount + " " + parsedMessage.nextBid.suit);
+        setCurrentBid(parsedMessage.currentBid);
+        setCurrentPlayerId(parsedMessage.currentPlayer.id);
+        setWinner(parsedMessage.winner);
       });
     }, (error) => {
       console.error("Error connecting to Stomp server:", error);
     });
-
     // Cleanup-Funktion
     return () => {
       stompClient.disconnect(() => {
@@ -263,22 +219,22 @@ const Game = () => {
         console.log("Bid type: ", typeof validBids.data);
         const currentBid = await api.get(`/games/currentBid/${lobbyId}`);
         console.log("Current Bid: ", currentBid.data);
-        setCurrentBid(currentBid.data);
+        //setCurrentBid(currentBid.data);
         const currentPlayerId = await api.get(`/games/currentPlayer/${lobbyId}`);
         setCurrentPlayerId(currentPlayerId.data);
         console.log("Current Player ID: ", currentPlayerId.data);
         const counter = await api.get(`/games/counter/${lobbyId}`);
         console.log("Counter: ", counter.data);
-        const lastPlayerId = await api.get(`/games/lastPlayer/${lobbyId}`);
-        console.log("Last Player ID: ", lastPlayerId.data);
+        //const lastPlayerId = await api.get(`/games/lastPlayer/${lobbyId}`);
+        //console.log("Last Player ID: ", lastPlayerId.data);
       } catch (error) {
         console.error("Error fetching users in lobby:", error);
       }
     };
     fetchUsersInLobby();
     rollHand();
-  }, []);
 
+  }, []);
   useEffect(() => {
     async function fetchRules() {
       try {
@@ -288,33 +244,48 @@ const Game = () => {
         console.error("Error fetching rules:", error);
       }
     }
-
     if (showRulesModal) {
       fetchRules();
     }
   }, [showRulesModal]);
+
+  useEffect(() => {
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then((stream) => {
+        console.log("Microphone permissions granted and audio stream created");
+      })
+      .catch((error) => {
+        console.error("Microphone permissions denied or audio stream creation failed", error);
+      });
+  }, []);
+
+  useEffect(() => {
+    AgoraRTC.getDevices().then(devices => {
+      const audioOutputDevices = devices.filter(device => device.kind === "audiooutput");
+      if (audioOutputDevices.length > 0) {
+        console.log("Audio Output Devices:", audioOutputDevices);
+      }
+    });
+  }, []);
+
+
   const navigatToLobby = () => {
     navigate(`/lobby/${lobbyId}`);
   };
-
   const showRules = async () => {
     setShowRulesModal(true);
   };
-
   const rollHand = async () => {
     try {
       const requestBody = JSON.stringify(userId);
       const response = await api.post(`/games/hand/${lobbyId}`, requestBody);
       setHand(response.data.dices);
       animateDice();
-
       //wait 3 seconds
-
     } catch (error) {
       console.error("Error rolling the hand:", error);
     }
   };
-
   const animateDice = () => {
     const diceElements = document.querySelectorAll(".die-image");
     diceElements.forEach((die) => {
@@ -324,10 +295,8 @@ const Game = () => {
       }, 10); // Wait for 10 milliseconds
     });
   };
-
   const bid = async (inputBid) => {
     console.log("inputBid: ", inputBid);
-    console.log("type of bid: ", typeof inputBid);
     const requestBody = JSON.stringify(inputBid);
     console.log("requestBody: ", requestBody);
     const response = await api.post(`/games/placeBid/${lobbyId}`, requestBody);
@@ -336,11 +305,9 @@ const Game = () => {
     //console.log("All Hands: ", allHands.data);
     setShowBidOtherModal(false);
   };
-
   const showBidOther = () => {
     setShowBidOtherModal(true);
   };
-
   const bidDudo = async () => {
     await api.put(`/games/dudo/${lobbyId}`);
     const loser = await api.get(`/games/loser/${lobbyId}`);
@@ -363,13 +330,13 @@ const Game = () => {
       await api.put(`/lobby/winner/${lobbyId}`);
     }
   };
+
   useEffect(() => {
     if (winner !== null) {
       setShowWinnerModal(true);
       endGame()
     }
   }, [winner]);
-
   const endGame = async () => {
     try {
       await api.put(`/games/end/${lobbyId}`);
@@ -378,7 +345,6 @@ const Game = () => {
       console.error("Error ending the game:", error);
     }
   };
-
 
   return (
     <BaseContainer className="game container">
@@ -396,9 +362,6 @@ const Game = () => {
             }}>
               <span
                 className={`opponent-name ${player.id === currentPlayerId ? "current" : ""}`}>{player.username}</span>
-              <Button onClick={() => toggleAudioPlay(player.id)}>
-                {audioSubscriptions[player.id]?.isPlaying ? "Stop Listening" : "Start Listening"}
-              </Button>
               <div className="opponent-chips">
                 {player.chips === 0 ? (
                   <span className="out-text">OUT</span>
@@ -408,6 +371,9 @@ const Game = () => {
                   ))
                 )}
               </div>
+              <Button onClick={() => toggleAudioPlay(player.id)}>
+                {audioSubscriptions[player.id]?.isPlaying ? "Stop Listening" : "Start Listening"}
+              </Button>
             </div>
           ))}
           <a href="#" className="question-image" onClick={showRules}>
@@ -418,10 +384,11 @@ const Game = () => {
       <div className="game-main">
         <div className="current-bid">
           Current Bid:
-          {currentBid === null || currentBid.includes("null") ? " No current bid" :
+          {!currentBid || currentBid.suit === null ? " No current bid" :
             <>
-              {currentBid.split(" ")[0] + " "}
-              <img src={suitImages[currentBid.split(" ")[1]]} alt={currentBid.split(" ")[1]} width="40px" height="35px" />
+              {currentBid.amount + " "}
+              <img src={suitImages[currentBid.suit]} alt={currentBid.suit} width="40px"
+                   height="35px" />
             </>
           }
         </div>
@@ -468,12 +435,11 @@ const Game = () => {
         </div>
       </div>
       <div className="game-footer">
-        <Button onClick={toggleMute}>{isMuted ? "Unmute" : "Mute"}</Button>
-        <Button onClick={() => bid(nextBid)} disabled={nextBid === "Null"}>
+        <Button onClick={() => bid(nextBid)} disabled={nextBid === "Null" || playerId !== currentPlayerId}>
           {nextBid === "Null" ? "Bid" : `Bid ${nextBid}`}
         </Button>
-        <Button onClick={showBidOther} disabled={validBids.length === 0}>Bid Other</Button>
-        <Button onClick={() => bidDudo()} disabled={playerId !== currentPlayerId || currentBid.includes("null") || currentBid.suit}>Dudo</Button>
+        <Button onClick={showBidOther} disabled={validBids.length === 0 || playerId !== currentPlayerId}>Bid Other</Button>
+        <Button onClick={() => bidDudo()} disabled={playerId !== currentPlayerId || !currentBid}>Dudo</Button>
         {winner !== null && (
           <Button onClick={endGame}>End Game</Button>
         )}
@@ -513,7 +479,6 @@ const Game = () => {
           </div>
         </div>
       )}
-
       {showRulesModal && (
         <div className="rules-modal">
           <div className="rules-content">
@@ -527,7 +492,6 @@ const Game = () => {
           </div>
         </div>
       )}
-
       {showWinnerModal && (
         <div className="winner-modal">
           <div className="winner-content">
@@ -543,5 +507,4 @@ const Game = () => {
     </BaseContainer>
   );
 };
-
 export default Game;

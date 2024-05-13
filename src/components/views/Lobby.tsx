@@ -256,11 +256,14 @@ const Lobby = () => {
       <div className="user-list">
         <h3>Users in Lobby:</h3>
         <ul>
-          {users.map((user) => (
-            <li key={user.id}>
-              {user.username} {user.ready ? "- Ready" : ""}
-            </li>
-          ))}
+          {Object.keys(users).map((id) => {
+            const player = users[id];
+            return (
+              <li key={id}>
+                {player.username} {player.ready ? "- Ready" : ""}
+              </li>
+            );
+          })}
         </ul>
         <a href="#" className="question-image" onClick={showRules}>
           <img src={question} alt="Question" width="80px" height="80px" />
@@ -303,18 +306,18 @@ const Lobby = () => {
             <h2>Leaderboard</h2>
             <table>
               <thead>
-                <tr>
-                  <th>Player</th>
-                  <th>Points</th>
-                </tr>
+              <tr>
+                <th>Player</th>
+                <th>Points</th>
+              </tr>
               </thead>
               <tbody>
-                {leaderboardData.map((player, index) => (
-                  <tr key={index}>
-                    <td>{player.username}</td>
-                    <td>{player.points}</td>
-                  </tr>
-                ))}
+              {leaderboardData.map((player, index) => (
+                <tr key={index}>
+                  <td>{player.username}</td>
+                  <td>{player.points}</td>
+                </tr>
+              ))}
               </tbody>
             </table>
             <Button onClick={() => setShowLeaderboardModal(false)}>Close</Button>
