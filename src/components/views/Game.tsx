@@ -248,7 +248,7 @@ const Game = () => {
       if (!currentBid || currentBid.suit === null || currentBid.suit === "null") {
         animateDice();
       }
-      const validBids = await api.get("/games/validBids/${lobbyId}");
+      const validBids = await api.get(`/games/validBids/${lobbyId}`);
       setValidBids(validBids.data);
     }
     fetchHand();
