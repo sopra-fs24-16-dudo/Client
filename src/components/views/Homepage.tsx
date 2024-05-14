@@ -56,6 +56,18 @@ const Homepage = () => {
   const goToProfile = () => {
     navigate("/profile");
   };
+  const userList = async ()  => {
+
+    try {
+      const response = await api.get("/users");
+      console.log("Response Data:", response.data); // Log response data
+      navigate("/userList");
+    } catch (error) {
+      alert(
+        "Something went wrong while creating a lobby: \n${handleError(error)}"
+      );
+    }
+  };
 
   const logout = async () => {
     try {
@@ -96,6 +108,9 @@ const Homepage = () => {
         <div className="button-container">
           <Button onClick={joinLobby}>
             Join Lobby
+          </Button>
+          <Button width="100%" onClick={userList}>
+            Search Users
           </Button>
           <Button onClick={createLobby}>
             Create Lobby
