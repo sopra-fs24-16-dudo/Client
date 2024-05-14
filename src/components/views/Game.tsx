@@ -222,7 +222,7 @@ const Game = () => {
         const currentBidResponse = await api.get(`/games/currentBid/${lobbyId}`);
         let currentBid = null;
         if (currentBidResponse.data.toLowerCase() !== "null") {
-          const currentBidData = currentBidResponse.data.split(' ');
+          const currentBidData = currentBidResponse.data.split(" ");
           currentBid = {
             amount: parseInt(currentBidData[0]),
             suit: currentBidData[1]
