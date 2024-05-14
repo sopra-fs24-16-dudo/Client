@@ -193,7 +193,6 @@ const Game = () => {
     }, (error) => {
       console.error("Error connecting to Stomp server:", error);
     });
-    // Cleanup-Funktion
 
     return () => {
       stompClient.disconnect(() => {

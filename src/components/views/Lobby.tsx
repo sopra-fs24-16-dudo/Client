@@ -32,6 +32,7 @@ type AgoraEvent = "user-published" | "user-unpublished";
 
 const Lobby = () => {
   const [users, setUsers] = useState([]);
+  const [admin, setAdmin] = useState([]);
   const [allReady, setAllReady] = useState(false);
   const navigate = useNavigate();
   const [showRulesModal, setShowRulesModal] = useState(false);
@@ -41,8 +42,7 @@ const Lobby = () => {
   const userId = localStorage.getItem("id");
   const [showLeaderboardModal, setShowLeaderboardModal] = useState(false);
   const [leaderboardData, setLeaderboardData] = useState([]);
-  //const [voiceChannel, setVoiceChannel] = useState(null);
-  //const [voiceChannelJoined, setVoiceChannelJoined] = useState(false);
+  const [votes, setVotes] = useState({});
 
   useEffect(() => {
     const websocket = new SockJS(`${getDomain()}/ws`);
@@ -56,6 +56,12 @@ const Lobby = () => {
         const parsedMessage = JSON.parse(message.body);
         const updatedUserList = parsedMessage.players;
         setUsers(updatedUserList);
+        const updateAdmin = parsedMessage.adminId;
+        setAdmin(updateAdmin)
+      });
+      stompClient.subscribe(`/topic/kick/${userId}`, (message) => {
+        console.log("Received kick message:", message.body);
+        window.location.href = "/homepage";
       });
       stompClient.subscribe(`/topic/start/${lobbyId}`, (message) => {
         console.log("Game started:", message.body);
@@ -104,51 +110,6 @@ const Lobby = () => {
       fetchRules();
     }
   }, [showRulesModal]);
-  /*
-  useEffect(() => {
-    const initializeAgora = async () => {
-      const appId = "b33a2021ed144a9386270ca92a266f62";
-      const client: any = AgoraRTC.createClient({ mode: "rtc", codec: "h264" });
-
-      client.on("user-published", async (user: any, mediaType: any) => {
-        await client.subscribe(user, mediaType.type);
-        if (mediaType.type === "audio") {
-          // Play the received audio track
-          const audioTrack = user.audioTrack;
-          audioTrack.play();
-        }
-      });
-
-      client.on("user-unpublished", (user: any) => {
-        // Handle user unpublish event
-      });
-
-      try {
-        if (!voiceChannel) {
-          console.error("Voice channel not set.");
-
-          return;
-        }
-
-        await client.join(appId, voiceChannel, userId);
-        console.log("Successfully joined the voice channel");
-      } catch (error) {
-        console.error("Failed to join the voice channel:", error);
-      }
-    };
-    if (voiceChannel && userId) {
-      initializeAgora();
-    }
-
-    return () => {
-      // Cleanup logic when the component unmounts
-      if (voiceChannel) {
-        leaveVoiceChannel();
-      }
-    };
-  }, [voiceChannel, userId]);
-
-   */
 
   const toggleReadyStatus = async () => {
     try {
@@ -175,22 +136,26 @@ const Lobby = () => {
     }
   };
 
-
   const leaveLobby = async () => {
     try {
       const requestBody = JSON.stringify(userId);
 
       await api.post(`/lobby/exit/${lobbyId}`, requestBody);
 
-      //if (voiceChannel) {
-      //  await leaveVoiceChannel();
-      // }
-
-      navigate("/homepage"); // Navigate back to the Homepage
+      navigate("/homepage");
     } catch (error) {
       alert(
         `Failed to leave the lobby: \n${handleError(error)}`
       );
+    }
+  };
+
+  const kickPlayer = async (userIdToKick) => {
+    try {
+      const requestBody = JSON.stringify( userIdToKick );
+      await api.post(`/lobby/kick/${lobbyId}/${userIdToKick}`, requestBody);
+    } catch (error) {
+      console.error("Error kicking player:", error);
     }
   };
   const showRules = async () => {
@@ -212,43 +177,6 @@ const Lobby = () => {
       console.error("Error fetching leaderboard:", error);
     }
   }
-  /*
-  const joinVoiceChannel = async () => {
-    try {
-
-      const response = await api.post("/lobby/${lobbyId}/${userId}/voice-channel/join", { userId, lobbyId });
-
-      // If join request is successful, set the voice channel state
-      if (response.status === 200) {
-        setVoiceChannelJoined(true);
-        setVoiceChannel(response.data.voiceChannel);
-      } else {
-        console.error("Error joining voice channel:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error joining voice channel:", error);
-    }
-  };
-
-  const leaveVoiceChannel = async () => {
-    try {
-      // Make a POST request to the server endpoint to leave voice channel
-      const response = await api.post("/lobby/${lobbyId}/${userId}/voice-channel/leave", { userId, lobbyId });
-
-      // If leave request is successful, reset the voice channel state
-      if (response.status === 200) {
-        setVoiceChannelJoined(false);
-        setVoiceChannel(null);
-      } else {
-        console.error("Error leaving voice channel:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error leaving voice channel:", error);
-    }
-  };
-
-   */
-
 
   return (
     <BaseContainer className="lobby container">
@@ -256,14 +184,22 @@ const Lobby = () => {
       <div className="user-list">
         <h3>Users in Lobby:</h3>
         <ul>
-          {Object.keys(users).map((id) => {
-            const player = users[id];
-
-            return (
-              <li key={id}>
-                {player.username} {player.ready ? "- Ready" : ""}
-              </li>
-            );
+          {Object.keys(users).map((playerId) => {
+            const player = users[playerId];
+            if (player.id !== admin && admin.toString() === userId) {
+              return (
+                <li key={playerId}>
+                  <Button onClick={() => kickPlayer(player.id)}>Kick</Button>
+                  {player.username} {player.ready ? "- Ready" : ""}
+                </li>
+              );
+            } else {
+              return (
+                <li key={playerId}>
+                  {player.username} {player.ready ? "- Ready" : ""}
+                </li>
+              );
+            }
           })}
         </ul>
         <a href="#" className="question-image" onClick={showRules}>
@@ -277,16 +213,7 @@ const Lobby = () => {
         <Button onClick={() => toggleReadyStatus()}>Ready</Button>
         <Button onClick={leaveLobby}>Leave Lobby</Button>
       </div>
-      <div/* className="voice-channels">
-        {voiceChannelJoined ? (
-          <Button onClick={leaveVoiceChannel}>Leave Voice Chat</Button>
-        ) : (
-
-        <Button onClick={() => toggleReadyStatus()} disabled={users.length < 2}>Ready</Button>
-
-          <Button onClick={joinVoiceChannel}>Join Voice Chat</Button>
-        )}
-      </div>*/>
+      <div>
       </div>
       {showRulesModal && (
         <div className="rules-modal">
