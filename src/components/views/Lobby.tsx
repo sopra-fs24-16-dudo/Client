@@ -248,6 +248,10 @@ const Lobby = () => {
                 ))}
               </tbody>
             </table>
+            <footer>
+              <div> Win with two chips: 2pts</div>
+              <div> Win with less than two chips: 1pt</div>
+            </footer>
             <Button onClick={() => setShowLeaderboardModal(false)}>Close</Button>
           </div>
         </div>
