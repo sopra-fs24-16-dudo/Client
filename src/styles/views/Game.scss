@@ -273,6 +273,48 @@
     }
   }
 
+  .loser-modal {
+    position: fixed;
+    z-index: 500;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .loser-content {
+    background-color: $background; // Use the background color from your theme
+    margin: auto;
+    padding: 15px;
+    width: 90%; // Increase the width of the container
+    max-width: 600px; // Increase the maximum width of the container
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 20px; // Use the border radius from your theme
+    h1 {
+      font-size: 2em; // Increase the size of the text
+      font-weight: bold; // Make the text bold
+      color: $textColor; // Use the text color from your theme
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); // Add a text shadow to give the text depth
+      text-transform: uppercase; // Make the text uppercase
+      -webkit-text-stroke: 1px black; // Keep the black border around the text
+      text-stroke: 1px black; // Keep the black border around the text
+    }
+
+    p {
+      font-size: 1.5em;
+      font-weight: bold;
+        color: BROWN;
+      text-transform: uppercase;
+    }
+  }
+
   .player-hand-container {
     display: flex;
     flex-direction: row;

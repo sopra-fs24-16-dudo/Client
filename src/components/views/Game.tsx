@@ -56,10 +56,13 @@ const Game = () => {
   const [stage, setStage] = useState("selectSuit");
   const uniqueSuits = Array.from(new Set(validBids.map(bid => bid.suit)));
   const [winner, setWinner] = useState(null);
+  const [loser, setLoser] = useState(null);
   const navigate = useNavigate();
   const [showBidOtherModal, setShowBidOtherModal] = useState(false);
   const [showRulesModal, setShowRulesModal] = useState(false);
   const [showWinnerModal, setShowWinnerModal] = useState(false);
+  const [showLoserModal, setShowLoserModal] = useState(false);
+  const [countdown, setCountdown] = useState(5);
   //dice
   const [die1, setDie1] = useState({ suit: "NINE" });
   const [die2, setDie2] = useState({ suit: "TEN" });
@@ -180,19 +183,23 @@ const Game = () => {
         console.log("players object in message:", parsedMessage.players);
         const playersArray = playersToArray(parsedMessage.players);
         setPlayers(playersArray);
-        console.log("playersArray:", playersArray);
-        //const playersMap = new Map(Object.entries(parsedMessage.players));
-        //setPlayers(parsedMessage);
-        //console.log("playersMap:", playersMap);
-        console.log("type of players: ", typeof players);
-        setNextBid(parsedMessage.nextBid.amount + " " + parsedMessage.nextBid.suit);
+        if (parsedMessage.nextBid !== null) {
+          setNextBid(parsedMessage.nextBid.amount + " " + parsedMessage.nextBid.suit);
+        }
+        else {
+          setNextBid("null");
+        }
         setCurrentBid(parsedMessage.currentBid);
+        console.log ("current bid WS: ", currentBid)
+        console.log("current bid WS type: ", typeof parsedMessage.currentBid)
         setCurrentPlayerId(parsedMessage.currentPlayer.id);
-        setWinner(parsedMessage.winner);
+        checkWinner();
+        rollHand();
       });
     }, (error) => {
       console.error("Error connecting to Stomp server:", error);
     });
+
     // Cleanup-Funktion
 
     return () => {
@@ -203,31 +210,30 @@ const Game = () => {
     };
   }, [lobbyId]);
 
+
+
   useEffect(() => {
     async function fetchUsersInLobby() {
       try {
-        console.log("LobbyID:", lobbyId);
         const response = await api.get(`/games/players/${lobbyId}`);
-        console.log("response", response.data);
         setPlayers(response.data);
-        console.log("players: ", players);
         const nextBid = await api.get(`/games/nextBid/${lobbyId}`);
         setNextBid(nextBid.data);
-        console.log("nextBid: ", nextBid);
         const validBids = await api.get(`/games/validBids/${lobbyId}`);
         setValidBids(validBids.data);
-        console.log("validBids: ", validBids);
-        console.log("Bid type: ", typeof validBids.data);
-        const currentBid = await api.get(`/games/currentBid/${lobbyId}`);
-        console.log("Current Bid: ", currentBid.data);
-        //setCurrentBid(currentBid.data);
+        const currentBidResponse = await api.get(`/games/currentBid/${lobbyId}`);
+        let currentBid = null;
+        if (currentBidResponse.data.toLowerCase() !== "null") {
+          const currentBidData = currentBidResponse.data.split(' ');
+          currentBid = {
+            amount: parseInt(currentBidData[0]),
+            suit: currentBidData[1]
+          };
+        }
+        setCurrentBid(currentBid);
+        console.log("current bid: ", currentBid);
         const currentPlayerId = await api.get(`/games/currentPlayer/${lobbyId}`);
         setCurrentPlayerId(currentPlayerId.data);
-        console.log("Current Player ID: ", currentPlayerId.data);
-        const counter = await api.get(`/games/counter/${lobbyId}`);
-        console.log("Counter: ", counter.data);
-        //const lastPlayerId = await api.get(`/games/lastPlayer/${lobbyId}`);
-        //console.log("Last Player ID: ", lastPlayerId.data);
       } catch (error) {
         console.error("Error fetching users in lobby:", error);
       }
@@ -235,7 +241,21 @@ const Game = () => {
     fetchUsersInLobby();
     rollHand();
 
+
   }, []);
+
+  useEffect(() => {
+    async function fetchHand() {
+      console.log('currentBid has changed:', currentBid);
+      if (!currentBid || currentBid.suit === null || currentBid.suit === "null") {
+        animateDice();
+      }
+      const validBids = await api.get(`/games/validBids/${lobbyId}`);
+      setValidBids(validBids.data);
+    }
+    fetchHand();
+  }, [currentBid]);
+
   useEffect(() => {
     async function fetchRules() {
       try {
@@ -273,6 +293,35 @@ const Game = () => {
   const navigatToLobby = () => {
     navigate(`/lobby/${lobbyId}`);
   };
+
+  const checkWinner = async () => {
+    const winner = await api.get(`/games/winnerCheck/${lobbyId}`);
+    if (winner.data) {
+      const w = await api.get(`/games/winner/${lobbyId}`);
+      setWinner(w.data);
+      setShowWinnerModal(true);
+    }else {
+      checkLoser();
+    }
+    console.log("winner: ", winner.data);
+  }
+
+  const checkLoser = async () => {
+    const loser = await api.get(`/games/loser/${lobbyId}`);
+    if (loser.data) {
+      setLoser(loser.data);
+      setShowLoserModal(true);
+      let countdownTimer = setInterval(() => {
+        setCountdown(prevCountdown => prevCountdown > 0 ? prevCountdown - 1 : 0);
+      }, 1000);
+      setTimeout(() => {
+        setShowLoserModal(false);
+        setCountdown(5);
+        clearInterval(countdownTimer); // Clear the interval here
+      }, 5000);
+    }
+    console.log("loser: ", loser.data);
+  }
   const showRules = async () => {
     setShowRulesModal(true);
   };
@@ -281,7 +330,11 @@ const Game = () => {
       const requestBody = JSON.stringify(userId);
       const response = await api.post(`/games/hand/${lobbyId}`, requestBody);
       setHand(response.data.dices);
-      animateDice();
+      //setHand(response.data.dices);
+      //console.log("Current bid: ", currentBid);
+      //if (!currentBid || currentBid.suit === null) {
+     //   animateDice();
+     // }
       //wait 3 seconds
     } catch (error) {
       console.error("Error rolling the hand:", error);
@@ -316,19 +369,11 @@ const Game = () => {
     const winner = await api.get(`/games/winnerCheck/${lobbyId}`);
     console.log("winner: ", winner.data);
     if (!winner.data) {
-      const newRound = await api.put(`/games/round/${lobbyId}`);
-      console.log("newRound: ", newRound.data);
-      alert(`Loser: ${loser.data.username}`);
-      setTimeout(() => {
-        window.location.reload(); // This will refresh the page after 5 seconds, effectively closing the alert box
+      setTimeout(async() => {
+        const newRound = await api.put(`/games/round/${lobbyId}`);
+        console.log("newRound: ", newRound.data);
       }, 5000);
-    } else {
-      const w = await api.get(`/games/winner/${lobbyId}`);
-      setWinner(w.data);
-      console.log("winner id: ", w.id);
-      console.log("winner data id: ", w.data.id);
-      console.log (typeof w.data.id)
-      await api.put(`/lobby/winner/${lobbyId}`);
+
     }
   };
 
@@ -385,7 +430,7 @@ const Game = () => {
       <div className="game-main">
         <div className="current-bid">
           Current Bid:
-          {!currentBid || currentBid.suit === null ? " No current bid" :
+          {!currentBid || currentBid.suit === null || currentBid.suit === "null" ? " No current bid" :
             <>
               {currentBid.amount + " "}
               <img src={suitImages[currentBid.suit]} alt={currentBid.suit} width="40px"
@@ -436,11 +481,11 @@ const Game = () => {
         </div>
       </div>
       <div className="game-footer">
-        <Button onClick={() => bid(nextBid)} disabled={nextBid === "Null" || playerId !== currentPlayerId}>
-          {nextBid === "Null" ? "Bid" : `Bid ${nextBid}`}
+        <Button onClick={() => bid(nextBid)} disabled={validBids.length === 0 || playerId !== currentPlayerId}>
+          {validBids.length === 0 ? "Bid" : `Bid ${nextBid}`}
         </Button>
         <Button onClick={showBidOther} disabled={validBids.length === 0 || playerId !== currentPlayerId}>Bid Other</Button>
-        <Button onClick={() => bidDudo()} disabled={playerId !== currentPlayerId || !currentBid}>Dudo</Button>
+        <Button onClick={() => bidDudo()} disabled={playerId !== currentPlayerId || !currentBid || currentBid.suit === null || currentBid.suit === "null"}>Dudo</Button>
         {winner !== null && (
           <Button onClick={endGame}>End Game</Button>
         )}
@@ -463,6 +508,7 @@ const Game = () => {
                 <Button className="amount-button" key={index} onClick={() => {
                   bid(`${bids.amount} ${bids.suit}`);
                   setShowBidOtherModal(false);
+                  setStage("selectSuit");
                 }}>
                   {bids.amount}
                 </Button>
@@ -496,12 +542,29 @@ const Game = () => {
       {showWinnerModal && (
         <div className="winner-modal">
           <div className="winner-content">
-            <h1>Congratulations {winner.username}!</h1>
-            <p>You are the winner!</p>
+            {winner.id === playerId ? (
+              <>
+                <h1>Congratulations {winner.username}!</h1>
+                <p>You are the winner!</p>
+              </>
+            ) : (
+              <>
+                <h1>{winner.username} has won the game!</h1>
+                <p>Better luck next time!</p>
+              </>
+            )}
             <Button onClick={() => {
               setShowWinnerModal(false);
               navigatToLobby(); // This will redirect the user back to the lobby page
             }}>Back to Lobby</Button>
+          </div>
+        </div>
+      )}
+      {showLoserModal && (
+        <div className="loser-modal">
+          <div className="loser-content">
+            <h1>{loser.username} lost a coin!</h1>
+            <p>The next round will start in {countdown} seconds</p>
           </div>
         </div>
       )}
