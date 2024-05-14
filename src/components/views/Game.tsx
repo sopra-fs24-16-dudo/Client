@@ -210,8 +210,6 @@ const Game = () => {
     };
   }, [lobbyId]);
 
-
-
   useEffect(() => {
     async function fetchUsersInLobby() {
       try {
@@ -246,11 +244,11 @@ const Game = () => {
 
   useEffect(() => {
     async function fetchHand() {
-      console.log('currentBid has changed:', currentBid);
+      console.log("currentBid has changed:", currentBid);
       if (!currentBid || currentBid.suit === null || currentBid.suit === "null") {
         animateDice();
       }
-      const validBids = await api.get(`/games/validBids/${lobbyId}`);
+      const validBids = await api.get("/games/validBids/${lobbyId}");
       setValidBids(validBids.data);
     }
     fetchHand();
@@ -330,12 +328,6 @@ const Game = () => {
       const requestBody = JSON.stringify(userId);
       const response = await api.post(`/games/hand/${lobbyId}`, requestBody);
       setHand(response.data.dices);
-      //setHand(response.data.dices);
-      //console.log("Current bid: ", currentBid);
-      //if (!currentBid || currentBid.suit === null) {
-     //   animateDice();
-     // }
-      //wait 3 seconds
     } catch (error) {
       console.error("Error rolling the hand:", error);
     }
