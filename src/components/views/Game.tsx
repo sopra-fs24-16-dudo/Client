@@ -479,6 +479,7 @@ const Game = () => {
         </div>
       </div>
       <div className="game-footer">
+        <Button onClick={toggleMute}>{isMuted ? "Unmute" : "Mute"}</Button>
         <Button onClick={() => bid(nextBid)} disabled={validBids.length === 0 || playerId !== currentPlayerId}>
           {validBids.length === 0 ? "Bid" : `Bid ${nextBid}`}
         </Button>
