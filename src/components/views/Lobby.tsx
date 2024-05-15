@@ -180,85 +180,83 @@ const Lobby = () => {
 
   return (
     <BaseContainer className="lobby container">
-      <h2>Lobby id: {lobbyId}</h2>
-      <h3>Users in Lobby:</h3>
+      <div className="user-list">
+        <h2>Lobby id: {lobbyId}</h2>
+        <h3>Users in Lobby:</h3>
+      </div>
       <div className="user-list">
         <ul>
           {Object.keys(users).map((playerId) => {
             const player = users[playerId];
-            if (player.id !== admin && admin.toString() === userId) {
-              return (
-                <li key={playerId}>
-                  {player.username} {player.ready ? "- Ready" : ""}
+            return (
+              <div key={playerId} className="user">
+          <span>
+            {player.username} {player.ready ? "- Ready" : ""}
+          </span>
+                {player.id !== admin && admin.toString() === userId && (
                   <Button onClick={() => kickPlayer(player.id)}>Kick</Button>
-                </li>
-              );
-            } else {
-              return (
-                <li key={playerId}>
-                  {player.username} {player.ready ? "- Ready" : ""}
-                </li>
-              );
-            }
+                )}
+              </div>
+            );
           })}
-        </ul>
-        <a href="#" className="question-image" onClick={showRules}>
-          <img src={question} alt="Question" width="80px" height="80px" />
-        </a>
-        <a href="#" className="leaderboard-image" onClick={showLeaderboard}>
-          <img src={leaderboard} alt="Leaderboard" width="110px" height="110px" />
-        </a>
-      </div>
-      <div className="button-container">
-        <Button onClick={() => toggleReadyStatus()}>Ready</Button>
-        <Button onClick={leaveLobby}>Leave Lobby</Button>
-      </div>
+      </ul>
+      <a href="#" className="question-image" onClick={showRules}>
+        <img src={question} alt="Question" width="80px" height="80px" />
+      </a>
+      <a href="#" className="leaderboard-image" onClick={showLeaderboard}>
+        <img src={leaderboard} alt="Leaderboard" width="110px" height="110px" />
+      </a>
+    </div>
+  <div className="button-container">
+    <Button onClick={() => toggleReadyStatus()}>Ready</Button>
+    <Button onClick={leaveLobby}>Leave Lobby</Button>
+  </div>
       <div>
       </div>
       {showRulesModal && (
         <div className="rules-modal">
           <div className="rules-content">
-            <h2>Rules</h2>
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              {rules.map((rule, index) => (
-                <p key={index}>{rule}</p>
-              ))}
+              <h2>Rules</h2>
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                {rules.map((rule, index) => (
+                  <p key={index}>{rule}</p>
+                ))}
+              </div>
+              <Button onClick={() => setShowRulesModal(false)}>Close</Button>
             </div>
-            <Button onClick={() => setShowRulesModal(false)}>Close</Button>
           </div>
-        </div>
-      )}
-      {showLeaderboardModal && (
-        <div className="leaderboard-modal">
-          <div className="leaderboard-content">
-            <h2>Leaderboard</h2>
-            <table>
-              <thead>
+        )}
+        {showLeaderboardModal && (
+          <div className="leaderboard-modal">
+            <div className="leaderboard-content">
+              <h2>Leaderboard</h2>
+              <table>
+                <thead>
                 <tr>
                   <th>Player</th>
                   <th>Points</th>
                 </tr>
-              </thead>
-              <tbody>
+                </thead>
+                <tbody>
                 {leaderboardData.map((player, index) => (
                   <tr key={index}>
                     <td>{player.username}</td>
                     <td>{player.points}</td>
                   </tr>
                 ))}
-              </tbody>
-            </table>
-            <footer>
-              <div> Win with two chips: 2pts</div>
-              <div> Win with less than two chips: 1pt</div>
-            </footer>
-            <Button onClick={() => setShowLeaderboardModal(false)}>Close</Button>
+                </tbody>
+              </table>
+              <footer>
+                <div> Win with two chips: 2pts</div>
+                <div> Win with less than two chips: 1pt</div>
+              </footer>
+              <Button onClick={() => setShowLeaderboardModal(false)}>Close</Button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
     </BaseContainer>
-  );
+);
 };
 
 export default Lobby;
