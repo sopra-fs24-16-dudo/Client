@@ -109,11 +109,11 @@ const Homepage = () => {
           <Button onClick={joinLobby}>
             Join Lobby
           </Button>
-          <Button width="100%" onClick={userList}>
-            Search Users
-          </Button>
           <Button onClick={createLobby}>
             Create Lobby
+          </Button>
+          <Button width="100%" onClick={userList}>
+            Search Users
           </Button>
           <Button onClick={goToProfile}>
             Go to Profile

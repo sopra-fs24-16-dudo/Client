@@ -181,16 +181,16 @@ const Lobby = () => {
   return (
     <BaseContainer className="lobby container">
       <h2>Lobby id: {lobbyId}</h2>
+      <h3>Users in Lobby:</h3>
       <div className="user-list">
-        <h3>Users in Lobby:</h3>
         <ul>
           {Object.keys(users).map((playerId) => {
             const player = users[playerId];
             if (player.id !== admin && admin.toString() === userId) {
               return (
                 <li key={playerId}>
-                  <Button onClick={() => kickPlayer(player.id)}>Kick</Button>
                   {player.username} {player.ready ? "- Ready" : ""}
+                  <Button onClick={() => kickPlayer(player.id)}>Kick</Button>
                 </li>
               );
             } else {
@@ -234,18 +234,18 @@ const Lobby = () => {
             <h2>Leaderboard</h2>
             <table>
               <thead>
-                <tr>
-                  <th>Player</th>
-                  <th>Points</th>
-                </tr>
+              <tr>
+                <th>Player</th>
+                <th>Points</th>
+              </tr>
               </thead>
               <tbody>
-                {leaderboardData.map((player, index) => (
-                  <tr key={index}>
-                    <td>{player.username}</td>
-                    <td>{player.points}</td>
-                  </tr>
-                ))}
+              {leaderboardData.map((player, index) => (
+                <tr key={index}>
+                  <td>{player.username}</td>
+                  <td>{player.points}</td>
+                </tr>
+              ))}
               </tbody>
             </table>
             <footer>
