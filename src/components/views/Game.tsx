@@ -95,10 +95,14 @@ const Game = () => {
   /////////////////////////////////////////////////////////////////////////////////////////////////
   useEffect(() => {
     async function initAgora() {
-      const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-      setRtc(prevState => ({ ...prevState, client }));
       try {
-        await client.join(APP_ID, lobbyId, TEMP_TOKEN, userId);  // Adjust 'userId' to be the current user
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+        console.log("Microphone permissions granted and audio stream created");
+
+        const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+        setRtc(prevState => ({ ...prevState, client }));
+
+        await client.join(APP_ID, lobbyId, TEMP_TOKEN, userId);
         const localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
         await client.publish(localAudioTrack);
         setRtc(prevState => ({ ...prevState, localAudioTrack }));
@@ -107,18 +111,12 @@ const Game = () => {
           if (mediaType === "audio") {
             await client.subscribe(user, mediaType);
             const audioTrack = user.audioTrack;
-            setAudioSubscriptions(prev => {
-              const isPlaying = prev[user.uid]?.isPlaying ?? true;  // Default to true if not already in subscriptions
-
-              return {
-                ...prev,
-                [user.uid]: { track: audioTrack, isPlaying }
-              };
-            });
-            if (audioSubscriptions[user.uid]?.isPlaying !== false) { // <-- Added check here
-              audioTrack.play();  // Start playing by default
-              console.log(`Subscribed and started playing audio from user ${user.uid}`);
-            }
+            setAudioSubscriptions(prev => ({
+              ...prev,
+              [user.uid]: { track: audioTrack, isPlaying: true }
+            }));
+            audioTrack.play();
+            console.log(`Subscribed and started playing audio from user ${user.uid}`);
           }
         });
 
@@ -131,7 +129,8 @@ const Game = () => {
           });
         });
       } catch (error) {
-        console.error("AgoraRTC client join failed", error);
+        console.log("Microphone permissions denied or audio stream creation failed");
+        setIsMicAvailable(false); // Update state to indicate the microphone is unavailable
       }
     }
 
@@ -285,7 +284,7 @@ const Game = () => {
     }
   }, [showRulesModal]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     navigator.mediaDevices.getUserMedia({ audio: true })
       .then((stream) => {
         console.log("Microphone permissions granted and audio stream created");
@@ -294,7 +293,7 @@ const Game = () => {
         console.log("Microphone permissions denied or audio stream creation failed");
         setIsMicAvailable(false); // Update state to indicate the microphone is unavailable
       });
-  }, []);
+  }, []);*/
 
   useEffect(() => {
     AgoraRTC.getDevices().then(devices => {
