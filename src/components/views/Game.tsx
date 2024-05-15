@@ -148,6 +148,7 @@ const Game = () => {
     };
   }, []); // Empty dependency array means this effect only runs once after initial render
   const toggleMute = async () => {
+    if (!isMicAvailable) return; // Prevent toggling if the mic is unavailable
     if (rtc.localAudioTrack) {
       const newMutedState = !isMuted;
       await rtc.localAudioTrack.setMuted(newMutedState);
@@ -282,15 +283,16 @@ const Game = () => {
     }
   }, [showRulesModal]);
 
-  /*useEffect(() => {
+  useEffect(() => {
     navigator.mediaDevices.getUserMedia({ audio: true })
       .then((stream) => {
         console.log("Microphone permissions granted and audio stream created");
       })
       .catch((error) => {
-        console.error("Microphone permissions denied or audio stream creation failed", error);
+        console.log("Microphone permissions denied or audio stream creation failed");
+        setIsMicAvailable(false); // Update state to indicate the microphone is unavailable
       });
-  }, []);*/
+  }, []);
 
   useEffect(() => {
     AgoraRTC.getDevices().then(devices => {
@@ -487,7 +489,7 @@ const Game = () => {
         </div>
       </div>
       <div className="game-footer">
-        <Button onClick={toggleMute}>{isMuted ? "Unmute" : "Mute"}</Button>
+        <Button onClick={toggleMute} disabled={!isMicAvailable}>{isMuted ? "Unmute" : "Mute"}</Button>
         <Button onClick={() => bid(nextBid)} disabled={validBids.length === 0 || playerId !== currentPlayerId}>
           {validBids.length === 0 ? "Bid" : `Bid ${nextBid}`}
         </Button>
