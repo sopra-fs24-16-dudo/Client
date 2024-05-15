@@ -321,7 +321,7 @@ const Game = () => {
       const w = await api.get(`/games/winner/${lobbyId}`);
       setWinner(w.data);
       setShowWinnerModal(true);
-    }else {
+    } else {
       checkLoser();
     }
     console.log("winner: ", winner.data);
@@ -389,19 +389,20 @@ const Game = () => {
         console.log("newRound: ", newRound.data);
       }, 5000);
 
+    }else {
+      endGame();
     }
   };
 
   useEffect(() => {
     if (winner !== null) {
       setShowWinnerModal(true);
-      endGame()
     }
   }, [winner]);
   const endGame = async () => {
     try {
-      await api.put(`/games/end/${lobbyId}`);
-      console.log("update user", userId)
+      const requestBody = JSON.stringify(userId);
+      await api.put(`/games/end/${lobbyId}`, requestBody);
     } catch (error) {
       console.error("Error ending the game:", error);
     }
@@ -508,9 +509,6 @@ const Game = () => {
         </Button>
         <Button onClick={showBidOther} disabled={validBids.length === 0 || playerId !== currentPlayerId}>Bid Other</Button>
         <Button onClick={() => bidDudo()} disabled={playerId !== currentPlayerId || !currentBid || currentBid.suit === null || currentBid.suit === "null"}>Dudo</Button>
-        {winner !== null && (
-          <Button onClick={endGame}>End Game</Button>
-        )}
       </div>
       {showBidOtherModal && (
         <div className="bid-other-modal">
