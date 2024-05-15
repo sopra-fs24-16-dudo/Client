@@ -95,46 +95,50 @@ const Game = () => {
       setRtc(prevState => ({ ...prevState, client }));
       try {
         await client.join(APP_ID, lobbyId, TEMP_TOKEN, userId);  // Adjust 'userId' to be the current user
-        //  console.log(`User Joined: ${userId}`)
         const localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
         await client.publish(localAudioTrack);
         setRtc(prevState => ({ ...prevState, localAudioTrack }));
+
         client.on("user-published", async (user, mediaType) => {
           if (mediaType === "audio") {
             await client.subscribe(user, mediaType);
             const audioTrack = user.audioTrack;
-            audioTrack.play();  // Start playing by default
             setAudioSubscriptions(prev => ({
               ...prev,
               [user.uid]: { track: audioTrack, isPlaying: true }
             }));
+            audioTrack.play();  // Start playing by default
             console.log(`Subscribed and started playing audio from user ${user.uid}`);
           }
         });
+
         client.enableAudioVolumeIndicator();
         client.on("volume-indicator", (volumes) => {
-          volumes.forEach(({uid, level}) => {
-            //console.log(`UID: ${uid}, Level: ${level}`);
+          volumes.forEach(({ uid, level }) => {
             if (level > 5) {
               setActiveSpeaker(uid);
             }
           });
         });
-        //  console.log("Publish success!");
       } catch (error) {
-        //  console.error("AgoraRTC client join failed", error);
+        console.error("AgoraRTC client join failed", error);
       }
     }
+
     initAgora();
 
     return () => {
-      Object.values(audioSubscriptions).forEach((subscription: AudioSubscription) => {
-        subscription.track.stop();
-      });
+      if (rtc.client) {
+        rtc.client.leave();
+        rtc.client.removeAllListeners();
+        Object.values(audioSubscriptions).forEach((subscription: AudioSubscription) => {
+          subscription.track.stop();
+          rtc.client.unsubscribe(subscription.track);
+        });
+      }
       rtc.localAudioTrack?.close();
-      rtc.client?.leave();
     };
-  }, [audioSubscriptions]); // Empty dependency array means this effect only runs once after initial render
+  }, []); // Empty dependency array means this effect only runs once after initial render
   const toggleMute = async () => {
     if (rtc.localAudioTrack) {
       const newMutedState = !isMuted;
@@ -143,15 +147,17 @@ const Game = () => {
     }
   };
 
-  const toggleAudioPlay = (userId) => {
+  const toggleAudioPlay = async (userId) => {
     setAudioSubscriptions(prev => {
       const currentSubscription = prev[userId];
       if (currentSubscription) {
         const newIsPlaying = !currentSubscription.isPlaying;
         if (newIsPlaying) {
+          rtc.client.subscribe(currentSubscription.track, "audio");
           currentSubscription.track.play();
         } else {
           currentSubscription.track.stop();
+          rtc.client.unsubscribe(currentSubscription.track);
         }
 
         return {
