@@ -188,6 +188,7 @@ const Lobby = () => {
         <ul>
           {Object.keys(users).map((playerId) => {
             const player = users[playerId];
+
             return (
               <div key={playerId} className="user">
           <span>
