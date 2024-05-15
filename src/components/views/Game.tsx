@@ -103,12 +103,18 @@ const Game = () => {
           if (mediaType === "audio") {
             await client.subscribe(user, mediaType);
             const audioTrack = user.audioTrack;
-            setAudioSubscriptions(prev => ({
-              ...prev,
-              [user.uid]: { track: audioTrack, isPlaying: true }
-            }));
-            audioTrack.play();  // Start playing by default
-            console.log(`Subscribed and started playing audio from user ${user.uid}`);
+            setAudioSubscriptions(prev => {
+              const isPlaying = prev[user.uid]?.isPlaying ?? true;  // Default to true if not already in subscriptions
+
+              return {
+                ...prev,
+                [user.uid]: { track: audioTrack, isPlaying }
+              };
+            });
+            if (audioSubscriptions[user.uid]?.isPlaying !== false) { // <-- Added check here
+              audioTrack.play();  // Start playing by default
+              console.log(`Subscribed and started playing audio from user ${user.uid}`);
+            }
           }
         });
 
