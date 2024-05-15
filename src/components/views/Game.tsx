@@ -79,6 +79,8 @@ const Game = () => {
   const [activeSpeaker, setActiveSpeaker] = useState(null);
   const [isMuted, setIsMuted] = useState(false);
   const [audioSubscriptions, setAudioSubscriptions] = useState<AudioSubscriptions>({});
+  const [isMicAvailable, setIsMicAvailable] = useState(true);
+
   const audioRef = useRef(null);
   useEffect(() => {
     if (audioRef.current) {
@@ -280,7 +282,7 @@ const Game = () => {
     }
   }, [showRulesModal]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     navigator.mediaDevices.getUserMedia({ audio: true })
       .then((stream) => {
         console.log("Microphone permissions granted and audio stream created");
@@ -288,7 +290,7 @@ const Game = () => {
       .catch((error) => {
         console.error("Microphone permissions denied or audio stream creation failed", error);
       });
-  }, []);
+  }, []);*/
 
   useEffect(() => {
     AgoraRTC.getDevices().then(devices => {
