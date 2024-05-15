@@ -107,7 +107,7 @@ const Game = () => {
         await client.publish(localAudioTrack);
         setRtc(prevState => ({ ...prevState, localAudioTrack }));
 
-        client.on("user-published", async (user, mediaType) => {
+        client.on("user-published", async (user, mediaType: "audio") => {
           if (mediaType === "audio") {
             await client.subscribe(user, mediaType);
             const audioTrack = user.audioTrack;
