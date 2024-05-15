@@ -96,7 +96,7 @@ const Game = () => {
   useEffect(() => {
     async function initAgora() {
       try {
-        await navigator.mediaDevices.getUserMedia({ audio: true });
+        await navigator.mediaDevices.getUserMedia({ audio: true, video: false});
         console.log("Microphone permissions granted and audio stream created");
 
         const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
