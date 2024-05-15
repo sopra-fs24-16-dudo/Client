@@ -80,6 +80,8 @@ const Game = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [audioSubscriptions, setAudioSubscriptions] = useState<AudioSubscriptions>({});
   const [isMicAvailable, setIsMicAvailable] = useState(true);
+  const muteButtonClass = !isMicAvailable ? "disabled-button" : "";
+
 
   const audioRef = useRef(null);
   useEffect(() => {
@@ -489,7 +491,13 @@ const Game = () => {
         </div>
       </div>
       <div className="game-footer">
-        <Button onClick={toggleMute} disabled={!isMicAvailable}>{isMuted ? "Unmute" : "Mute"}</Button>
+        <Button
+          onClick={toggleMute}
+          disabled={!isMicAvailable}
+          className={muteButtonClass}
+        >
+          {!isMicAvailable ? "Unmute" : (isMuted ? "Unmute" : "Mute")}
+        </Button>
         <Button onClick={() => bid(nextBid)} disabled={validBids.length === 0 || playerId !== currentPlayerId}>
           {validBids.length === 0 ? "Bid" : `Bid ${nextBid}`}
         </Button>
