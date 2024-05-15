@@ -21,7 +21,11 @@ const Homepage = () => {
       localStorage.setItem("lobbyId", lobbyId);
 
       //subscribeToLobbyChannel(lobbyId);
-
+      const isFree = await api.get(`/lobby/availability/${lobbyId}`);
+      if (!isFree.data) {
+        alert("Sorry, a game is already in progress in this lobby. Please try again later.");
+        return;
+      }
       navigate(`/lobby/${lobbyId}`);
     } catch (error) {
       alert(
