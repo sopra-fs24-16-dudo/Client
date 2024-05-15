@@ -317,14 +317,14 @@ const Game = () => {
 
   const checkWinner = async () => {
       const winner = await api.get(`/games/winnerCheck/${lobbyId}`);
-      if (winner.data) {
-        const w = await api.get(`/games/winner/${lobbyId}`);
-        setWinner(w.data);
-        setShowWinnerModal(true);
-      } else {
-        checkLoser();
-      }
-      console.log("winner: ", winner.data);
+        if (winner.data) {
+          const w = await api.get(`/games/winner/${lobbyId}`);
+          setWinner(w.data);
+          setShowWinnerModal(true);
+        } else {
+          checkLoser();
+        }
+        console.log("winner: ", winner.data);
 
   }
 
