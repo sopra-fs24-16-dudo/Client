@@ -474,55 +474,59 @@ const Game = () => {
             </div>
           ))}
         </div>
-        <div className="hand-container">
-          <div className="die-row">
-            {isRolling ? (
-              <>
-                <div className="die">
-                  <img src={suitImages[die1.suit]} alt={die1.suit} className="die-image" />
-                </div>
-                <div className="die">
-                  <img src={suitImages[die2.suit]} alt={die2.suit} className="die-image" />
-                </div>
-              </>
-            ) : (
-              hand.slice(0, 2).map((die, index) => (
-                <div key={index} className="die">
-                  <img src={suitImages[die.suit]} alt={die.suit} className="die-image" />
-                </div>
-              ))
-            )}
-          </div>
-          <div className="die-row">
-            {isRolling ? (
-              <div className="die">
-                <img src={suitImages[die3.suit]} alt={die3.suit} className="die-image" />
+        {players.filter(player => player.id === playerId).map((player, index) => (
+          player.chips > 0 && (
+            <div className="hand-container" key={index}>
+              <div className="die-row">
+                {isRolling ? (
+                  <>
+                    <div className="die">
+                      <img src={suitImages[die1.suit]} alt={die1.suit} className="die-image" />
+                    </div>
+                    <div className="die">
+                      <img src={suitImages[die2.suit]} alt={die2.suit} className="die-image" />
+                    </div>
+                  </>
+                ) : (
+                  hand.slice(0, 2).map((die, index) => (
+                    <div key={index} className="die">
+                      <img src={suitImages[die.suit]} alt={die.suit} className="die-image" />
+                    </div>
+                  ))
+                )}
               </div>
-            ) : (
-              <div className="die">
-                <img src={suitImages[hand[2]?.suit || ""]} alt={hand[2]?.suit} className="die-image" />
+              <div className="die-row">
+                {isRolling ? (
+                  <div className="die">
+                    <img src={suitImages[die3.suit]} alt={die3.suit} className="die-image" />
+                  </div>
+                ) : (
+                  <div className="die">
+                    <img src={suitImages[hand[2]?.suit || ""]} alt={hand[2]?.suit} className="die-image" />
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-          <div className="die-row">
-            {isRolling ? (
-              <>
-                <div className="die">
-                  <img src={suitImages[die4.suit]} alt={die4.suit} className="die-image" />
-                </div>
-                <div className="die">
-                  <img src={suitImages[die5.suit]} alt={die5.suit} className="die-image" />
-                </div>
-              </>
-            ) : (
-              hand.slice(3, 5).map((die, index) => (
-                <div key={index} className="die">
-                  <img src={suitImages[die.suit]} alt={die.suit} className="die-image" />
-                </div>
-              ))
-            )}
-          </div>
-        </div>
+              <div className="die-row">
+                {isRolling ? (
+                  <>
+                    <div className="die">
+                      <img src={suitImages[die4.suit]} alt={die4.suit} className="die-image" />
+                    </div>
+                    <div className="die">
+                      <img src={suitImages[die5.suit]} alt={die5.suit} className="die-image" />
+                    </div>
+                  </>
+                ) : (
+                  hand.slice(3, 5).map((die, index) => (
+                    <div key={index} className="die">
+                      <img src={suitImages[die.suit]} alt={die.suit} className="die-image" />
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )
+        ))}
       </div>
       <div className="game-footer">
         <Button
