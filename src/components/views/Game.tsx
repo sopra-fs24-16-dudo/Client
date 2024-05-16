@@ -61,6 +61,8 @@ const Game = () => {
   const [showWinnerModal, setShowWinnerModal] = useState(false);
   const [showLoserModal, setShowLoserModal] = useState(false);
   const [countdown, setCountdown] = useState(5);
+  const [isRolling, setIsRolling] = useState(false);
+  const suits = ["NINE", "TEN", "JACK", "QUEEN", "KING", "ACE"];
   //dice
   const [die1, setDie1] = useState({ suit: "NINE" });
   const [die2, setDie2] = useState({ suit: "TEN" });
@@ -333,9 +335,28 @@ const Game = () => {
     diceElements.forEach((die) => {
       die.classList.remove("rotate-animation");
       setTimeout(() => {
+        startRolling();
         die.classList.add("rotate-animation"); // Add the class after a short delay
       }, 10); // Wait for 10 milliseconds
     });
+  };
+
+  // Function to start the dice rolling
+  const startRolling = () => {
+    setIsRolling(true);
+    const rollInterval = setInterval(() => {
+      setDie1({ suit: suits[Math.floor(Math.random() * suits.length)] });
+      setDie2({ suit: suits[Math.floor(Math.random() * suits.length)] });
+      setDie3({ suit: suits[Math.floor(Math.random() * suits.length)] });
+      setDie4({ suit: suits[Math.floor(Math.random() * suits.length)] });
+      setDie5({ suit: suits[Math.floor(Math.random() * suits.length)] });
+    }, 200);
+
+    setTimeout(() => {
+      clearInterval(rollInterval);
+      setIsRolling(false);
+      rollHand(); // This function should set the actual suits of the dice
+    }, 2500);
   };
   const bid = async (inputBid) => {
     const requestBody = JSON.stringify(inputBid);
@@ -440,23 +461,51 @@ const Game = () => {
         </div>
         <div className="hand-container">
           <div className="die-row">
-            {hand.slice(0, 2).map((die, index) => (
-              <div key={index} className="die">
-                <img src={suitImages[die.suit]} alt={die.suit} className="die-image" />
-              </div>
-            ))}
+            {isRolling ? (
+              <>
+                <div className="die">
+                  <img src={suitImages[die1.suit]} alt={die1.suit} className="die-image" />
+                </div>
+                <div className="die">
+                  <img src={suitImages[die2.suit]} alt={die2.suit} className="die-image" />
+                </div>
+              </>
+            ) : (
+              hand.slice(0, 2).map((die, index) => (
+                <div key={index} className="die">
+                  <img src={suitImages[die.suit]} alt={die.suit} className="die-image" />
+                </div>
+              ))
+            )}
           </div>
           <div className="die-row">
-            <div className="die">
-              <img src={suitImages[hand[2]?.suit || ""]} alt={hand[2]?.suit} className="die-image" />
-            </div>
+            {isRolling ? (
+              <div className="die">
+                <img src={suitImages[die3.suit]} alt={die3.suit} className="die-image" />
+              </div>
+            ) : (
+              <div className="die">
+                <img src={suitImages[hand[2]?.suit || ""]} alt={hand[2]?.suit} className="die-image" />
+              </div>
+            )}
           </div>
           <div className="die-row">
-            {hand.slice(3, 5).map((die, index) => (
-              <div key={index} className="die">
-                <img src={suitImages[die.suit]} alt={die.suit} className="die-image" />
-              </div>
-            ))}
+            {isRolling ? (
+              <>
+                <div className="die">
+                  <img src={suitImages[die4.suit]} alt={die4.suit} className="die-image" />
+                </div>
+                <div className="die">
+                  <img src={suitImages[die5.suit]} alt={die5.suit} className="die-image" />
+                </div>
+              </>
+            ) : (
+              hand.slice(3, 5).map((die, index) => (
+                <div key={index} className="die">
+                  <img src={suitImages[die.suit]} alt={die.suit} className="die-image" />
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
@@ -471,14 +520,16 @@ const Game = () => {
         <Button onClick={() => bid(nextBid)} disabled={validBids.length === 0 || playerId !== currentPlayerId}>
           {validBids.length === 0 ? "Bid" : `Bid ${nextBid}`}
         </Button>
-        <Button onClick={showBidOther} disabled={validBids.length === 0 || playerId !== currentPlayerId}>Bid Other</Button>
+        <Button onClick={showBidOther} disabled={validBids.length === 0 || playerId !== currentPlayerId}>Bid
+          Other</Button>
         <Button onClick={() => bidDudo()} disabled={playerId !== currentPlayerId || !currentBid || currentBid.suit === null || currentBid.suit === "null"}>Dudo</Button>
       </div>
       {showBidOtherModal && (
         <div className="bid-other-modal">
           <div className="bid-other-content">
             <h1>Select a bid</h1>
-            {stage === "selectAmount" && (<img src={suitImages[selectedSuit.toString()]} alt={selectedSuit} className="suit-image" />)}
+            {stage === "selectAmount" && (
+              <img src={suitImages[selectedSuit.toString()]} alt={selectedSuit} className="suit-image" />)}
             <div className="bid-grid">
               {stage === "selectSuit" && uniqueSuits.map((suit, index) => (
                 <Button key={index} onClick={() => {
