@@ -8,7 +8,6 @@ import PropTypes from "prop-types";
 import { User } from "types";
 import "styles/views/UserList.scss";
 
-// Define the UserInfoField component
 const UserInfoField = ({ label, value }) => (
   <div className="user-info-field">
     <label className="user-info label">{label}</label>
@@ -16,15 +15,12 @@ const UserInfoField = ({ label, value }) => (
   </div>
 );
 
-// PropTypes for UserInfoField component
 UserInfoField.propTypes = {
   label: PropTypes.string.isRequired,
   value: PropTypes.string,
 };
 
-// Define the UserItem component
 const UserItem = ({ user, onClick }) => {
-  // Function to determine the status indicator color
   const getStatusColor = () => {
     return user.status === "ONLINE" ? "green" : "red";
   };
@@ -38,17 +34,14 @@ const UserItem = ({ user, onClick }) => {
   );
 };
 
-// PropTypes for UserItem component
 UserItem.propTypes = {
   user: PropTypes.object.isRequired,
   onClick: PropTypes.func.isRequired,
 };
 
-// Define the UserList component
 const UserList = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
-
   useEffect(() => {
     async function fetchData() {
       try {

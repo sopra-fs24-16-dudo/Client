@@ -11,7 +11,6 @@ const Player = ({ user, isCurrentUser }: { user: User, isCurrentUser: boolean })
   const navigate = useNavigate();
 
   const handleEditProfile = () => {
-    // Redirect to the edit profile page
     navigate("/editProfile");
   };
 
@@ -21,7 +20,6 @@ const Player = ({ user, isCurrentUser }: { user: User, isCurrentUser: boolean })
         <div className="player info-item">Username: {user.username}</div>
         <div className="player info-item">Status: {user.status}</div>
         <div className="player info-item">Games played: {user.gamesPlayed}</div>
-
         {isCurrentUser && (
           <div className="player info-item">
             <Button onClick={handleEditProfile}>Edit Profile</Button>
@@ -58,7 +56,6 @@ const Profile = () => {
   }, [userId]);
 
   useEffect(() => {
-    // Retrieve id from localStorage
     const storedUserId = localStorage.getItem("id");
     setCurrentUser({ id: storedUserId });
   }, []);

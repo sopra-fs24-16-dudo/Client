@@ -15,16 +15,12 @@ const Homepage = () => {
   const joinLobby = async () => {
     try {
       const requestBody = JSON.stringify(id);
-
       await api.put(`/lobby/players/${lobbyId}`, requestBody);
-
       localStorage.setItem("lobbyId", lobbyId);
-
-      //subscribeToLobbyChannel(lobbyId);
       const isFree = await api.get(`/lobby/availability/${lobbyId}`);
       if (!isFree.data) {
         alert("Sorry, a game is already in progress in this lobby. Please try again later.");
-        
+
         return;
       }
       navigate(`/lobby/${lobbyId}`);
@@ -38,18 +34,9 @@ const Homepage = () => {
   const createLobby = async () => {
     try {
       const requestBody = JSON.stringify(id);
-
       const response = await api.post("/lobbies", requestBody);
-      console.log("Response Data:", response.data); // Log response data
       const lobby = new Lobby(response.data);
-
       localStorage.setItem("lobbyId", lobby.id);
-
-      // Subscribe to the lobby channel immediately after creating the lobby
-      //subscribeToLobbyChannel(lobbyId);
-
-
-      // Login successfully worked --> navigate to the route /game in the GameRouter
       navigate(`/lobby/${lobby.id}`);
     } catch (error) {
       alert(
@@ -62,10 +49,8 @@ const Homepage = () => {
     navigate("/profile");
   };
   const userList = async ()  => {
-
     try {
       const response = await api.get("/users");
-      console.log("Response Data:", response.data); // Log response data
       navigate("/userList");
     } catch (error) {
       alert(
@@ -78,15 +63,10 @@ const Homepage = () => {
     try {
       // Call the backend API to update the user's status to "offline"
       const requestBody = JSON.stringify({id});
-      console.log(requestBody);
-
       await api.put("/logout", requestBody);
-
       localStorage.removeItem("token");
       localStorage.removeItem("id");
       localStorage.removeItem("currentPlayerId");
-
-      // Navigate to the login page
       navigate("/login");
     } catch (error) {
       console.error("Error logging out:", error);

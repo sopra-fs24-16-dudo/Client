@@ -4,7 +4,6 @@ import { Button } from "components/ui/Button";
 import BaseContainer from "components/ui/BaseContainer";
 import "styles/views/Game.scss";
 import { useNavigate } from "react-router-dom";
-import PropTypes from "prop-types";
 import question from "../../images/question.png";
 import chips from "../../images/poker_chip.png";
 import nine from "../../images/dice/nine.png";
@@ -33,14 +32,13 @@ const suitImages = {
 
 interface AudioSubscription {
   track: IRemoteAudioTrack;
-  isPlaying: boolean; // This flag will indicate if the audio is currently being played
+  isPlaying: boolean;
 }
 
 interface AudioSubscriptions {
   [userId: string]: AudioSubscription;
 }
 const Game = () => {
-  // Game state variables
   const [players, setPlayers] = useState([]);
   const [currentBid, setCurrentBid] = useState(null);
   const [nextBid, setNextBid] = useState(null);
@@ -97,8 +95,6 @@ const Game = () => {
     async function initAgora() {
       try {
         await navigator.mediaDevices.getUserMedia({ audio: true, video: false});
-        console.log("Microphone permissions granted and audio stream created");
-
         const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
         setRtc(prevState => ({ ...prevState, client }));
 
@@ -112,14 +108,14 @@ const Game = () => {
             await client.subscribe(user, mediaType);
             const audioTrack = user.audioTrack;
             setAudioSubscriptions(prev => {
-              const isPlaying = prev[user.uid]?.isPlaying ?? true;  // Default to true if not already in subscriptions
+              const isPlaying = prev[user.uid]?.isPlaying ?? true;
 
               return {
                 ...prev,
                 [user.uid]: { track: audioTrack, isPlaying }
               };
             });
-            if (audioSubscriptions[user.uid]?.isPlaying !== false) { // <-- Added check here
+            if (audioSubscriptions[user.uid]?.isPlaying !== false) {
               audioTrack.play();  // Start playing by default
               console.log(`Subscribed and started playing audio from user ${user.uid}`);
             }
@@ -136,7 +132,7 @@ const Game = () => {
         });
       } catch (error) {
         console.log("Microphone permissions denied or audio stream creation failed");
-        setIsMicAvailable(false); // Update state to indicate the microphone is unavailable
+        setIsMicAvailable(false);
       }
     }
 
@@ -153,9 +149,9 @@ const Game = () => {
       }
       rtc.localAudioTrack?.close();
     };
-  }, []); // Empty dependency array means this effect only runs once after initial render
+  }, []);
   const toggleMute = async () => {
-    if (!isMicAvailable) return; // Prevent toggling if the mic is unavailable
+    if (!isMicAvailable) return;
     if (rtc.localAudioTrack) {
       const newMutedState = !isMuted;
       await rtc.localAudioTrack.setMuted(newMutedState);
@@ -192,17 +188,13 @@ const Game = () => {
   const playersToArray = (playersObj) => {
     return Object.values(playersObj);
   };
-  // Functions to handle game actions
-  // ... other game functions like sendMessage from Lobby
   useEffect(() => {
     const websocket = new SockJS(`${getDomain()}/ws`);
     const stompClient = Stomp.over(websocket);
     stompClient.connect({}, () => {
       console.log("Connected to Stomp server");
       stompClient.subscribe(`/topic/lobby/${lobbyId}`, (message) => {
-        console.log("Received message from lobby channel:", message.body);
         const parsedMessage = JSON.parse(message.body);
-        console.log("players object in message:", parsedMessage.players);
         const playersArray = playersToArray(parsedMessage.players);
         setPlayers(playersArray);
         if (parsedMessage.nextBid !== null) {
@@ -212,8 +204,6 @@ const Game = () => {
           setNextBid("null");
         }
         setCurrentBid(parsedMessage.currentBid);
-        console.log ("current bid WS: ", currentBid)
-        console.log("current bid WS type: ", typeof parsedMessage.currentBid)
         setCurrentPlayerId(parsedMessage.currentPlayer.id);
         checkWinner();
         rollHand();
@@ -221,8 +211,6 @@ const Game = () => {
     }, (error) => {
       console.error("Error connecting to Stomp server:", error);
     });
-
-    // Cleanup-Funktion
 
     return () => {
       stompClient.disconnect(() => {
@@ -251,7 +239,6 @@ const Game = () => {
           };
         }
         setCurrentBid(currentBid);
-        console.log("current bid: ", currentBid);
         const currentPlayerId = await api.get(`/games/currentPlayer/${lobbyId}`);
         setCurrentPlayerId(currentPlayerId.data);
       } catch (error) {
@@ -266,7 +253,6 @@ const Game = () => {
 
   useEffect(() => {
     async function fetchHand() {
-      console.log("currentBid has changed:", currentBid);
       if (!currentBid || currentBid.suit === null || currentBid.suit === "null") {
         animateDice();
       }
@@ -289,17 +275,6 @@ const Game = () => {
       fetchRules();
     }
   }, [showRulesModal]);
-
-  /*useEffect(() => {
-    navigator.mediaDevices.getUserMedia({ audio: true })
-      .then((stream) => {
-        console.log("Microphone permissions granted and audio stream created");
-      })
-      .catch((error) => {
-        console.log("Microphone permissions denied or audio stream creation failed");
-        setIsMicAvailable(false); // Update state to indicate the microphone is unavailable
-      });
-  }, []);*/
 
   useEffect(() => {
     AgoraRTC.getDevices().then(devices => {
@@ -324,7 +299,6 @@ const Game = () => {
     } else {
       checkLoser();
     }
-    console.log("winner: ", winner.data);
   }
 
   const checkLoser = async () => {
@@ -338,10 +312,9 @@ const Game = () => {
       setTimeout(() => {
         setShowLoserModal(false);
         setCountdown(5);
-        clearInterval(countdownTimer); // Clear the interval here
+        clearInterval(countdownTimer);
       }, 5000);
     }
-    console.log("loser: ", loser.data);
   }
   const showRules = async () => {
     setShowRulesModal(true);
@@ -358,20 +331,15 @@ const Game = () => {
   const animateDice = () => {
     const diceElements = document.querySelectorAll(".die-image");
     diceElements.forEach((die) => {
-      die.classList.remove("rotate-animation"); // Remove the class first
+      die.classList.remove("rotate-animation");
       setTimeout(() => {
         die.classList.add("rotate-animation"); // Add the class after a short delay
       }, 10); // Wait for 10 milliseconds
     });
   };
   const bid = async (inputBid) => {
-    console.log("inputBid: ", inputBid);
     const requestBody = JSON.stringify(inputBid);
-    console.log("requestBody: ", requestBody);
-    const response = await api.post(`/games/placeBid/${lobbyId}`, requestBody);
-    console.log("responseEEEE: ", response);
-    //const allHands = await api.get(`/games/hands/${lobbyId}`);
-    //console.log("All Hands: ", allHands.data);
+    await api.post(`/games/placeBid/${lobbyId}`, requestBody);
     setShowBidOtherModal(false);
   };
   const showBidOther = () => {
@@ -379,14 +347,10 @@ const Game = () => {
   };
   const bidDudo = async () => {
     await api.put(`/games/dudo/${lobbyId}`);
-    const loser = await api.get(`/games/loser/${lobbyId}`);
-    console.log("loser: ", loser.data);
     const winner = await api.get(`/games/winnerCheck/${lobbyId}`);
-    console.log("winner: ", winner.data);
     if (!winner.data) {
       setTimeout(async() => {
-        const newRound = await api.put(`/games/round/${lobbyId}`);
-        console.log("newRound: ", newRound.data);
+        await api.put(`/games/round/${lobbyId}`);
       }, 5000);
 
     }else {
@@ -454,7 +418,7 @@ const Game = () => {
             </>
           }
         </div>
-        {/* Game board, dice, etc. */}
+        {}
       </div>
       <div className="player-hand-container">
         <div className="current-player-container">
@@ -575,7 +539,7 @@ const Game = () => {
             )}
             <Button onClick={() => {
               setShowWinnerModal(false);
-              navigatToLobby(); // This will redirect the user back to the lobby page
+              navigatToLobby();
             }}>Back to Lobby</Button>
           </div>
         </div>
@@ -591,5 +555,4 @@ const Game = () => {
     </BaseContainer>
   );
 };
-
 export default Game;
