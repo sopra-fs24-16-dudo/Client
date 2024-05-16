@@ -47,7 +47,7 @@
       transform: scale(1);
     }
     50% {
-      transform: scale(1.5);
+      transform: scale(1.8);
     }
     100% {
       transform: scale(1);
@@ -72,6 +72,11 @@
 
       &.current {
         animation: pulse 2s infinite;
+        font-weight: bold;
+        color: BROWN; /* Change the color to red */
+        font-size: 2em; /* Increase the font size */
+        -webkit-text-stroke: 0.3px white; /* Add a thin white border to the text */
+        text-stroke: 0.3px white;
       }
     }
 
@@ -354,6 +359,11 @@
 
       &.current {
         animation: pulse 2s infinite;
+        font-weight: bold;
+        color: BROWN; 
+        font-size: 2em;
+        -webkit-text-stroke: 0.3px white;
+        text-stroke: 0.3px white;
       }
     }
 
