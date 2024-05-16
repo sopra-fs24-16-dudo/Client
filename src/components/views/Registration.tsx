@@ -55,16 +55,10 @@ const Registration = () => {
     try {
       const requestBody = JSON.stringify({ username, name });
       const response = await api.post("/users", requestBody);
-
-      // Get the returned user and update a new object.
       const user = new User(response.data);
-
-      // Store the token into the local storage.
       localStorage.setItem("token", user.token);
       localStorage.setItem("id", user.id);
       localStorage.setItem("currentPlayerId", user.id);
-
-      // Login successfully worked --> navigate to the route /homepage in the HomepageRouter
       navigate("/homepage");
     } catch (error) {
       alert(

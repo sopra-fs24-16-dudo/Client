@@ -4,17 +4,10 @@ import User from "models/User";
 import {useNavigate} from "react-router-dom";
 import { Button } from "components/ui/Button";
 import "styles/views/Login.scss";
-import Header from "components/views/Header";
 import BaseContainer from "components/ui/BaseContainer";
 import PropTypes from "prop-types";
 import showPasswordIMG from "images/show_password.png"
 
-/*
-It is possible to add multiple components inside a single file,
-however be sure not to clutter your files with an endless amount!
-As a rule of thumb, use one file per component and only add small,
-specific components that belong to the main one in the same file.
- */
 const FormField = (props) => {
   return (
     <div className="login field">
@@ -67,8 +60,6 @@ const Login = () => {
       localStorage.setItem("token", user.token);
       localStorage.setItem("id", user.id);
       localStorage.setItem("currentPlayerId", user.id);
-
-
       navigate("/homepage");
     } catch (error) {
       alert(

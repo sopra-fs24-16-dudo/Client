@@ -17,16 +17,6 @@ interface UserInfo {
   userId: string;
   token: string;
 }
-interface UserType {
-  uid: string;
-  info: UserInfo;
-  mediaType: string;
-}
-
-interface MediaType {
-  type: "audio" | "video"; // Media type
-  track: any; // The media track object
-}
 
 type AgoraEvent = "user-published" | "user-unpublished";
 
@@ -37,20 +27,16 @@ const Lobby = () => {
   const navigate = useNavigate();
   const [showRulesModal, setShowRulesModal] = useState(false);
   const [rules, setRules] = useState([]);
-  const [message, setMessage] = useState("");
   const lobbyId = localStorage.getItem("lobbyId");
   const userId = localStorage.getItem("id");
   const [showLeaderboardModal, setShowLeaderboardModal] = useState(false);
   const [leaderboardData, setLeaderboardData] = useState([]);
-  const [votes, setVotes] = useState({});
 
   useEffect(() => {
     const websocket = new SockJS(`${getDomain()}/ws`);
     const stompClient = Stomp.over(websocket);
-
     stompClient.connect({}, () => {
       console.log("Connected to Stomp server");
-
       stompClient.subscribe(`/topic/lobby/${lobbyId}`, (message) => {
         console.log("Received message from lobby channel:", message.body);
         const parsedMessage = JSON.parse(message.body);
@@ -71,7 +57,6 @@ const Lobby = () => {
       console.error("Error connecting to Stomp server:", error);
     });
 
-    // Cleanup-Funktion
     return () => {
       stompClient.disconnect(() => {
         console.log("Disconnected from Stomp server");
@@ -89,7 +74,6 @@ const Lobby = () => {
         setUsers(response.data);
         const allReady = response.data.every((user) => user.ready);
         setAllReady(allReady);
-
       } catch (error) {
         console.error("Error fetching users in lobby:", error);
       }
@@ -114,21 +98,12 @@ const Lobby = () => {
   const toggleReadyStatus = async () => {
     try {
       const requestBody = JSON.stringify(userId);
-      // Send request to update readiness status to the server
       await api.put(`/lobby/player/${lobbyId}/ready`, requestBody);
-
-      // Fetch updated readiness status of all users
       const response = await api.get(`/lobby/players/${lobbyId}`);
       const updatedUsers = response.data;
-
-      // Check if all users are ready after the update
       const allReady = updatedUsers.every((user) => user.ready);
-
-      // Check if there are at least two players in the lobby
       const enoughPlayers = updatedUsers.length >= 2;
-
       if (allReady && enoughPlayers) {
-        // If all users are ready and there are at least two players, start the game
         await api.post(`/lobby/start/${lobbyId}`);
       }
     } catch (error) {
@@ -139,9 +114,7 @@ const Lobby = () => {
   const leaveLobby = async () => {
     try {
       const requestBody = JSON.stringify(userId);
-
       await api.post(`/lobby/exit/${lobbyId}`, requestBody);
-
       navigate("/homepage");
     } catch (error) {
       alert(
