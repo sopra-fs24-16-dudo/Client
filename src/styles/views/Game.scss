@@ -353,14 +353,14 @@
     }
 
     .current-player-name {
-      font-size: 20px;
+      font-size: 1.5em;
       font-weight: bold;
       margin-bottom: 10px;
 
       &.current {
         animation: pulse 2s infinite;
         font-weight: bold;
-        color: BROWN; 
+        color: BROWN;
         font-size: 2em;
         -webkit-text-stroke: 0.3px white;
         text-stroke: 0.3px white;

@@ -63,6 +63,7 @@ const Game = () => {
   const [countdown, setCountdown] = useState(5);
   const [isRolling, setIsRolling] = useState(false);
   const suits = ["NINE", "TEN", "JACK", "QUEEN", "KING", "ACE"];
+  const [isFijo, setIsFijo] = useState(false);
   //dice
   const [die1, setDie1] = useState({ suit: "NINE" });
   const [die2, setDie2] = useState({ suit: "TEN" });
@@ -243,6 +244,8 @@ const Game = () => {
         setCurrentBid(currentBid);
         const currentPlayerId = await api.get(`/games/currentPlayer/${lobbyId}`);
         setCurrentPlayerId(currentPlayerId.data);
+        const fijo = await api.get(`/games/fijoCheck/${lobbyId}`);
+        setIsFijo(fijo.data);
       } catch (error) {
         console.error("Error fetching users in lobby:", error);
       }
@@ -306,6 +309,7 @@ const Game = () => {
   const checkLoser = async () => {
     const loser = await api.get(`/games/loser/${lobbyId}`);
     if (loser.data) {
+      setIsFijo(loser.data.chips < 2)
       setLoser(loser.data);
       setShowLoserModal(true);
       let countdownTimer = setInterval(() => {
@@ -318,6 +322,7 @@ const Game = () => {
       }, 5000);
     }
   }
+
   const showRules = async () => {
     setShowRulesModal(true);
   };
@@ -431,11 +436,15 @@ const Game = () => {
       <div className="game-main">
         <div className="current-bid">
           Current Bid:
-          {!currentBid || currentBid.suit === null || currentBid.suit === "null" ? " No current bid" :
+          {!currentBid || currentBid.suit === null || currentBid.suit === "null" ?
+            <>
+               No current bid
+              {isFijo && "  (Fijo)"}
+            </> :
             <>
               {currentBid.amount + " "}
-              <img src={suitImages[currentBid.suit]} alt={currentBid.suit} width="40px"
-                height="35px" />
+              <img src={suitImages[currentBid.suit]} alt={currentBid.suit} width="40px" height="35px" />
+              {isFijo && "  (Fijo)"}
             </>
           }
         </div>
@@ -599,6 +608,7 @@ const Game = () => {
         <div className="loser-modal">
           <div className="loser-content">
             <h1>{loser.username} lost a coin!</h1>
+            {isFijo && <h2>Get ready for a fijo round!</h2>}
             <p>The next round will start in {countdown} seconds</p>
           </div>
         </div>
