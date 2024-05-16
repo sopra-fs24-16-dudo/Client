@@ -246,6 +246,7 @@ const Game = () => {
         setCurrentPlayerId(currentPlayerId.data);
         const fijo = await api.get(`/games/fijoCheck/${lobbyId}`);
         setIsFijo(fijo.data);
+        console.log("Fijo check fetch users:", isFijo);
       } catch (error) {
         console.error("Error fetching users in lobby:", error);
       }
@@ -258,6 +259,9 @@ const Game = () => {
 
   useEffect(() => {
     async function fetchHand() {
+      const fijo = await api.get(`/games/fijoCheck/${lobbyId}`);
+      setIsFijo(fijo.data);
+      console.log("Fijo check fetch hand:", isFijo);
       if (!currentBid || currentBid.suit === null || currentBid.suit === "null") {
         animateDice();
       }
@@ -309,7 +313,9 @@ const Game = () => {
   const checkLoser = async () => {
     const loser = await api.get(`/games/loser/${lobbyId}`);
     if (loser.data) {
-      setIsFijo(loser.data.chips < 2)
+      const r = await api.get(`/games/fijoCheck/${lobbyId}`);
+      setIsFijo(loser.data.chips === 1)
+      console.log("Fijo check checkLoser:", isFijo);
       setLoser(loser.data);
       setShowLoserModal(true);
       let countdownTimer = setInterval(() => {
