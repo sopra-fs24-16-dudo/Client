@@ -397,8 +397,7 @@ const Game = () => {
   }, [winner]);
   const endGame = async () => {
     try {
-      const requestBody = JSON.stringify(userId);
-      await api.put(`/games/end/${lobbyId}`, requestBody);
+      await api.put(`/games/end/${lobbyId}`);
     } catch (error) {
       console.error("Error ending the game:", error);
     }
