@@ -10,21 +10,12 @@ import { User } from "types";
 const Player = ({ user, isCurrentUser }: { user: User, isCurrentUser: boolean }) => {
   const navigate = useNavigate();
 
-  const handleEditProfile = () => {
-    navigate("/editProfile");
-  };
-
   return (
     <div className="player container">
       <div className="player info">
         <div className="player info-item">Username: {user.username}</div>
         <div className="player info-item">Status: {user.status}</div>
         <div className="player info-item">Games played: {user.gamesPlayed}</div>
-        {isCurrentUser && (
-          <div className="player info-item">
-            <Button onClick={handleEditProfile}>Edit Profile</Button>
-          </div>
-        )}
       </div>
     </div>
   );
@@ -44,8 +35,7 @@ const Profile = () => {
   useEffect(() => {
     async function fetchUserData() {
       try {
-        const id = localStorage.getItem("id");
-        const response = await api.get(`/users/${id}`);
+        const response = await api.get(`/users/${userId}`);
         setUser(response.data);
       } catch (error) {
         console.error(`Error fetching user data: \n${handleError(error)}`);

@@ -10,7 +10,6 @@ const Homepage = () => {
   const navigate = useNavigate();
   const [lobbyId, setLobbyId] = useState<string>("");
   const [id, setUserId] = useState<number>(null);
-  const [users, setUsers] = useState([]);
 
   const joinLobby = async () => {
     try {
@@ -46,7 +45,7 @@ const Homepage = () => {
   };
 
   const goToProfile = () => {
-    navigate("/profile");
+    navigate(`/profile/${id}`);
   };
   const userList = async ()  => {
     try {

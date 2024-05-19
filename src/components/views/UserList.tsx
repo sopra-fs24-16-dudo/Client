@@ -56,8 +56,8 @@ const UserList = () => {
     fetchData();
   }, []);
 
-  const navigateToProfile = (userId: string) => {
-    navigate("/profile");
+  const navigateToProfile = (userId: number) => {
+    navigate(`/profile/${userId}`);
   };
 
   const navigateToHomepage = () => {
