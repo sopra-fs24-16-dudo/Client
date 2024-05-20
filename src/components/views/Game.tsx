@@ -407,11 +407,22 @@ const Game = () => {
   }, [winner]);
   const endGame = async () => {
     try {
+      const reqBody = JSON.stringify({playerId});
       await api.put(`/games/end/${lobbyId}`);
     } catch (error) {
       console.error("Error ending the game:", error);
     }
   };
+
+  const leaveGame = async () => {
+    try {
+      const reqBody = JSON.stringify({playerId});
+      await api.post(`/lobby/exit/${lobbyId}`, playerId);
+      navigate(`/homepage`);
+    } catch (error) {
+      console.error("Error leaving the game:", error);
+    }
+  }
 
   return (
     <BaseContainer className="game container">
@@ -553,6 +564,7 @@ const Game = () => {
         <Button onClick={() => bidDudo()}
                 disabled={playerId !== currentPlayerId || !currentBid || currentBid.suit === null || currentBid.suit === "null"}>Dudo</Button>
       </div>
+      <Button className="leave-game-button" onClick={leaveGame}>Leave Game</Button>
       {showBidOtherModal && (
         <div className="bid-other-modal">
           <div className="bid-other-content">
