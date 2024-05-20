@@ -90,9 +90,7 @@ const Game = () => {
 
   useEffect(() => {
     startPlaying();
-  }, []); // Leere Abhängigkeitsliste bedeutet, dass dieser Effekt nur beim Mounten ausgeführt wird
-
-// Rest des Codes...
+  }, []);
 
   const audioRef = useRef(null);
   useEffect(() => {
@@ -418,7 +416,7 @@ const Game = () => {
     try {
       const reqBody = JSON.stringify({playerId});
       await api.post(`/lobby/exit/${lobbyId}`, playerId);
-      navigate(`/homepage`);
+      navigate("/homepage");
     } catch (error) {
       console.error("Error leaving the game:", error);
     }
@@ -561,8 +559,7 @@ const Game = () => {
         </Button>
         <Button onClick={showBidOther} disabled={validBids.length === 0 || playerId !== currentPlayerId}>Bid
           Other</Button>
-        <Button onClick={() => bidDudo()}
-                disabled={playerId !== currentPlayerId || !currentBid || currentBid.suit === null || currentBid.suit === "null"}>Dudo</Button>
+        <Button onClick={() => bidDudo()} disabled={playerId !== currentPlayerId || !currentBid || currentBid.suit === null || currentBid.suit === "null"}>Dudo</Button>
       </div>
       <Button className="leave-game-button" onClick={leaveGame}>Leave Game</Button>
       {showBidOtherModal && (
