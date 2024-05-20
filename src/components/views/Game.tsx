@@ -79,24 +79,13 @@ const Game = () => {
   const [audioSubscriptions, setAudioSubscriptions] = useState<AudioSubscriptions>({});
   const [isMicAvailable, setIsMicAvailable] = useState(true);
   const muteButtonClass = !isMicAvailable ? "disabled-button" : "";
-
-  const [audio] = useState(new Audio(jazz));
-  const [playing, setPlaying] = useState(false);
-
-  const startPlaying = () => {
-    setPlaying(true);
-    audio.play();
-  };
-
-  useEffect(() => {
-    startPlaying();
-  }, []);
+  const [volume, setVolume] = useState(0.5);
 
   const audioRef = useRef(null);
   useEffect(() => {
     if (audioRef.current) {
-      audioRef.current.volume = 0.1;
-    }}, []);
+      audioRef.current.volume = volume;
+    }}, [volume]);
 
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -426,6 +415,8 @@ const Game = () => {
     <BaseContainer className="game container">
       <div>
         <audio ref={audioRef} src={jazz} autoPlay loop />
+        <p>Music volume: </p>
+        <input type="range" min="0" max="1" step="0.01" value={volume} onChange={e => setVolume(Number(e.target.value))} />
       </div>
       <div className="game-header">
         {/* Players at the top */}
@@ -559,7 +550,8 @@ const Game = () => {
         </Button>
         <Button onClick={showBidOther} disabled={validBids.length === 0 || playerId !== currentPlayerId}>Bid
           Other</Button>
-        <Button onClick={() => bidDudo()} disabled={playerId !== currentPlayerId || !currentBid || currentBid.suit === null || currentBid.suit === "null"}>Dudo</Button>
+        <Button onClick={() => bidDudo()}
+                disabled={playerId !== currentPlayerId || !currentBid || currentBid.suit === null || currentBid.suit === "null"}>Dudo</Button>
       </div>
       <Button className="leave-game-button" onClick={leaveGame}>Leave Game</Button>
       {showBidOtherModal && (
