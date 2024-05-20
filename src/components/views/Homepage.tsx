@@ -82,25 +82,22 @@ const Homepage = () => {
     <BaseContainer className="homepage container">
       <h2>Join or create lobby</h2>
       <div className="lobby-form">
-        <input
-          className="registration input"
-          type="text"
-          placeholder="Enter lobby ID"
-          value={lobbyId}
-          onChange={(e) => setLobbyId(e.target.value)}
-        />
+        <div className="join-lobby-container">
+          <input
+            className="registration input" style={{ marginTop: "10px" }}
+            type="text"
+            placeholder="Enter lobby ID"
+            value={lobbyId}
+            onChange={(e) => setLobbyId(e.target.value)}
+          />
+          <Button onClick={joinLobby}>Join Lobby</Button>
+        </div>
         <div className="button-container">
-          <Button onClick={joinLobby}>
-            Join Lobby
-          </Button>
           <Button onClick={createLobby}>
             Create Lobby
           </Button>
           <Button width="100%" onClick={userList}>
             Search Users
-          </Button>
-          <Button onClick={goToProfile}>
-            Go to Profile
           </Button>
           <Button onClick={logout}>
             Logout

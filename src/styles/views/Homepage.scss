@@ -40,9 +40,19 @@
   }
 
 .button-container {
-  margin-top: -20px; /* Adjust as needed */
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: 10px; /* Adjust as needed */
+}
+
+.join-lobby-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.join-lobby-container button {
+  box-sizing: border-box;
+  align-self: flex-start;
 }
