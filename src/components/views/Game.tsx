@@ -16,7 +16,6 @@ import jazz from "../../sounds/GameJazzMusic.mp3";
 import { getDomain } from "helpers/getDomain";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
-//Imports for the Voice chat API
 import AgoraRTC, { IRemoteAudioTrack } from "agora-rtc-sdk-ng";
 import AgoraRTM from "agora-rtm-sdk";
 
@@ -46,7 +45,6 @@ const Game = () => {
   const [rules, setRules] = useState([]);
   const lobbyId = localStorage.getItem("lobbyId");
   const [hand, setHand] = useState([]);
-  const gameId = localStorage.getItem("lobbyId");
   const userId = localStorage.getItem("id");
   const playerId = parseInt(localStorage.getItem("currentPlayerId"));
   const [currentPlayerId, setCurrentPlayerId] = useState(null);
@@ -64,7 +62,6 @@ const Game = () => {
   const [isRolling, setIsRolling] = useState(false);
   const suits = ["NINE", "TEN", "JACK", "QUEEN", "KING", "ACE"];
   const [isFijo, setIsFijo] = useState(false);
-  //dice
   const [die1, setDie1] = useState({ suit: "NINE" });
   const [die2, setDie2] = useState({ suit: "TEN" });
   const [die3, setDie3] = useState({ suit: "JACK" });
@@ -83,6 +80,19 @@ const Game = () => {
   const [isMicAvailable, setIsMicAvailable] = useState(true);
   const muteButtonClass = !isMicAvailable ? "disabled-button" : "";
 
+  const [audio] = useState(new Audio(jazz));
+  const [playing, setPlaying] = useState(false);
+
+  const startPlaying = () => {
+    setPlaying(true);
+    audio.play();
+  };
+
+  useEffect(() => {
+    startPlaying();
+  }, []); // Leere Abhängigkeitsliste bedeutet, dass dieser Effekt nur beim Mounten ausgeführt wird
+
+// Rest des Codes...
 
   const audioRef = useRef(null);
   useEffect(() => {
@@ -406,7 +416,7 @@ const Game = () => {
   return (
     <BaseContainer className="game container">
       <div>
-        <audio ref={audioRef} src={jazz} autoPlay loop/>
+        <audio ref={audioRef} src={jazz} autoPlay loop />
       </div>
       <div className="game-header">
         {/* Players at the top */}
@@ -443,7 +453,7 @@ const Game = () => {
           Current Bid:
           {!currentBid || currentBid.suit === null || currentBid.suit === "null" ?
             <>
-               No current bid
+              No current bid
               {isFijo && "  (Fijo)"}
             </> :
             <>
@@ -540,7 +550,8 @@ const Game = () => {
         </Button>
         <Button onClick={showBidOther} disabled={validBids.length === 0 || playerId !== currentPlayerId}>Bid
           Other</Button>
-        <Button onClick={() => bidDudo()} disabled={playerId !== currentPlayerId || !currentBid || currentBid.suit === null || currentBid.suit === "null"}>Dudo</Button>
+        <Button onClick={() => bidDudo()}
+                disabled={playerId !== currentPlayerId || !currentBid || currentBid.suit === null || currentBid.suit === "null"}>Dudo</Button>
       </div>
       {showBidOtherModal && (
         <div className="bid-other-modal">
