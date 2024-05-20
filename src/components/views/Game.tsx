@@ -550,8 +550,7 @@ const Game = () => {
         </Button>
         <Button onClick={showBidOther} disabled={validBids.length === 0 || playerId !== currentPlayerId}>Bid
           Other</Button>
-        <Button onClick={() => bidDudo()}
-                disabled={playerId !== currentPlayerId || !currentBid || currentBid.suit === null || currentBid.suit === "null"}>Dudo</Button>
+        <Button onClick={() => bidDudo()} disabled={playerId !== currentPlayerId || !currentBid || currentBid.suit === null || currentBid.suit === "null"}>Dudo</Button>
       </div>
       <Button className="leave-game-button" onClick={leaveGame}>Leave Game</Button>
       {showBidOtherModal && (
