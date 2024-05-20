@@ -74,6 +74,9 @@ const Lobby = () => {
         setUsers(response.data);
         const allReady = response.data.every((user) => user.ready);
         setAllReady(allReady);
+        const adminId = await api.get(`/lobby/admin/${lobbyId}`);
+        setAdmin(adminId.data);
+        console.log("Admin:", adminId.data);
       } catch (error) {
         console.error("Error fetching users in lobby:", error);
       }
