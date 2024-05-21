@@ -338,7 +338,8 @@ const Game = () => {
       await client.publish(localAudioTrack);
       setRtc(prevState => ({ ...prevState, localAudioTrack }));
       setupClientEventHandlers(client);
-      setIsInVoiceChannel(true);  // Set to true when joined successfully
+      setIsInVoiceChannel(true);
+      setUsersInVoiceChannel(prev => [...prev, userId]); // Add the current user to the voice channel state
       console.log("Joined channel successfully");
     } catch (error) {
       console.error("Error joining channel:", error);
@@ -352,7 +353,8 @@ const Game = () => {
         rtc.localAudioTrack?.close();
         setRtc({ client: null, localAudioTrack: null });
         console.log("Left the voice channel successfully");
-        setIsInVoiceChannel(false);  // Set to false when left successfully
+        setIsInVoiceChannel(false);
+        setUsersInVoiceChannel(prev => prev.filter(id => id !== userId)); // Remove the current user from the voice channel state
       }
     } catch (error) {
       console.error("Error leaving the voice channel:", error);
@@ -421,7 +423,7 @@ const Game = () => {
         const audioTrack = user.audioTrack;
         setAudioSubscriptions((prev) => {
           const isPlaying = prev[user.uid]?.isPlaying ?? true;
-          
+
           return {
             ...prev,
             [user.uid]: { track: audioTrack, isPlaying },
@@ -459,6 +461,30 @@ const Game = () => {
     console.log("Agora client event handlers set up");
   };
 
+  useEffect(() => {
+    if (rtc.client) {
+      // List of current player IDs
+      const currentPlayersIds = players.map(player => player.id);
+
+      // Leave voice channel for users who are not in the current players list
+      usersInVoiceChannel.forEach(async userId => {
+        if (!currentPlayersIds.includes(userId)) {
+          await rtc.client.leave();
+          setUsersInVoiceChannel(prev => prev.filter(id => id !== userId));
+          console.log(`User ${userId} left the voice channel because they are not in the game`);
+        }
+      });
+
+      // Add to the voice channel users who are in the current players list but not in the voice channel
+      currentPlayersIds.forEach(async playerId => {
+        if (!usersInVoiceChannel.includes(playerId)) {
+          await joinVoiceChannel(); // You might need to implement this to join specific players
+          setUsersInVoiceChannel(prev => [...prev, playerId]);
+          console.log(`User ${playerId} joined the voice channel`);
+        }
+      });
+    }
+  }, [players]); // Dependencies to rerun this effect when the players array changes
 
   const cleanupAgora = () => {
     if (rtc.client) {
