@@ -1,5 +1,5 @@
 @import "../theme";
-
+@import url('https://fonts.googleapis.com/css2?family=Racing+Sans+One&display=swap');
 .header {
   &.container {
     @include center;
@@ -11,6 +11,8 @@
     text-align: center;
     margin-left: 50px;
     margin-right: 50px;
+    font-family: 'Luckiest Guy';
+    font-size: 40px;
   }
 
   &.header h2 {
@@ -19,5 +21,6 @@
     text-align: center;
     margin-left: 50px;
     margin-right: 50px;
+    font-family: 'Luckiest Guy';
   }
 }

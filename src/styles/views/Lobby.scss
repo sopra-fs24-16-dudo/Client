@@ -17,6 +17,8 @@
     box-shadow: $dropShadow;
     width: 20%;
     align-items: flex-start;
+    font-family: 'Luckiest Guy';
+    color : BROWN;
   }
 
   &.user-list {
@@ -24,10 +26,12 @@
     text-align: left;
     align-items: flex-start;
     list-style: none;
+
   }
 
   & p, h2 {
     margin: 0.5em 0;
+    color : BROWN;
   }
 
   &.button-container {

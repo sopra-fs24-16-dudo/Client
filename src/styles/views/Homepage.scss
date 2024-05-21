@@ -17,6 +17,7 @@
     align-items: center;
     box-shadow: $dropShadow;
     min-width: 20em;
+    font-family: 'Luckiest Guy';
   }
   &.user-list {
     list-style: none;
@@ -30,6 +31,7 @@
   }
   & p,h2 {
     margin: 0.5em 0;
+    color : BROWN;
   }
 }
 

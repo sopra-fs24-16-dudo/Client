@@ -4,6 +4,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  font-family: 'Luckiest Guy';
 }
 
 .user-list {
@@ -13,6 +14,7 @@
   flex-wrap: wrap;
   gap: 20px;
   justify-content: center;
+
 }
 
 .user-item {
@@ -50,6 +52,7 @@
 h2 {
   text-align: center;
   margin-bottom: 20px;
+  font-family: 'Luckiest Guy';
 }
 
 .button-container {
