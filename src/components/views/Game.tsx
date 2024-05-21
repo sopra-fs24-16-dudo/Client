@@ -309,6 +309,7 @@ const Game = () => {
       const reqBody = JSON.stringify({playerId});
       await api.post(`/games/exit/${lobbyId}`, playerId);
       navigate("/homepage");
+      leaveVoiceChannel();
     } catch (error) {
       console.error("Error leaving the game:", error);
     }
