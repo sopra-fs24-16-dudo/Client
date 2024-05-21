@@ -355,7 +355,7 @@ const Game = () => {
   };
 
 
-  useEffect(() => {
+  /*useEffect(() => {
     const initAgora = async () => {
       const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
       setRtc(prevState => ({ ...prevState, client }));
@@ -376,7 +376,7 @@ const Game = () => {
     return () => {
       cleanupAgora();
     };
-  }, []);
+  }, []);*/
 
   const checkMicrophoneAvailability = async () => {
     try {
