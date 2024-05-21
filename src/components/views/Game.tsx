@@ -59,6 +59,7 @@ const Game = () => {
   const [showRulesModal, setShowRulesModal] = useState(false);
   const [showWinnerModal, setShowWinnerModal] = useState(false);
   const [showLoserModal, setShowLoserModal] = useState(false);
+  const [showLeaveConfirmation, setShowLeaveConfirmation] = useState(false);
   const [countdown, setCountdown] = useState(5);
   const [isRolling, setIsRolling] = useState(false);
   const suits = ["NINE", "TEN", "JACK", "QUEEN", "KING", "ACE"];
@@ -304,9 +305,13 @@ const Game = () => {
     }
   };
 
+  const handleLeaveConfirmation = () => {
+    setShowLeaveConfirmation(!showLeaveConfirmation);
+  };
+
   const leaveGame = async () => {
     try {
-      const reqBody = JSON.stringify({playerId});
+      const reqBody = JSON.stringify({ playerId });
       await api.post(`/games/exit/${lobbyId}`, playerId);
       navigate("/homepage");
       leaveVoiceChannel();
@@ -695,7 +700,21 @@ const Game = () => {
           Other</Button>
         <Button onClick={() => bidDudo()} disabled={playerId !== currentPlayerId || !currentBid || currentBid.suit === null || currentBid.suit === "null"}>Dudo</Button>
       </div>
-      <Button className="leave-game-button" onClick={leaveGame}>Leave Game</Button>
+        <Button className="leave-game-button" onClick={handleLeaveConfirmation}>
+          Leave Game
+        </Button>
+      {showLeaveConfirmation && (
+        <div className="leave-game-confirmation-modal">
+          <div className="leave-game-confirmation-content">
+            <h2>Are you sure you want to leave the game?</h2>
+            <div>
+              <Button type="primary" onClick={leaveGame}>Yes</Button>
+              <Button onClick={() => setShowLeaveConfirmation(false)}>No</Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showBidOtherModal && (
         <div className="bid-other-modal">
           <div className="bid-other-content">
