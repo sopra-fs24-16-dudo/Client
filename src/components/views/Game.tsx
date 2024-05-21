@@ -337,6 +337,7 @@ const Game = () => {
       await client.publish(localAudioTrack);
       setRtc(prevState => ({ ...prevState, localAudioTrack }));
       setupClientEventHandlers(client);
+      setIsInVoiceChannel(true);  // Set to true when joined successfully
       console.log("Joined channel successfully");
     } catch (error) {
       console.error("Error joining channel:", error);
@@ -350,6 +351,7 @@ const Game = () => {
         rtc.localAudioTrack?.close();
         setRtc({ client: null, localAudioTrack: null });
         console.log("Left the voice channel successfully");
+        setIsInVoiceChannel(false);  // Set to false when left successfully
       }
     } catch (error) {
       console.error("Error leaving the voice channel:", error);
@@ -359,7 +361,6 @@ const Game = () => {
 
   useEffect(() => {
     joinVoiceChannel();
-
     return () => {
       leaveVoiceChannel();
       cleanupAgora();
