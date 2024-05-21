@@ -75,6 +75,8 @@ const Game = () => {
     client: null,
     localAudioTrack: null,
   });
+
+  const [usersInVoiceChannel, setUsersInVoiceChannel] = useState([]);
   const [isInVoiceChannel, setIsInVoiceChannel] = useState(false);
 
   const [activeSpeaker, setActiveSpeaker] = useState(null);
@@ -428,18 +430,30 @@ const Game = () => {
       if (mediaType === "audio") {
         await client.subscribe(user, mediaType);
         const audioTrack = user.audioTrack;
-        setAudioSubscriptions(prev => {
+        setAudioSubscriptions((prev) => {
           const isPlaying = prev[user.uid]?.isPlaying ?? true;
-
           return {
             ...prev,
-            [user.uid]: { track: audioTrack, isPlaying }
+            [user.uid]: { track: audioTrack, isPlaying },
           };
         });
         if (audioSubscriptions[user.uid]?.isPlaying !== false) {
           audioTrack.play();
           console.log(`Subscribed and started playing audio from user ${user.uid}`);
         }
+        setUsersInVoiceChannel((prev) => [...prev, user.uid]);
+      }
+    });
+
+    client.on("user-unpublished", (user, mediaType: "audio") => {
+      if (mediaType === "audio") {
+        setAudioSubscriptions((prev) => {
+          const { [user.uid]: _, ...rest } = prev;
+
+          return rest;
+        });
+        setUsersInVoiceChannel((prev) => prev.filter((uid) => uid !== user.uid));
+        console.log(`User ${user.uid} unpublished`);
       }
     });
 
@@ -454,6 +468,7 @@ const Game = () => {
 
     console.log("Agora client event handlers set up");
   };
+
 
   const cleanupAgora = () => {
     if (rtc.client) {
@@ -479,7 +494,12 @@ const Game = () => {
   };
 
   const toggleAudioPlay = async (userId) => {
-    setAudioSubscriptions(prev => {
+    if (!usersInVoiceChannel.includes(userId)) {
+      console.log(`User ${userId} is not in the voice channel`);
+
+      return;
+    }
+    setAudioSubscriptions((prev) => {
       const currentSubscription = prev[userId];
       if (currentSubscription) {
         const newIsPlaying = !currentSubscription.isPlaying;
@@ -491,17 +511,22 @@ const Game = () => {
           rtc.client.unsubscribe(currentSubscription.track);
         }
 
-        console.log(newIsPlaying ? `Playing audio from user ${userId}` : `Stopped playing audio from user ${userId}`);
+        console.log(
+          newIsPlaying
+            ? `Playing audio from user ${userId}`
+            : `Stopped playing audio from user ${userId}`
+        );
 
         return {
           ...prev,
-          [userId]: { ...currentSubscription, isPlaying: newIsPlaying }
+          [userId]: { ...currentSubscription, isPlaying: newIsPlaying },
         };
       }
 
       return prev;
     });
   };
+
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = volume;
@@ -537,7 +562,10 @@ const Game = () => {
                   ))
                 )}
               </div>
-              <Button onClick={() => toggleAudioPlay(player.id)}>
+              <Button
+                onClick={() => toggleAudioPlay(player.id)}
+                disabled={!usersInVoiceChannel.includes(player.id)}
+              >
                 {audioSubscriptions[player.id]?.isPlaying ? "Stop Listening" : "Start Listening"}
               </Button>
             </div>
