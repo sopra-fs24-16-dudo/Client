@@ -318,14 +318,14 @@ const Game = () => {
   ////////////////////////////////AGORA////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // Agora initialization
-  const toggleVoiceChannel = async () => {
+  /*const toggleVoiceChannel = async () => {
     if (isInVoiceChannel) {
       await leaveVoiceChannel();
     } else {
       await joinVoiceChannel();
     }
     setIsInVoiceChannel(!isInVoiceChannel);
-  };
+  };*/
 
   const joinVoiceChannel = async () => {
     try {
@@ -357,28 +357,14 @@ const Game = () => {
   };
 
 
-  /*useEffect(() => {
-    const initAgora = async () => {
-      const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-      setRtc(prevState => ({ ...prevState, client }));
-
-      try {
-        await checkMicrophoneAvailability();
-        await joinChannel(client);
-        await initializeLocalAudioTrack(client);
-        setupClientEventHandlers(client);
-      } catch (error) {
-        console.error("Error during Agora initialization:", error);
-        setIsMicAvailable(false);
-      }
-    };
-
-    initAgora();
+  useEffect(() => {
+    joinVoiceChannel();
 
     return () => {
+      leaveVoiceChannel();
       cleanupAgora();
     };
-  }, []);*/
+  }, []);
 
   const checkMicrophoneAvailability = async () => {
     try {
@@ -397,8 +383,8 @@ const Game = () => {
           setIsMicAvailable(false);
         }
       }
-    } catch (error) {
-      console.error("Error checking microphone availability:", error);
+    } catch {
+      console.log("Error checking microphone availability:");
       setIsMicAvailable(false);
     }
   };
@@ -666,9 +652,6 @@ const Game = () => {
         ))}
       </div>
       <div className="game-footer">
-        <Button onClick={toggleVoiceChannel} disabled={!isMicAvailable}>
-          {isInVoiceChannel ? "Leave Voice Channel" : "Join Voice Channel"}
-        </Button>
         <Button
           onClick={toggleMute}
           disabled={!isMicAvailable}
