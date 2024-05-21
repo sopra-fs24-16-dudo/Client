@@ -75,6 +75,8 @@ const Game = () => {
     client: null,
     localAudioTrack: null,
   });
+  const [isInVoiceChannel, setIsInVoiceChannel] = useState(false);
+
   const [activeSpeaker, setActiveSpeaker] = useState(null);
   const [isMuted, setIsMuted] = useState(false);
   const [audioSubscriptions, setAudioSubscriptions] = useState<AudioSubscriptions>({});
@@ -314,6 +316,45 @@ const Game = () => {
   ////////////////////////////////AGORA////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // Agora initialization
+  const toggleVoiceChannel = async () => {
+    if (isInVoiceChannel) {
+      await leaveVoiceChannel();
+    } else {
+      await joinVoiceChannel();
+    }
+    setIsInVoiceChannel(!isInVoiceChannel);
+  };
+
+  const joinVoiceChannel = async () => {
+    try {
+      await checkMicrophoneAvailability();
+      const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+      setRtc(prevState => ({ ...prevState, client }));
+      await client.join(APP_ID, lobbyId, TEMP_TOKEN, userId);
+      const localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+      await client.publish(localAudioTrack);
+      setRtc(prevState => ({ ...prevState, localAudioTrack }));
+      setupClientEventHandlers(client);
+      console.log("Joined channel successfully");
+    } catch (error) {
+      console.error("Error joining channel:", error);
+      setIsMicAvailable(false);
+    }
+  };
+  const leaveVoiceChannel = async () => {
+    try {
+      if (rtc.client) {
+        rtc.client.leave();
+        rtc.localAudioTrack?.close();
+        setRtc({ client: null, localAudioTrack: null });
+        console.log("Left the voice channel successfully");
+      }
+    } catch (error) {
+      console.error("Error leaving the voice channel:", error);
+    }
+  };
+
+
   useEffect(() => {
     const initAgora = async () => {
       const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
@@ -596,6 +637,9 @@ const Game = () => {
         ))}
       </div>
       <div className="game-footer">
+        <Button onClick={toggleVoiceChannel} disabled={!isMicAvailable}>
+          {isInVoiceChannel ? "Leave Voice Channel" : "Join Voice Channel"}
+        </Button>
         <Button
           onClick={toggleMute}
           disabled={!isMicAvailable}
