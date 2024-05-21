@@ -432,6 +432,7 @@ const Game = () => {
         const audioTrack = user.audioTrack;
         setAudioSubscriptions((prev) => {
           const isPlaying = prev[user.uid]?.isPlaying ?? true;
+          
           return {
             ...prev,
             [user.uid]: { track: audioTrack, isPlaying },
