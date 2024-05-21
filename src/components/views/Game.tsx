@@ -700,9 +700,9 @@ const Game = () => {
           Other</Button>
         <Button onClick={() => bidDudo()} disabled={playerId !== currentPlayerId || !currentBid || currentBid.suit === null || currentBid.suit === "null"}>Dudo</Button>
       </div>
-        <Button className="leave-game-button" onClick={handleLeaveConfirmation}>
-          Leave Game
-        </Button>
+      <Button className="leave-game-button" onClick={handleLeaveConfirmation}>
+        Leave Game
+      </Button>
       {showLeaveConfirmation && (
         <div className="leave-game-confirmation-modal">
           <div className="leave-game-confirmation-content">
