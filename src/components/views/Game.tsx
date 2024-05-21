@@ -83,167 +83,6 @@ const Game = () => {
   const [volume, setVolume] = useState(0.5);
 
   const audioRef = useRef(null);
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume;
-    }
-  }, [volume]);
-
-
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-  ////////////////////////////////AGORA////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-  // Agora initialization
-  useEffect(() => {
-    const initAgora = async () => {
-      const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-      setRtc(prevState => ({ ...prevState, client }));
-
-      try {
-        await checkMicrophoneAvailability();
-        await joinChannel(client);
-        await initializeLocalAudioTrack(client);
-        setupClientEventHandlers(client);
-      } catch (error) {
-        console.error("Error during Agora initialization:", error);
-        setIsMicAvailable(false);
-      }
-    };
-
-    initAgora();
-
-    return () => {
-      cleanupAgora();
-    };
-  }, []);
-
-  const checkMicrophoneAvailability = async () => {
-    try {
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      const audioInputDevices = devices.filter(device => device.kind === "audioinput");
-
-      if (audioInputDevices.length === 0) {
-        console.log("No microphone found");
-        setIsMicAvailable(false);
-      } else {
-        try {
-          await navigator.mediaDevices.getUserMedia({ audio: true });
-          setIsMicAvailable(true);
-        } catch {
-          console.log("Microphone access denied");
-          setIsMicAvailable(false);
-        }
-      }
-    } catch (error) {
-      console.error("Error checking microphone availability:", error);
-      setIsMicAvailable(false);
-    }
-  };
-
-  const joinChannel = async (client) => {
-    try {
-      await client.join(APP_ID, lobbyId, TEMP_TOKEN, userId);
-      console.log("Joined channel successfully");
-    } catch (error) {
-      console.error("Error joining channel:", error);
-      throw error;
-    }
-  };
-
-  const initializeLocalAudioTrack = async (client) => {
-    try {
-      const localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
-      await client.publish(localAudioTrack);
-      setRtc(prevState => ({ ...prevState, localAudioTrack }));
-      console.log("Local audio track initialized and published");
-    } catch (error) {
-      console.error("Error initializing local audio track:", error);
-      throw error;
-    }
-  };
-
-  const setupClientEventHandlers = (client: IAgoraRTCClient) => {
-    client.on("user-published", async (user, mediaType: "audio") => {
-      if (mediaType === "audio") {
-        await client.subscribe(user, mediaType);
-        const audioTrack = user.audioTrack;
-        setAudioSubscriptions(prev => {
-          const isPlaying = prev[user.uid]?.isPlaying ?? true;
-
-          return {
-            ...prev,
-            [user.uid]: { track: audioTrack, isPlaying }
-          };
-        });
-        if (audioSubscriptions[user.uid]?.isPlaying !== false) {
-          audioTrack.play();
-          console.log(`Subscribed and started playing audio from user ${user.uid}`);
-        }
-      }
-    });
-
-    client.enableAudioVolumeIndicator();
-    client.on("volume-indicator", (volumes) => {
-      volumes.forEach(({ uid, level }) => {
-        if (level > 5) {
-          setActiveSpeaker(uid);
-        }
-      });
-    });
-
-    console.log("Agora client event handlers set up");
-  };
-
-  const cleanupAgora = () => {
-    if (rtc.client) {
-      rtc.client.leave();
-      rtc.client.removeAllListeners();
-      Object.values(audioSubscriptions).forEach((subscription: AudioSubscription) => {
-        subscription.track.stop();
-        rtc.client.unsubscribe(subscription.track);
-      });
-    }
-    rtc.localAudioTrack?.close();
-    console.log("Cleaned up Agora resources");
-  };
-
-  const toggleMute = async () => {
-    if (!isMicAvailable) return;
-    if (rtc.localAudioTrack) {
-      const newMutedState = !isMuted;
-      await rtc.localAudioTrack.setMuted(newMutedState);
-      setIsMuted(newMutedState);
-      console.log(newMutedState ? "Microphone muted" : "Microphone unmuted");
-    }
-  };
-
-  const toggleAudioPlay = async (userId) => {
-    setAudioSubscriptions(prev => {
-      const currentSubscription = prev[userId];
-      if (currentSubscription) {
-        const newIsPlaying = !currentSubscription.isPlaying;
-        if (newIsPlaying) {
-          rtc.client.subscribe(currentSubscription.track, "audio");
-          currentSubscription.track.play();
-        } else {
-          currentSubscription.track.stop();
-          rtc.client.unsubscribe(currentSubscription.track);
-        }
-
-        console.log(newIsPlaying ? `Playing audio from user ${userId}` : `Stopped playing audio from user ${userId}`);
-
-        return {
-          ...prev,
-          [userId]: { ...currentSubscription, isPlaying: newIsPlaying }
-        };
-      }
-
-      return prev;
-    });
-  };
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-
 
   const playersToArray = (playersObj) => {
     return Object.values(playersObj);
@@ -470,6 +309,165 @@ const Game = () => {
       console.error("Error leaving the game:", error);
     }
   }
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////AGORA////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  // Agora initialization
+  useEffect(() => {
+    const initAgora = async () => {
+      const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+      setRtc(prevState => ({ ...prevState, client }));
+
+      try {
+        await checkMicrophoneAvailability();
+        await joinChannel(client);
+        await initializeLocalAudioTrack(client);
+        setupClientEventHandlers(client);
+      } catch (error) {
+        console.error("Error during Agora initialization:", error);
+        setIsMicAvailable(false);
+      }
+    };
+
+    initAgora();
+
+    return () => {
+      cleanupAgora();
+    };
+  }, []);
+
+  const checkMicrophoneAvailability = async () => {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const audioInputDevices = devices.filter(device => device.kind === "audioinput");
+
+      if (audioInputDevices.length === 0) {
+        console.log("No microphone found");
+        setIsMicAvailable(false);
+      } else {
+        try {
+          await navigator.mediaDevices.getUserMedia({ audio: true });
+          setIsMicAvailable(true);
+        } catch {
+          console.log("Microphone access denied");
+          setIsMicAvailable(false);
+        }
+      }
+    } catch (error) {
+      console.error("Error checking microphone availability:", error);
+      setIsMicAvailable(false);
+    }
+  };
+
+  const joinChannel = async (client) => {
+    try {
+      await client.join(APP_ID, lobbyId, TEMP_TOKEN, userId);
+      console.log("Joined channel successfully");
+    } catch (error) {
+      console.error("Error joining channel:", error);
+      throw error;
+    }
+  };
+
+  const initializeLocalAudioTrack = async (client) => {
+    try {
+      const localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+      await client.publish(localAudioTrack);
+      setRtc(prevState => ({ ...prevState, localAudioTrack }));
+      console.log("Local audio track initialized and published");
+    } catch (error) {
+      console.error("Error initializing local audio track:", error);
+      throw error;
+    }
+  };
+
+  const setupClientEventHandlers = (client: IAgoraRTCClient) => {
+    client.on("user-published", async (user, mediaType: "audio") => {
+      if (mediaType === "audio") {
+        await client.subscribe(user, mediaType);
+        const audioTrack = user.audioTrack;
+        setAudioSubscriptions(prev => {
+          const isPlaying = prev[user.uid]?.isPlaying ?? true;
+
+          return {
+            ...prev,
+            [user.uid]: { track: audioTrack, isPlaying }
+          };
+        });
+        if (audioSubscriptions[user.uid]?.isPlaying !== false) {
+          audioTrack.play();
+          console.log(`Subscribed and started playing audio from user ${user.uid}`);
+        }
+      }
+    });
+
+    client.enableAudioVolumeIndicator();
+    client.on("volume-indicator", (volumes) => {
+      volumes.forEach(({ uid, level }) => {
+        if (level > 5) {
+          setActiveSpeaker(uid);
+        }
+      });
+    });
+
+    console.log("Agora client event handlers set up");
+  };
+
+  const cleanupAgora = () => {
+    if (rtc.client) {
+      rtc.client.leave();
+      rtc.client.removeAllListeners();
+      Object.values(audioSubscriptions).forEach((subscription: AudioSubscription) => {
+        subscription.track.stop();
+        rtc.client.unsubscribe(subscription.track);
+      });
+    }
+    rtc.localAudioTrack?.close();
+    console.log("Cleaned up Agora resources");
+  };
+
+  const toggleMute = async () => {
+    if (!isMicAvailable) return;
+    if (rtc.localAudioTrack) {
+      const newMutedState = !isMuted;
+      await rtc.localAudioTrack.setMuted(newMutedState);
+      setIsMuted(newMutedState);
+      console.log(newMutedState ? "Microphone muted" : "Microphone unmuted");
+    }
+  };
+
+  const toggleAudioPlay = async (userId) => {
+    setAudioSubscriptions(prev => {
+      const currentSubscription = prev[userId];
+      if (currentSubscription) {
+        const newIsPlaying = !currentSubscription.isPlaying;
+        if (newIsPlaying) {
+          rtc.client.subscribe(currentSubscription.track, "audio");
+          currentSubscription.track.play();
+        } else {
+          currentSubscription.track.stop();
+          rtc.client.unsubscribe(currentSubscription.track);
+        }
+
+        console.log(newIsPlaying ? `Playing audio from user ${userId}` : `Stopped playing audio from user ${userId}`);
+
+        return {
+          ...prev,
+          [userId]: { ...currentSubscription, isPlaying: newIsPlaying }
+        };
+      }
+
+      return prev;
+    });
+  };
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume]);
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////////
 
   return (
     <BaseContainer className="game container">
