@@ -361,6 +361,7 @@ const Game = () => {
 
   useEffect(() => {
     joinVoiceChannel();
+
     return () => {
       leaveVoiceChannel();
       cleanupAgora();
