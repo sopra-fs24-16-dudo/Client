@@ -307,7 +307,7 @@ const Game = () => {
   const leaveGame = async () => {
     try {
       const reqBody = JSON.stringify({playerId});
-      await api.post(`/lobby/exit/${lobbyId}`, playerId);
+      await api.post(`/games/exit/${lobbyId}`, playerId);
       navigate("/homepage");
     } catch (error) {
       console.error("Error leaving the game:", error);
