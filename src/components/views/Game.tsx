@@ -94,7 +94,26 @@ const Game = () => {
   useEffect(() => {
     async function initAgora() {
       try {
-        await navigator.mediaDevices.getUserMedia({ audio: true, video: false});
+        // Check for audio input devices and request permission
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const audioInputDevices = devices.filter(device => device.kind === "audioinput");
+
+        // If no audio input devices found, set mic availability to false
+        if (audioInputDevices.length === 0) {
+          console.log("No microphone found");
+          setIsMicAvailable(false);
+        } else {
+          try {
+            // Request microphone access
+            await navigator.mediaDevices.getUserMedia({ audio: true });
+            setIsMicAvailable(true);
+          } catch {
+            console.log("Microphone access denied");
+            setIsMicAvailable(false);
+          }
+        }
+
+        // Initialize Agora client
         const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
         setRtc(prevState => ({ ...prevState, client }));
 
@@ -131,7 +150,7 @@ const Game = () => {
           });
         });
       } catch (error) {
-        console.log("Microphone permissions denied or audio stream creation failed");
+        console.log("Audio stream creation failed");
         setIsMicAvailable(false);
       }
     }
