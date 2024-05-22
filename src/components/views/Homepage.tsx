@@ -90,7 +90,9 @@ const Homepage = () => {
             value={lobbyId}
             onChange={(e) => setLobbyId(e.target.value)}
           />
-          <Button onClick={joinLobby}>Join Lobby</Button>
+          <Button onClick={joinLobby} disabled={!lobbyId}>
+            Join Lobby
+          </Button>
         </div>
         <div className="button-container">
           <Button onClick={createLobby}>
