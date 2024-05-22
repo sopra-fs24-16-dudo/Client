@@ -121,7 +121,7 @@ const Homepage = () => {
   // Function to check if user is in a lobby
   const isUserInLobby = async (userId) => {
     try {
-      const response = await api.get(`/user/${userId}/lobby`);
+      const response = await api.get(`/users/${userId}/lobby`);
 
       return response.status === 200 ? response.data : null;
     } catch (error) {
@@ -135,7 +135,7 @@ const Homepage = () => {
   const checkAndRemoveFromVC = async () => {
     const userId = localStorage.getItem("id");
     const lobbyId = await isUserInLobby(userId);
-    console.log("checkAndRemoveFromVC Was triggered userId: {userId}, lobbyId: {lobbyId}")
+    console.log("checkAndRemoveFromVC Was triggered userId: ${userId}, lobbyId: ${lobbyId}")
 
 
     if (!lobbyId) {
