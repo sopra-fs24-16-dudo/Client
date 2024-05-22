@@ -20,9 +20,7 @@ const Homepage = () => {
     localAudioTrack: null,
   });
 
-  const [state, setState] = useState(() => {
-    return JSON.parse(sessionStorage.getItem("navigationState"));
-  });
+  const state = JSON.parse(sessionStorage.getItem("navigationState"));
 
   // Initialize Agora RTC client
   useEffect(() => {
