@@ -20,6 +20,10 @@ const Homepage = () => {
     localAudioTrack: null,
   });
 
+  const [state, setState] = useState(() => {
+    return JSON.parse(sessionStorage.getItem("navigationState"));
+  });
+
   // Initialize Agora RTC client
   useEffect(() => {
     const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
@@ -154,7 +158,9 @@ const Homepage = () => {
     // Check and remove from VC if needed
     console.log("Use Effect Was triggered")
     checkAndRemoveFromVC();
-  }, [location]);
+    sessionStorage.removeItem("navigationState");
+    console.log("Session Storage after cleaning up Lobby is: ", sessionStorage)
+  }, [state]);
 
   return (
     <BaseContainer className="homepage container">

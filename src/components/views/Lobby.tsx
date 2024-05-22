@@ -31,6 +31,9 @@ const Lobby = () => {
   const userId = localStorage.getItem("id");
   const [showLeaderboardModal, setShowLeaderboardModal] = useState(false);
   const [leaderboardData, setLeaderboardData] = useState([]);
+  const state = { from: "Lobby" };
+  sessionStorage.setItem("navigationState", JSON.stringify(state));
+  console.log("Session Storage after having been in Lobby is: ", sessionStorage)
 
   useEffect(() => {
     const websocket = new SockJS(`${getDomain()}/ws`);
