@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { api, handleError } from "helpers/api";
 import { Button } from "components/ui/Button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
 import "styles/views/Homepage.scss";
 import Lobby from "models/Lobby";
@@ -9,6 +9,8 @@ import AgoraRTC from "agora-rtc-sdk";
 
 const Homepage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [lobbyId, setLobbyId] = useState<string>("");
   const [id, setUserId] = useState<number>(null);
 
@@ -149,7 +151,7 @@ const Homepage = () => {
 
     // Check and remove from VC if needed
     checkAndRemoveFromVC();
-  }, []);
+  }, [location]);
 
   return (
     <BaseContainer className="homepage container">
