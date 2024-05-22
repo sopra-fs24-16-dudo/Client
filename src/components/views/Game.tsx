@@ -311,10 +311,10 @@ const Game = () => {
 
   const leaveGame = async () => {
     try {
+      leaveVoiceChannel();
       const reqBody = JSON.stringify({ playerId });
       await api.post(`/games/exit/${lobbyId}`, playerId);
       navigate("/homepage");
-      leaveVoiceChannel();
     } catch (error) {
       console.error("Error leaving the game:", error);
     }
@@ -553,6 +553,47 @@ const Game = () => {
       audioRef.current.volume = volume;
     }
   }, [volume]);
+  const checkUserInVoiceChannel = async (userId) => {
+    if (rtc.client) {
+      const remoteUsers = rtc.client.remoteUsers;
+
+      return remoteUsers.some(user => user.uid === userId);
+    }
+
+    return false;
+  };
+  const addSpecificPlayerToVoiceChannel = async (playerId) => {
+    try {
+      const isInVoiceChannel = await checkUserInVoiceChannel(playerId);
+      if (!isInVoiceChannel) {
+        await joinVoiceChannel();
+        setUsersInVoiceChannel(prev => [...prev, playerId]);
+        console.log(`User ${playerId} joined the voice channel`);
+      }
+    } catch (error) {
+      console.error(`Error adding player ${playerId} to the voice channel:`, error);
+    }
+  };
+
+  const kickPlayerFromVoiceChannel = async (playerId) => {
+    try {
+      const isInVoiceChannel = await checkUserInVoiceChannel(playerId);
+      if (isInVoiceChannel) {
+        if (rtc.client) {
+          rtc.client.remoteUsers.forEach(user => {
+            if (user.uid === playerId) {
+              rtc.client.unsubscribe(user);
+              user.audioTrack.stop();
+            }
+          });
+          setUsersInVoiceChannel(prev => prev.filter(id => id !== playerId));
+          console.log(`User ${playerId} kicked from the voice channel`);
+        }
+      }
+    } catch (error) {
+      console.error(`Error kicking player ${playerId} from the voice channel:`, error);
+    }
+  };
   /////////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
