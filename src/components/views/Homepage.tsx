@@ -135,6 +135,8 @@ const Homepage = () => {
   const checkAndRemoveFromVC = async () => {
     const userId = localStorage.getItem("id");
     const lobbyId = await isUserInLobby(userId);
+    console.log("checkAndRemoveFromVC Was triggered userId: {userId}, lobbyId: {lobbyId}")
+
 
     if (!lobbyId) {
       const isInVC = await checkUserInVoiceChannel(userId);
@@ -150,6 +152,7 @@ const Homepage = () => {
     setUserId(storedUserId);
 
     // Check and remove from VC if needed
+    console.log("Use Effect Was triggered")
     checkAndRemoveFromVC();
   }, [location]);
 
