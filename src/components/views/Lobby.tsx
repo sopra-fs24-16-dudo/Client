@@ -33,9 +33,6 @@ const Lobby = () => {
   const [leaderboardData, setLeaderboardData] = useState([]);
 
   useEffect(() => {
-    const state = { from: "Lobby" };
-    sessionStorage.setItem("navigationState", JSON.stringify(state));
-    console.log("Session Storage after having been in Lobby is: ", sessionStorage.getItem("navigationState"));
     const websocket = new SockJS(`${getDomain()}/ws`);
     const stompClient = Stomp.over(websocket);
     stompClient.connect({}, () => {
@@ -106,6 +103,11 @@ const Lobby = () => {
       const requestBody = JSON.stringify(userId);
       await api.put(`/lobby/player/${lobbyId}/ready`, requestBody);
       const response = await api.get(`/lobby/players/${lobbyId}`);
+
+      const state = { from: "Lobby" };
+      sessionStorage.setItem("navigationState", JSON.stringify(state));
+      console.log("Session Storage after having been in Lobby is: ", sessionStorage.getItem("navigationState"));
+
       const updatedUsers = response.data;
       const allReady = updatedUsers.every((user) => user.ready);
       const enoughPlayers = updatedUsers.length >= 2;
