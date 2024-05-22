@@ -313,8 +313,8 @@ const Game = () => {
     try {
       const reqBody = JSON.stringify({ playerId });
       await api.post(`/games/exit/${lobbyId}`, playerId);
-      leaveVoiceChannel();
       navigate("/homepage");
+      leaveVoiceChannel();
     } catch (error) {
       console.error("Error leaving the game:", error);
     }
@@ -323,23 +323,17 @@ const Game = () => {
   /////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////AGORA////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////////
-  const checkUserInVoiceChannel = async (userId) => {
-    if (rtc.client) {
-      const remoteUsers = rtc.client.remoteUsers;
-
-      return remoteUsers.some(user => user.uid === userId);
+  // Agora initialization
+  /*const toggleVoiceChannel = async () => {
+    if (isInVoiceChannel) {
+      await leaveVoiceChannel();
+    } else {
+      await joinVoiceChannel();
     }
-
-    return false;
-  };
+    setIsInVoiceChannel(!isInVoiceChannel);
+  };*/
 
   const joinVoiceChannel = async () => {
-    const isInVoiceChannel = await checkUserInVoiceChannel(userId);
-    if (isInVoiceChannel) {
-      console.log("Already in voice channel");
-
-      return;
-    }
     try {
       await checkMicrophoneAvailability();
       const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
@@ -369,39 +363,6 @@ const Game = () => {
       }
     } catch (error) {
       console.error("Error leaving the voice channel:", error);
-    }
-  };
-
-  const addSpecificPlayerToVoiceChannel = async (playerId) => {
-    try {
-      const isInVoiceChannel = await checkUserInVoiceChannel(playerId);
-      if (!isInVoiceChannel) {
-        await joinVoiceChannel();
-        setUsersInVoiceChannel(prev => [...prev, playerId]);
-        console.log(`User ${playerId} joined the voice channel`);
-      }
-    } catch (error) {
-      console.error(`Error adding player ${playerId} to the voice channel:`, error);
-    }
-  };
-
-  const kickPlayerFromVoiceChannel = async (playerId) => {
-    try {
-      const isInVoiceChannel = await checkUserInVoiceChannel(playerId);
-      if (isInVoiceChannel) {
-        if (rtc.client) {
-          rtc.client.remoteUsers.forEach(user => {
-            if (user.uid === playerId) {
-              rtc.client.unsubscribe(user);
-              user.audioTrack.stop();
-            }
-          });
-          setUsersInVoiceChannel(prev => prev.filter(id => id !== playerId));
-          console.log(`User ${playerId} kicked from the voice channel`);
-        }
-      }
-    } catch (error) {
-      console.error(`Error kicking player ${playerId} from the voice channel:`, error);
     }
   };
 
@@ -435,6 +396,28 @@ const Game = () => {
     } catch {
       console.log("Error checking microphone availability:");
       setIsMicAvailable(false);
+    }
+  };
+
+  const joinChannel = async (client) => {
+    try {
+      await client.join(APP_ID, lobbyId, TEMP_TOKEN, userId);
+      console.log("Joined channel successfully");
+    } catch (error) {
+      console.error("Error joining channel:", error);
+      throw error;
+    }
+  };
+
+  const initializeLocalAudioTrack = async (client) => {
+    try {
+      const localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+      await client.publish(localAudioTrack);
+      setRtc(prevState => ({ ...prevState, localAudioTrack }));
+      console.log("Local audio track initialized and published");
+    } catch (error) {
+      console.error("Error initializing local audio track:", error);
+      throw error;
     }
   };
 
@@ -484,26 +467,28 @@ const Game = () => {
   };
 
   useEffect(() => {
-    // List of current player IDs
-    const currentPlayersIds = players.map(player => player.id);
+    if (rtc.client) {
+      // List of current player IDs
+      const currentPlayersIds = players.map(player => player.id);
 
-    // Leave voice channel for users who are not in the current players list
-    usersInVoiceChannel.forEach(async playerId => {
-      if (!currentPlayersIds.includes(playerId)) {
-        kickPlayerFromVoiceChannel(playerId)
-        setUsersInVoiceChannel(prev => prev.filter(id => id !== playerId));
-        console.log(`User ${playerId} left the voice channel because they are not in the game`);
-      }
-    });
+      // Leave voice channel for users who are not in the current players list
+      usersInVoiceChannel.forEach(async userId => {
+        if (!currentPlayersIds.includes(userId)) {
+          await rtc.client.leave();
+          setUsersInVoiceChannel(prev => prev.filter(id => id !== userId));
+          console.log(`User ${userId} left the voice channel because they are not in the game`);
+        }
+      });
 
-    // Add to the voice channel users who are in the current players list but not in the voice channel
-    currentPlayersIds.forEach(async playerId => {
-      if (!usersInVoiceChannel.includes(playerId)) {
-        await addSpecificPlayerToVoiceChannel(playerId); // join specific players
-        setUsersInVoiceChannel(prev => [...prev, playerId]);
-        console.log(`User ${playerId} joined the voice channel`);
-      }
-    });
+      // Add to the voice channel users who are in the current players list but not in the voice channel
+      currentPlayersIds.forEach(async playerId => {
+        if (!usersInVoiceChannel.includes(playerId)) {
+          await joinVoiceChannel(); // You might need to implement this to join specific players
+          setUsersInVoiceChannel(prev => [...prev, playerId]);
+          console.log(`User ${playerId} joined the voice channel`);
+        }
+      });
+    }
   }, [players]); // Dependencies to rerun this effect when the players array changes
 
   const cleanupAgora = () => {
