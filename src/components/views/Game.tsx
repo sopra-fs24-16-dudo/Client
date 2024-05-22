@@ -558,7 +558,7 @@ const Game = () => {
 
   return (
     <BaseContainer className="game container">
-      <div>
+      <div className="music-bar">
         <audio ref={audioRef} src={jazz} autoPlay loop />
         <p>Music volume: </p>
         <input type="range" min="0" max="1" step="0.01" value={volume} onChange={e => setVolume(Number(e.target.value))} />
@@ -584,6 +584,7 @@ const Game = () => {
                 )}
               </div>
               <Button
+                className="listen-button"
                 onClick={() => toggleAudioPlay(player.id)}
                 disabled={!usersInVoiceChannel.includes(player.id)}
               >
