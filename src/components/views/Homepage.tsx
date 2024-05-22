@@ -135,7 +135,7 @@ const Homepage = () => {
   const checkAndRemoveFromVC = async () => {
     const userId = localStorage.getItem("id");
     const lobbyId = await isUserInLobby(userId);
-    console.log("checkAndRemoveFromVC Was triggered userId: ${userId}, lobbyId: ${lobbyId}")
+    console.log("checkAndRemoveFromVC Was triggered userId: $",userId, "lobbyId: ",lobbyId)
 
 
     if (!lobbyId) {
