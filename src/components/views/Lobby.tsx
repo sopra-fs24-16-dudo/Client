@@ -100,13 +100,14 @@ const Lobby = () => {
 
   const toggleReadyStatus = async () => {
     try {
+      const state = { from: "Lobby" };
+      sessionStorage.setItem("navigationState", JSON.stringify(state));
+      console.log("?????????")
+      console.log("Session Storage after having been in Lobby is: ", sessionStorage.getItem("navigationState"));
+
       const requestBody = JSON.stringify(userId);
       await api.put(`/lobby/player/${lobbyId}/ready`, requestBody);
       const response = await api.get(`/lobby/players/${lobbyId}`);
-
-      const state = { from: "Lobby" };
-      sessionStorage.setItem("navigationState", JSON.stringify(state));
-      console.log("Session Storage after having been in Lobby is: ", sessionStorage.getItem("navigationState"));
 
       const updatedUsers = response.data;
       const allReady = updatedUsers.every((user) => user.ready);
