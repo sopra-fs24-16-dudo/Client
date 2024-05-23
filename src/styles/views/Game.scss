@@ -1,11 +1,5 @@
 @import "../theme";
 
-/* The '&' is a shorthand for the containing element,
-  so for example a '&.user-list' inside .game will compile to
-  .game.user-list
-
-  for more information visit https://sass-lang.com/guide
- */
 .game {
   &.container {
     display: flex;
@@ -77,13 +71,12 @@
       &.current {
         animation: pulse 2s infinite;
         font-weight: bold;
-        color: BROWN; /* Change the color to red */
-        font-size: 2em; /* Increase the font size */
-        -webkit-text-stroke: 0.3px white; /* Add a thin white border to the text */
+        color: BROWN;
+        font-size: 2em;
+        -webkit-text-stroke: 0.3px white;
         text-stroke: 0.3px white;
       }
     }
-
 
     .opponent-chips {
       margin-top: 5px;
@@ -126,13 +119,13 @@
     transform: translateX(-50%);
     color: white;
     font-size: 2em;
-    z-index: 10; // Ensures it's above other elements
+    z-index: 10;
   }
 
   .disabled-button {
     background-color: grey;
     cursor: not-allowed;
-    color: white; /* Ensure the text is visible */
+    color: white;
   }
 
   &-footer {
@@ -144,7 +137,7 @@
       padding: 10px 20px;
       font-size: 1em;
       color: white;
-      background-color: #4caf50; // Green button background as in the image
+      background-color: #4caf50;
       border: none;
       border-radius: 5px;
       cursor: pointer;
@@ -171,30 +164,30 @@
   }
 
   .bid-other-content {
-    background-color: $background; // Use the background color from your theme
+    background-color: $background;
     margin: auto;
     padding: 15px;
-    width: 90%; // Increase the width of the container
-    max-width: 600px; // Increase the maximum width of the container
+    width: 90%;
+    max-width: 600px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    border-radius: 20px; // Use the border radius from your theme
+    border-radius: 20px;
     h1 {
-      font-size: 2em; // Increase the size of the text
-      font-weight: bold; // Make the text bold
-      color: $textColor; // Use the text color from your theme
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); // Add a text shadow to give the text depth
-      text-transform: uppercase; // Make the text uppercase
-      -webkit-text-stroke: 1px black; // Keep the black border around the text
-      text-stroke: 1px black; // Keep the black border around the text
+      font-size: 2em;
+      font-weight: bold;
+      color: $textColor;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      text-transform: uppercase;
+      -webkit-text-stroke: 1px black;
+      text-stroke: 1px black;
     }
 
 
     button {
       border-radius: 7px;
-      background-color: BROWN; // Use the button color from your theme
-      color: WHITE; // Use the button text color from your theme
+      background-color: BROWN;
+      color: WHITE;
       margin: 5px;
       height: 60px;
 
@@ -204,7 +197,7 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: space-around;
-      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); // This will create a responsive grid of buttons
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
       gap: 10px;
     }
 
@@ -231,7 +224,7 @@
       background-color: BROWN;
       color: $textColor;
       margin: 5px;
-      border-radius: 20px; // Increase this value to make the edges smoother
+      border-radius: 20px;
       height: 40px;
       width: 40px;
       transition: all 0.3s ease;
@@ -267,23 +260,23 @@
   }
 
   .winner-content {
-    background-color: $background; // Use the background color from your theme
+    background-color: $background;
     margin: auto;
     padding: 15px;
-    width: 90%; // Increase the width of the container
-    max-width: 600px; // Increase the maximum width of the container
+    width: 90%;
+    max-width: 600px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    border-radius: 20px; // Use the border radius from your theme
+    border-radius: 20px;
     h1 {
-      font-size: 2em; // Increase the size of the text
-      font-weight: bold; // Make the text bold
-      color: $textColor; // Use the text color from your theme
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); // Add a text shadow to give the text depth
-      text-transform: uppercase; // Make the text uppercase
-      -webkit-text-stroke: 1px black; // Keep the black border around the text
-      text-stroke: 1px black; // Keep the black border around the text
+      font-size: 2em;
+      font-weight: bold;
+      color: $textColor;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      text-transform: uppercase;
+      -webkit-text-stroke: 1px black;
+      text-stroke: 1px black;
     }
 
     p {
@@ -309,23 +302,23 @@
   }
 
   .loser-content {
-    background-color: $background; // Use the background color from your theme
+    background-color: $background;
     margin: auto;
     padding: 15px;
-    width: 90%; // Increase the width of the container
-    max-width: 600px; // Increase the maximum width of the container
+    width: 90%;
+    max-width: 600px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    border-radius: 20px; // Use the border radius from your theme
+    border-radius: 20px;
     h1 {
-      font-size: 2em; // Increase the size of the text
-      font-weight: bold; // Make the text bold
-      color: $textColor; // Use the text color from your theme
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); // Add a text shadow to give the text depth
-      text-transform: uppercase; // Make the text uppercase
-      -webkit-text-stroke: 1px black; // Keep the black border around the text
-      text-stroke: 1px black; // Keep the black border around the text
+      font-size: 2em;
+      font-weight: bold;
+      color: $textColor;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      text-transform: uppercase;
+      -webkit-text-stroke: 1px black;
+      text-stroke: 1px black;
     }
 
 
@@ -346,7 +339,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 10000; /* Higher than any other content */
+    z-index: 10000;
   }
 
   .leave-game-confirmation-content {
@@ -395,7 +388,6 @@
     width: 40%;
     margin-left: 30%;
     margin-top: 10%;
-    //margin: auto;
 
     .current-player-container {
       flex: 1;
@@ -447,7 +439,6 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      //margin-left: 60px;
       width: 100%;
 
       .die {

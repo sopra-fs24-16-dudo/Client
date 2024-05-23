@@ -30,9 +30,9 @@ const Homepage = () => {
   const joinLobby = async () => {
     try {
       const requestBody = JSON.stringify(id);
-      await api.put(`/lobby/players/${lobbyId}`, requestBody);
+      await api.put(`/lobbies/players/${lobbyId}`, requestBody);
       localStorage.setItem("lobbyId", lobbyId);
-      const isFree = await api.get(`/lobby/availability/${lobbyId}`);
+      const isFree = await api.get(`/lobbies/availability/${lobbyId}`);
       if (!isFree.data) {
         alert("Sorry, a game is already in progress in this lobby. Please try again later.");
 

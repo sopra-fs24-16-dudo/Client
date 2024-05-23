@@ -70,7 +70,6 @@ const Profile = () => {
   };
 
   /////////////////////////AGORA LOBBY HANDLE///////////////////////////////////
-  // Function to check if user is in voice channel
   const checkUserInVoiceChannel = async (userId) => {
     if (rtc.client) {
       const remoteUsers = rtc.client.remoteUsers;
@@ -81,7 +80,6 @@ const Profile = () => {
     return false;
   };
 
-  // Function to remove user from voice channel
   const leaveVoiceChannel = async () => {
     try {
       if (rtc.client) {
@@ -95,7 +93,6 @@ const Profile = () => {
     }
   };
 
-  // Function to check if user is in a lobby
   const isUserInLobby = async (userId) => {
     try {
       const response = await api.get(`/users/${userId}/lobby`);
@@ -108,13 +105,10 @@ const Profile = () => {
     }
   };
 
-  // Function to check if user is in a lobby and handle VC accordingly
   const checkAndRemoveFromVC = async () => {
     const userId = localStorage.getItem("id");
     const lobbyId = await isUserInLobby(userId);
     console.log("checkAndRemoveFromVC Was triggered userId: $",userId, "lobbyId: ",lobbyId)
-
-
     if (!lobbyId) {
       const isInVC = await checkUserInVoiceChannel(userId);
       if (isInVC) {

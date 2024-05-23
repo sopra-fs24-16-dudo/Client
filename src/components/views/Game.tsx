@@ -252,8 +252,8 @@ const Game = () => {
       die.classList.remove("rotate-animation");
       setTimeout(() => {
         startRolling();
-        die.classList.add("rotate-animation"); // Add the class after a short delay
-      }, 10); // Wait for 10 milliseconds
+        die.classList.add("rotate-animation");
+      }, 10);
     });
   };
 
@@ -271,7 +271,7 @@ const Game = () => {
     setTimeout(() => {
       clearInterval(rollInterval);
       setIsRolling(false);
-      rollHand(); // This function should set the actual suits of the dice
+      rollHand();
     }, 2500);
   };
   const bid = async (inputBid) => {
@@ -327,15 +327,7 @@ const Game = () => {
   /////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////AGORA////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////////
-  // Agora initialization
-  /*const toggleVoiceChannel = async () => {
-    if (isInVoiceChannel) {
-      await leaveVoiceChannel();
-    } else {
-      await joinVoiceChannel();
-    }
-    setIsInVoiceChannel(!isInVoiceChannel);
-  };*/
+
 
   const joinVoiceChannel = async () => {
     try {
@@ -348,7 +340,7 @@ const Game = () => {
       setRtc(prevState => ({ ...prevState, localAudioTrack }));
       setupClientEventHandlers(client);
       setIsInVoiceChannel(true);
-      setUsersInVoiceChannel(prev => [...prev, userId]); // Add the current user to the voice channel state
+      setUsersInVoiceChannel(prev => [...prev, userId]);
       console.log("Joined channel successfully");
     } catch (error) {
       console.error("Error joining channel:", error);
@@ -363,7 +355,7 @@ const Game = () => {
         setRtc({ client: null, localAudioTrack: null });
         console.log("Left the voice channel successfully");
         setIsInVoiceChannel(false);
-        setUsersInVoiceChannel(prev => prev.filter(id => id !== userId)); // Remove the current user from the voice channel state
+        setUsersInVoiceChannel(prev => prev.filter(id => id !== userId));
       }
     } catch (error) {
       console.error("Error leaving the voice channel:", error);
@@ -472,10 +464,7 @@ const Game = () => {
 
   useEffect(() => {
     if (rtc.client) {
-      // List of current player IDs
       const currentPlayersIds = players.map(player => player.id);
-
-      // Leave voice channel for users who are not in the current players list
       usersInVoiceChannel.forEach(async userId => {
         if (!currentPlayersIds.includes(userId)) {
           await rtc.client.leave();
@@ -483,17 +472,15 @@ const Game = () => {
           console.log(`User ${userId} left the voice channel because they are not in the game`);
         }
       });
-
-      // Add to the voice channel users who are in the current players list but not in the voice channel
       currentPlayersIds.forEach(async playerId => {
         if (!usersInVoiceChannel.includes(playerId)) {
-          await joinVoiceChannel(); // You might need to implement this to join specific players
+          await joinVoiceChannel();
           setUsersInVoiceChannel(prev => [...prev, playerId]);
           console.log(`User ${playerId} joined the voice channel`);
         }
       });
     }
-  }, [players]); // Dependencies to rerun this effect when the players array changes
+  }, [players]);
 
   const cleanupAgora = () => {
     if (rtc.client) {

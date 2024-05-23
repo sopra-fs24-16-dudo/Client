@@ -42,7 +42,7 @@ FormField.propTypes = {
   onChange: PropTypes.func,
   type: PropTypes.string,
   imgSrc: PropTypes.string,
-  onImgClick: PropTypes.func, // Add this line
+  onImgClick: PropTypes.func,
 };
 
 const Registration = () => {
@@ -97,7 +97,6 @@ const Registration = () => {
     return false;
   };
 
-  // Function to remove user from voice channel
   const leaveVoiceChannel = async () => {
     try {
       if (rtc.client) {
@@ -111,7 +110,6 @@ const Registration = () => {
     }
   };
 
-  // Function to check if user is in a lobby
   const isUserInLobby = async (userId) => {
     try {
       const response = await api.get(`/users/${userId}/lobby`);
@@ -124,13 +122,10 @@ const Registration = () => {
     }
   };
 
-  // Function to check if user is in a lobby and handle VC accordingly
   const checkAndRemoveFromVC = async () => {
     const userId = localStorage.getItem("id");
     const lobbyId = await isUserInLobby(userId);
     console.log("checkAndRemoveFromVC Was triggered userId: $",userId, "lobbyId: ",lobbyId)
-
-
     if (!lobbyId) {
       const isInVC = await checkUserInVoiceChannel(userId);
       if (isInVC) {
@@ -143,7 +138,6 @@ const Registration = () => {
   };
 
   useEffect(() => {
-    // Check and remove from VC if needed
     console.log("Session Storage before cleaning up Lobby is: ", sessionStorage)
     console.log("Use Effect Was triggered")
     checkAndRemoveFromVC();

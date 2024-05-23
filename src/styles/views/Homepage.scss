@@ -1,11 +1,5 @@
 @import "../theme";
 
-/* The '&' is a shorthand for the containing element,
-  so for example a '&.user-list' inside .game will compile to
-  .game.user-list
-
-  for more information visit https://sass-lang.com/guide
- */
 
 .homepage {
   &.container {
@@ -45,7 +39,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 10px; /* Adjust as needed */
+  gap: 10px;
 }
 
 .join-lobby-container {

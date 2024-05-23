@@ -4,7 +4,6 @@ import { Button } from "components/ui/Button";
 import BaseContainer from "components/ui/BaseContainer";
 import { useNavigate, useParams } from "react-router-dom";
 import "styles/views/Lobby.scss";
-import PropTypes from "prop-types";
 import AgoraRTC from "agora-rtc-sdk";
 import question from "../../images/question.png";
 import leaderboard from "../../images/leaderboard.png";
@@ -13,10 +12,6 @@ import { getDomain } from "helpers/getDomain";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
-interface UserInfo {
-  userId: string;
-  token: string;
-}
 
 type AgoraEvent = "user-published" | "user-unpublished";
 
@@ -84,11 +79,11 @@ const Lobby = () => {
     async function fetchUsersInLobby () {
       try {
         console.log("LobbyID:", lobbyId);
-        const response = await api.get(`/lobby/players/${lobbyId}`);
+        const response = await api.get(`/lobbies/players/${lobbyId}`);
         setUsers(response.data);
         const allReady = response.data.every((user) => user.ready);
         setAllReady(allReady);
-        const adminId = await api.get(`/lobby/admin/${lobbyId}`);
+        const adminId = await api.get(`/lobbies/admin/${lobbyId}`);
         setAdmin(adminId.data);
         console.log("Admin:", adminId.data);
       } catch (error) {
@@ -115,14 +110,14 @@ const Lobby = () => {
   const toggleReadyStatus = async () => {
     try {
       const requestBody = JSON.stringify(userId);
-      await api.put(`/lobby/player/${lobbyId}/ready`, requestBody);
-      const response = await api.get(`/lobby/players/${lobbyId}`);
+      await api.put(`/lobbies/player/${lobbyId}/ready`, requestBody);
+      const response = await api.get(`/lobbies/players/${lobbyId}`);
 
       const updatedUsers = response.data;
       const allReady = updatedUsers.every((user) => user.ready);
       const enoughPlayers = updatedUsers.length >= 2;
       if (allReady && enoughPlayers) {
-        await api.post(`/lobby/start/${lobbyId}`);
+        await api.post(`/lobbies/start/${lobbyId}`);
       }
     } catch (error) {
       console.error("Error toggling ready status:", error);
@@ -132,7 +127,7 @@ const Lobby = () => {
   const leaveLobby = async () => {
     try {
       const requestBody = JSON.stringify(userId);
-      await api.post(`/lobby/exit/${lobbyId}`, requestBody);
+      await api.post(`/lobbies/exit/${lobbyId}`, requestBody);
       navigate("/homepage");
     } catch (error) {
       alert(
@@ -144,7 +139,7 @@ const Lobby = () => {
   const kickPlayer = async (userIdToKick) => {
     try {
       const requestBody = JSON.stringify( userIdToKick );
-      await api.post(`/lobby/kick/${lobbyId}/${userIdToKick}`, requestBody);
+      await api.post(`/lobbies/kick/${lobbyId}/${userIdToKick}`, requestBody);
     } catch (error) {
       console.error("Error kicking player:", error);
     }
@@ -180,7 +175,6 @@ const Lobby = () => {
     return false;
   };
 
-  // Function to remove user from voice channel
   const leaveVoiceChannel = async () => {
     try {
       if (rtc.client) {
@@ -194,7 +188,6 @@ const Lobby = () => {
     }
   };
 
-  // Function to check if user is in a lobby
   const isUserInLobby = async (userId) => {
     try {
       const response = await api.get(`/users/${userId}/lobby`);
@@ -207,13 +200,10 @@ const Lobby = () => {
     }
   };
 
-  // Function to check if user is in a lobby and handle VC accordingly
   const checkAndRemoveFromVC = async () => {
     const userId = localStorage.getItem("id");
     const lobbyId = await isUserInLobby(userId);
     console.log("checkAndRemoveFromVC Was triggered userId: $",userId, "lobbyId: ",lobbyId)
-
-
     if (!lobbyId) {
       const isInVC = await checkUserInVoiceChannel(userId);
       if (isInVC) {
