@@ -33,13 +33,14 @@ const Profile = () => {
   const [user, setUser] = useState<User>({});
   const [currentUser, setCurrentUser] = useState<User>({});
 
-  // Agora client state
+  // Agora client state/////////////////////////////////////////////////////////////////////////////////////////////////////////////
   const [rtc, setRtc] = useState({
     client: null,
     localAudioTrack: null,
   });
 
-  let state = JSON.parse(sessionStorage.getItem("navigationState"));
+  const [navigationState, setNavigationState] = useState(() => JSON.parse(sessionStorage.getItem("navigationState")));
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // Initialize Agora RTC client
   useEffect(() => {
@@ -69,7 +70,29 @@ const Profile = () => {
     navigate("/homepage");
   };
 
-  /////////////////////////AGORA LOBBY HANDLE///////////////////////////////////
+  /////////////////////////PROFILE AGORA HANDLE///////////////////////////////////
+  const useSessionStorageListener = (key, callback) => {
+    useEffect(() => {
+      const handleStorageChange = (event) => {
+        if (event.key === key) {
+          callback(JSON.parse(event.newValue));
+        }
+      };
+
+      window.addEventListener("storage", handleStorageChange);
+
+      return () => {
+        window.removeEventListener("storage", handleStorageChange);
+      };
+    }, [key, callback]);
+  };
+
+  // Custom hook to handle session storage changes
+  useSessionStorageListener("navigationState", (newState) => {
+    setNavigationState(newState);
+  });
+
+  // Function to check if user is in voice channel
   const checkUserInVoiceChannel = async (userId) => {
     if (rtc.client) {
       const remoteUsers = rtc.client.remoteUsers;
@@ -92,35 +115,28 @@ const Profile = () => {
     }
   };
 
-  const isUserInLobby = async (userId) => {
-    try {
-      const response = await api.get(`/users/${userId}/lobby`);
-
-      return response.status === 200 ? response.data : null;
-    } catch (error) {
-      console.error("Error checking if user is in a lobby:", error);
-
-      return null;
-    }
-  };
-
   const checkAndRemoveFromVC = async () => {
-    const userId = localStorage.getItem("id");
-    const lobbyId = await isUserInLobby(userId);
-    if (!lobbyId) {
-      const isInVC = await checkUserInVoiceChannel(userId);
-      if (isInVC) {
-        await leaveVoiceChannel();
-      }
-    } else{
-      console.log("User is in lobby but not in an associated VC")
+    const isInVC = await checkUserInVoiceChannel(userId);
+    if (!isInVC) {
+      await leaveVoiceChannel();
+    } else {
+      console.log("User is in VC");
     }
   };
 
   useEffect(() => {
-    checkAndRemoveFromVC();
-    sessionStorage.removeItem("navigationState");
-  }, [state]);
+    // Function to periodically check and remove from VC if needed
+    const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+    setRtc((prevState) => ({ ...prevState, client }));
+
+    const interval = setInterval(() => {
+      checkAndRemoveFromVC();
+    }, 5000); // Check every 5 seconds
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(interval);
+  }, [rtc.client, userId, location.pathname, navigationState]); // Add dependencies to re-run effect if these change
+
   ///////////////////////////////////////////////////////////////////////////////
 
   return (

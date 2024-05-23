@@ -79,10 +79,12 @@ const Game = () => {
 
   const [usersInVoiceChannel, setUsersInVoiceChannel] = useState([]);
   const [isInVoiceChannel, setIsInVoiceChannel] = useState(false);
+  const [isCurrentUserInVC, setIsCurrentUserInVC] = useState(true);
 
-  const [activeSpeaker, setActiveSpeaker] = useState(null);
   const [isMuted, setIsMuted] = useState(false);
   const [audioSubscriptions, setAudioSubscriptions] = useState<AudioSubscriptions>({});
+  const [volumeToggle, setVolumeToggle] = useState({});
+
   const [isMicAvailable, setIsMicAvailable] = useState(true);
   const muteButtonClass = !isMicAvailable ? "disabled-button" : "";
   const [volume, setVolume] = useState(0.5);
@@ -321,17 +323,21 @@ const Game = () => {
   ////////////////////////////////AGORA////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
-
   const joinVoiceChannel = async () => {
     try {
       await checkMicrophoneAvailability();
       const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+
       setRtc(prevState => ({ ...prevState, client }));
+
       await client.join(APP_ID, lobbyId, TEMP_TOKEN, userId);
       const localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
       await client.publish(localAudioTrack);
+
       setRtc(prevState => ({ ...prevState, localAudioTrack }));
+
       setupClientEventHandlers(client);
+
       setIsInVoiceChannel(true);
       setUsersInVoiceChannel(prev => [...prev, userId]);
     } catch (error) {
@@ -339,11 +345,13 @@ const Game = () => {
       setIsMicAvailable(false);
     }
   };
+
   const leaveVoiceChannel = async () => {
     try {
       if (rtc.client) {
         rtc.client.leave();
         rtc.localAudioTrack?.close();
+
         setRtc({ client: null, localAudioTrack: null });
         setIsInVoiceChannel(false);
         setUsersInVoiceChannel(prev => prev.filter(id => id !== userId));
@@ -353,7 +361,6 @@ const Game = () => {
     }
   };
 
-
   useEffect(() => {
     joinVoiceChannel();
 
@@ -362,6 +369,27 @@ const Game = () => {
       cleanupAgora();
     };
   }, []);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (rtc.client) {
+        const isInVC = checkUserInVoiceChannel(userId);
+        setIsCurrentUserInVC(isInVC);
+
+        if (!isInVC) {
+          try {
+            await leaveVoiceChannel();
+            await joinVoiceChannel();
+          } catch (error) {
+            console.error("Error rejoining channel:", error);
+          }
+        }
+      }
+    }, 10000); // Check every 10 seconds
+
+    return () => clearInterval(interval);
+  }, [rtc.client, userId, lobbyId, setRtc]);
+
 
   const checkMicrophoneAvailability = async () => {
     try {
@@ -380,27 +408,7 @@ const Game = () => {
       }
     } catch {
       console.log("Error checking microphone availability:");
-      setIsMicAvailable(false);
-    }
-  };
-
-  const joinChannel = async (client) => {
-    try {
-      await client.join(APP_ID, lobbyId, TEMP_TOKEN, userId);
-    } catch (error) {
-      console.error("Error joining channel:", error);
-      throw error;
-    }
-  };
-
-  const initializeLocalAudioTrack = async (client) => {
-    try {
-      const localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
-      await client.publish(localAudioTrack);
-      setRtc(prevState => ({ ...prevState, localAudioTrack }));
-    } catch (error) {
-      console.error("Error initializing local audio track:", error);
-      throw error;
+      //setIsMicAvailable(false);
     }
   };
 
@@ -436,33 +444,7 @@ const Game = () => {
     });
 
     client.enableAudioVolumeIndicator();
-    client.on("volume-indicator", (volumes) => {
-      volumes.forEach(({ uid, level }) => {
-        if (level > 5) {
-          setActiveSpeaker(uid);
-        }
-      });
-    });
-
   };
-
-  useEffect(() => {
-    if (rtc.client) {
-      const currentPlayersIds = players.map(player => player.id);
-      usersInVoiceChannel.forEach(async userId => {
-        if (!currentPlayersIds.includes(userId)) {
-          await rtc.client.leave();
-          setUsersInVoiceChannel(prev => prev.filter(id => id !== userId));
-        }
-      });
-      currentPlayersIds.forEach(async playerId => {
-        if (!usersInVoiceChannel.includes(playerId)) {
-          await joinVoiceChannel();
-          setUsersInVoiceChannel(prev => [...prev, playerId]);
-        }
-      });
-    }
-  }, [players]);
 
   const cleanupAgora = () => {
     if (rtc.client) {
@@ -487,7 +469,95 @@ const Game = () => {
 
   const toggleAudioPlay = async (userId) => {
     if (!usersInVoiceChannel.includes(userId)) {
+      return;
+    }
 
+    setVolumeToggle((prev) => {
+      const newToggleState = !prev[userId];
+      const newVolume = newToggleState ? 0 : 1; // Toggle between 0 and max volume
+
+      if (audioSubscriptions[userId]) {
+        audioSubscriptions[userId].track.setVolume(newVolume);
+      }
+
+      return {
+        ...prev,
+        [userId]: newToggleState,
+      };
+    });
+  };
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume]);
+
+  const checkUserInVoiceChannel = async (userId) => {
+    if (rtc.client) {
+      const remoteUsers = rtc.client.remoteUsers;
+
+      return remoteUsers.some(user => user.uid === userId);
+    }
+
+    return false;
+  };
+
+  const handleVolumeChange = (userId, volume) => {
+    setAudioSubscriptions((prev) => {
+      const currentSubscription = prev[userId];
+      if (currentSubscription) {
+        currentSubscription.track.setVolume(volume);
+
+        return {
+          ...prev,
+          [userId]: { ...currentSubscription, volume },
+        };
+      }
+
+      return prev;
+    });
+  };
+
+  /*const kickPlayerFromVoiceChannel = async (playerId) => {
+    try {
+      const isInVoiceChannel = await checkUserInVoiceChannel(playerId);
+      if (isInVoiceChannel) {
+        if (rtc.client) {
+          rtc.client.remoteUsers.forEach(user => {
+            if (user.uid === playerId) {
+              rtc.client.unsubscribe(user);
+              user.audioTrack.stop();
+            }
+          });
+          setUsersInVoiceChannel(prev => prev.filter(id => id !== playerId));
+        }
+      }
+    } catch (error) {
+      console.error(`Error kicking player ${playerId} from the voice channel:`, error);
+    }
+  };
+
+    useEffect(() => {
+    if (rtc.client) {
+      const currentPlayersIds = players.map(player => player.id);
+      usersInVoiceChannel.forEach(async userId => {
+        if (!currentPlayersIds.includes(userId)) {
+          await rtc.client.leave();
+          setUsersInVoiceChannel(prev => prev.filter(id => id !== userId));
+        }
+      });
+      currentPlayersIds.forEach(async playerId => {
+        if (!usersInVoiceChannel.includes(playerId)) {
+          await joinVoiceChannel();
+          setUsersInVoiceChannel(prev => [...prev, playerId]);
+        }
+      });
+    }
+  }, []);
+
+  const toggleAudioPlay = async (userId) => {
+    if (!usersInVoiceChannel.includes(userId)) {
       return;
     }
     setAudioSubscriptions((prev) => {
@@ -511,51 +581,8 @@ const Game = () => {
       return prev;
     });
   };
+  */
 
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume;
-    }
-  }, [volume]);
-  const checkUserInVoiceChannel = async (userId) => {
-    if (rtc.client) {
-      const remoteUsers = rtc.client.remoteUsers;
-
-      return remoteUsers.some(user => user.uid === userId);
-    }
-
-    return false;
-  };
-  const addSpecificPlayerToVoiceChannel = async (playerId) => {
-    try {
-      const isInVoiceChannel = await checkUserInVoiceChannel(playerId);
-      if (!isInVoiceChannel) {
-        await joinVoiceChannel();
-        setUsersInVoiceChannel(prev => [...prev, playerId]);
-      }
-    } catch (error) {
-      console.error(`Error adding player ${playerId} to the voice channel:`, error);
-    }
-  };
-
-  const kickPlayerFromVoiceChannel = async (playerId) => {
-    try {
-      const isInVoiceChannel = await checkUserInVoiceChannel(playerId);
-      if (isInVoiceChannel) {
-        if (rtc.client) {
-          rtc.client.remoteUsers.forEach(user => {
-            if (user.uid === playerId) {
-              rtc.client.unsubscribe(user);
-              user.audioTrack.stop();
-            }
-          });
-          setUsersInVoiceChannel(prev => prev.filter(id => id !== playerId));
-        }
-      }
-    } catch (error) {
-      console.error(`Error kicking player ${playerId} from the voice channel:`, error);
-    }
-  };
   /////////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -570,11 +597,7 @@ const Game = () => {
         {/* Players at the top */}
         <div className="opponent-container">
           {players.filter(player => player.id !== playerId).map((player) => (
-            <div className="opponent" key={player.id} style={{
-              border: player.id === activeSpeaker ? "2px solid #4CAF50" : "none",
-              fontWeight: player.id === activeSpeaker ? "bold" : "normal",
-              fontColor: player.id === activeSpeaker ? "green" : "white"
-            }}>
+            <div className="opponent" key={player.id} style={{}}>
               <span
                 className={`opponent-name ${player.id === currentPlayerId ? "current" : ""}`}>{player.username}</span>
               <div className="opponent-chips">
@@ -589,10 +612,19 @@ const Game = () => {
               <Button
                 className="listen-button"
                 onClick={() => toggleAudioPlay(player.id)}
-                disabled={!usersInVoiceChannel.includes(player.id)}
+                disabled={!checkUserInVoiceChannel(player.id)}
               >
-                {audioSubscriptions[player.id]?.isPlaying ? "Stop Listening" : "Start Listening"}
+                {volumeToggle[player.id] ? "Set Volume to Max" : "Set Volume to Zero"}
               </Button>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={audioSubscriptions[player.id]?.volume ?? 0.5}
+                onChange={(e) => handleVolumeChange(player.id, Number(e.target.value))}
+                disabled={!audioSubscriptions[player.id]?.isPlaying}
+              />
             </div>
           ))}
           <a href="#" className="question-image" onClick={showRules}>
