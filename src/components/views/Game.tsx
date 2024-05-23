@@ -93,6 +93,10 @@ const Game = () => {
     return Object.values(playersObj);
   };
   useEffect(() => {
+    const state = { from: "Game" };
+    sessionStorage.setItem("navigationState", JSON.stringify(state));
+    console.log("Session Storage after having been in Game is: ", sessionStorage.getItem("navigationState"));
+
     const websocket = new SockJS(`${getDomain()}/ws`);
     const stompClient = Stomp.over(websocket);
     stompClient.connect({}, () => {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { api, handleError } from "helpers/api";
 import { Button } from "components/ui/Button";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import BaseContainer from "components/ui/BaseContainer";
 import "styles/views/Homepage.scss";
 import Lobby from "models/Lobby";
@@ -9,7 +9,6 @@ import AgoraRTC from "agora-rtc-sdk";
 
 const Homepage = () => {
   const navigate = useNavigate();
-  const location = useLocation();
 
   const [lobbyId, setLobbyId] = useState<string>("");
   const [id, setUserId] = useState<number>(null);
@@ -95,6 +94,7 @@ const Homepage = () => {
     setUserId(storedUserId);
   }, []);
 
+  /////////////////////////AGORA LOBBY HANDLE///////////////////////////////////
   // Function to check if user is in voice channel
   const checkUserInVoiceChannel = async (userId) => {
     if (rtc.client) {
@@ -147,18 +147,18 @@ const Homepage = () => {
         await leaveVoiceChannel();
       }
     }
+    console.log("User is in lobby but not in an associated VC")
   };
 
   useEffect(() => {
-    const storedUserId = localStorage.getItem("id");
-    setUserId(storedUserId);
-
     // Check and remove from VC if needed
+    console.log("Session Storage before cleaning up Lobby is: ", sessionStorage)
     console.log("Use Effect Was triggered")
     checkAndRemoveFromVC();
     sessionStorage.removeItem("navigationState");
     console.log("Session Storage after cleaning up Lobby is: ", sessionStorage)
   }, [state]);
+  ///////////////////////////////////////////////////////////////////////////////
 
   return (
     <BaseContainer className="homepage container">
