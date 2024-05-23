@@ -14,13 +14,18 @@ const Homepage = () => {
   const [id, setUserId] = useState<number>(null);
 
   // Agora client state
-  const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
   const [rtc, setRtc] = useState({
     client: null,
     localAudioTrack: null,
   });
 
   let state = JSON.parse(sessionStorage.getItem("navigationState"));
+
+  // Initialize Agora RTC client
+  useEffect(() => {
+    const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+    setRtc((prevState) => ({ ...prevState, client }));
+  }, []);
 
   const joinLobby = async () => {
     try {
@@ -130,28 +135,19 @@ const Homepage = () => {
 
   // Function to check if user is in a lobby and handle VC accordingly
   const checkAndRemoveFromVC = async () => {
-    setRtc((prevState) => ({ ...prevState, client }));
-
     const userId = localStorage.getItem("id");
     const lobbyId = await isUserInLobby(userId);
     console.log("checkAndRemoveFromVC Was triggered userId: $",userId, "lobbyId: ",lobbyId)
-    const isInVC = await checkUserInVoiceChannel(userId);
+
 
     if (!lobbyId) {
-      if (isInVC) {
-        console.log("User is in VC and in a lobby, removing from VC");
-        await leaveVoiceChannel();
-      } else {
-        console.log("User is in lobby but not in an associated VC")
-      }
-    } else{
-      console.log("User is not in a lobby")
+      const isInVC = await checkUserInVoiceChannel(userId);
       if (isInVC) {
         console.log("User is in VC but not in a lobby, removing from VC");
         await leaveVoiceChannel();
-      } else {
-        console.log("User is not in a lobby and not in an associated VC")
       }
+    } else{
+      console.log("User is in lobby but not in an associated VC")
     }
   };
 
