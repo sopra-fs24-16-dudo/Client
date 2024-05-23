@@ -466,26 +466,6 @@ const Game = () => {
     }
   };
 
-  const toggleAudioPlay = async (userId) => {
-    if (!usersInVoiceChannel.includes(userId)) {
-      return;
-    }
-
-    setVolumeToggle((prev) => {
-      const newToggleState = !prev[userId];
-      const newVolume = newToggleState ? 0 : 1; // Toggle between 0 and max volume
-
-      if (audioSubscriptions[userId]) {
-        audioSubscriptions[userId].track.setVolume(newVolume);
-      }
-
-      return {
-        ...prev,
-        [userId]: newToggleState,
-      };
-    });
-  };
-
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = volume;
@@ -578,6 +558,26 @@ const Game = () => {
       }
 
       return prev;
+    });
+  };
+
+  const toggleAudioPlay = async (userId) => {
+    if (!usersInVoiceChannel.includes(userId)) {
+      return;
+    }
+
+    setVolumeToggle((prev) => {
+      const newToggleState = !prev[userId];
+      const newVolume = newToggleState ? 0 : 1; // Toggle between 0 and max volume
+
+      if (audioSubscriptions[userId]) {
+        audioSubscriptions[userId].track.setVolume(newVolume);
+      }
+
+      return {
+        ...prev,
+        [userId]: newToggleState,
+      };
     });
   };
   */
