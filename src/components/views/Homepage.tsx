@@ -140,12 +140,13 @@ const Homepage = () => {
       console.log("User is in VC");
     }
   };
+  useEffect(() => {
+    const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+    setRtc((prevState) => ({ ...prevState, client }));
+  }, []);
 
   useEffect(() => {
     // Function to periodically check and remove from VC if needed
-    const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-    setRtc((prevState) => ({ ...prevState, client }));
-
     const interval = setInterval(() => {
       checkAndRemoveFromVC();
     }, 5000); // Check every 5 seconds

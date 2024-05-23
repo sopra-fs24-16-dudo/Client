@@ -138,10 +138,12 @@ const UserList = () => {
   };
 
   useEffect(() => {
-    // Function to periodically check and remove from VC if needed
     const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
     setRtc((prevState) => ({ ...prevState, client }));
+  }, []);
 
+  useEffect(() => {
+    // Function to periodically check and remove from VC if needed
     const interval = setInterval(() => {
       checkAndRemoveFromVC();
     }, 5000); // Check every 5 seconds
