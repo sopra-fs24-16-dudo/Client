@@ -45,9 +45,8 @@ const Lobby = () => {
     const websocket = new SockJS(`${getDomain()}/ws`);
     const stompClient = Stomp.over(websocket);
     stompClient.connect({}, () => {
-      console.log("Connected to Stomp server");
       stompClient.subscribe(`/topic/lobby/${lobbyId}`, (message) => {
-        console.log("Received message from lobby channel:", message.body);
+
         const parsedMessage = JSON.parse(message.body);
         const updatedUserList = parsedMessage.players;
         setUsers(updatedUserList);
@@ -55,11 +54,9 @@ const Lobby = () => {
         setAdmin(updateAdmin)
       });
       stompClient.subscribe(`/topic/kick/${userId}`, (message) => {
-        console.log("Received kick message:", message.body);
         window.location.href = "/homepage";
       });
       stompClient.subscribe(`/topic/start/${lobbyId}`, (message) => {
-        console.log("Game started:", message.body);
         window.location.href = "/game/" + lobbyId;
       });
     }, (error) => {
@@ -68,7 +65,6 @@ const Lobby = () => {
 
     return () => {
       stompClient.disconnect(() => {
-        console.log("Disconnected from Stomp server");
       });
       websocket.close();
     };
@@ -78,14 +74,12 @@ const Lobby = () => {
   useEffect(() => {
     async function fetchUsersInLobby () {
       try {
-        console.log("LobbyID:", lobbyId);
         const response = await api.get(`/lobbies/players/${lobbyId}`);
         setUsers(response.data);
         const allReady = response.data.every((user) => user.ready);
         setAllReady(allReady);
         const adminId = await api.get(`/lobbies/admin/${lobbyId}`);
         setAdmin(adminId.data);
-        console.log("Admin:", adminId.data);
       } catch (error) {
         console.error("Error fetching users in lobby:", error);
       }
@@ -181,7 +175,6 @@ const Lobby = () => {
         await rtc.client.leave();
         rtc.localAudioTrack?.close();
         setRtc({ client: null, localAudioTrack: null });
-        console.log("Left the voice channel successfully");
       }
     } catch (error) {
       console.error("Error leaving the voice channel:", error);
@@ -203,11 +196,9 @@ const Lobby = () => {
   const checkAndRemoveFromVC = async () => {
     const userId = localStorage.getItem("id");
     const lobbyId = await isUserInLobby(userId);
-    console.log("checkAndRemoveFromVC Was triggered userId: $",userId, "lobbyId: ",lobbyId)
     if (!lobbyId) {
       const isInVC = await checkUserInVoiceChannel(userId);
       if (isInVC) {
-        console.log("User is in VC but not in a lobby, removing from VC");
         await leaveVoiceChannel();
       }
     } else{
@@ -217,11 +208,8 @@ const Lobby = () => {
 
   useEffect(() => {
     // Check and remove from VC if needed
-    console.log("Session Storage before cleaning up Lobby is: ", sessionStorage)
-    console.log("Use Effect Was triggered")
     checkAndRemoveFromVC();
     sessionStorage.removeItem("navigationState");
-    console.log("Session Storage after cleaning up Lobby is: ", sessionStorage)
   }, [state]);
   ///////////////////////////////////////////////////////////////////////////////
 

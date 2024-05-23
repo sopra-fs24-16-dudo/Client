@@ -104,7 +104,6 @@ const Login = () => {
         await rtc.client.leave();
         rtc.localAudioTrack?.close();
         setRtc({ client: null, localAudioTrack: null });
-        console.log("Left the voice channel successfully");
       }
     } catch (error) {
       console.error("Error leaving the voice channel:", error);
@@ -126,11 +125,9 @@ const Login = () => {
   const checkAndRemoveFromVC = async () => {
     const userId = localStorage.getItem("id");
     const lobbyId = await isUserInLobby(userId);
-    console.log("checkAndRemoveFromVC Was triggered userId: $",userId, "lobbyId: ",lobbyId)
     if (!lobbyId) {
       const isInVC = await checkUserInVoiceChannel(userId);
       if (isInVC) {
-        console.log("User is in VC but not in a lobby, removing from VC");
         await leaveVoiceChannel();
       }
     } else{
@@ -139,12 +136,8 @@ const Login = () => {
   };
 
   useEffect(() => {
-    // Check and remove from VC if needed
-    console.log("Session Storage before cleaning up Lobby is: ", sessionStorage)
-    console.log("Use Effect Was triggered")
     checkAndRemoveFromVC();
     sessionStorage.removeItem("navigationState");
-    console.log("Session Storage after cleaning up Lobby is: ", sessionStorage)
   }, [state]);
   ///////////////////////////////////////////////////////////////////////////////
 

@@ -95,12 +95,10 @@ const Game = () => {
   useEffect(() => {
     const state = { from: "Game" };
     sessionStorage.setItem("navigationState", JSON.stringify(state));
-    console.log("Session Storage after having been in Game is: ", sessionStorage.getItem("navigationState"));
 
     const websocket = new SockJS(`${getDomain()}/ws`);
     const stompClient = Stomp.over(websocket);
     stompClient.connect({}, () => {
-      console.log("Connected to Stomp server");
       stompClient.subscribe(`/topic/lobby/${lobbyId}`, (message) => {
         const parsedMessage = JSON.parse(message.body);
         const playersArray = playersToArray(parsedMessage.players);
@@ -122,7 +120,6 @@ const Game = () => {
 
     return () => {
       stompClient.disconnect(() => {
-        console.log("Disconnected from Stomp server");
       });
       websocket.close();
     };
@@ -151,7 +148,6 @@ const Game = () => {
         setCurrentPlayerId(currentPlayerId.data);
         const fijo = await api.get(`/games/fijoCheck/${lobbyId}`);
         setIsFijo(fijo.data);
-        console.log("Fijo check fetch users:", isFijo);
       } catch (error) {
         console.error("Error fetching users in lobby:", error);
       }
@@ -166,7 +162,6 @@ const Game = () => {
     async function fetchHand() {
       const fijo = await api.get(`/games/fijoCheck/${lobbyId}`);
       setIsFijo(fijo.data);
-      console.log("Fijo check fetch hand:", isFijo);
       if (!currentBid || currentBid.suit === null || currentBid.suit === "null") {
         animateDice();
       }
@@ -194,7 +189,6 @@ const Game = () => {
     AgoraRTC.getDevices().then(devices => {
       const audioOutputDevices = devices.filter(device => device.kind === "audiooutput");
       if (audioOutputDevices.length > 0) {
-        console.log("Audio Output Devices:", audioOutputDevices);
       }
     });
   }, []);
@@ -220,7 +214,6 @@ const Game = () => {
     if (loser.data) {
       const r = await api.get(`/games/fijoCheck/${lobbyId}`);
       setIsFijo(loser.data.chips === 1)
-      console.log("Fijo check checkLoser:", isFijo);
       setLoser(loser.data);
       setShowLoserModal(true);
       let countdownTimer = setInterval(() => {
@@ -341,7 +334,6 @@ const Game = () => {
       setupClientEventHandlers(client);
       setIsInVoiceChannel(true);
       setUsersInVoiceChannel(prev => [...prev, userId]);
-      console.log("Joined channel successfully");
     } catch (error) {
       console.error("Error joining channel:", error);
       setIsMicAvailable(false);
@@ -353,7 +345,6 @@ const Game = () => {
         rtc.client.leave();
         rtc.localAudioTrack?.close();
         setRtc({ client: null, localAudioTrack: null });
-        console.log("Left the voice channel successfully");
         setIsInVoiceChannel(false);
         setUsersInVoiceChannel(prev => prev.filter(id => id !== userId));
       }
@@ -378,14 +369,12 @@ const Game = () => {
       const audioInputDevices = devices.filter(device => device.kind === "audioinput");
 
       if (audioInputDevices.length === 0) {
-        console.log("No microphone found");
         setIsMicAvailable(false);
       } else {
         try {
           await navigator.mediaDevices.getUserMedia({ audio: true });
           setIsMicAvailable(true);
         } catch {
-          console.log("Microphone access denied");
           setIsMicAvailable(false);
         }
       }
@@ -398,7 +387,6 @@ const Game = () => {
   const joinChannel = async (client) => {
     try {
       await client.join(APP_ID, lobbyId, TEMP_TOKEN, userId);
-      console.log("Joined channel successfully");
     } catch (error) {
       console.error("Error joining channel:", error);
       throw error;
@@ -410,7 +398,6 @@ const Game = () => {
       const localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
       await client.publish(localAudioTrack);
       setRtc(prevState => ({ ...prevState, localAudioTrack }));
-      console.log("Local audio track initialized and published");
     } catch (error) {
       console.error("Error initializing local audio track:", error);
       throw error;
@@ -432,7 +419,6 @@ const Game = () => {
         });
         if (audioSubscriptions[user.uid]?.isPlaying !== false) {
           audioTrack.play();
-          console.log(`Subscribed and started playing audio from user ${user.uid}`);
         }
         setUsersInVoiceChannel((prev) => [...prev, user.uid]);
       }
@@ -446,7 +432,6 @@ const Game = () => {
           return rest;
         });
         setUsersInVoiceChannel((prev) => prev.filter((uid) => uid !== user.uid));
-        console.log(`User ${user.uid} unpublished`);
       }
     });
 
@@ -459,7 +444,6 @@ const Game = () => {
       });
     });
 
-    console.log("Agora client event handlers set up");
   };
 
   useEffect(() => {
@@ -469,14 +453,12 @@ const Game = () => {
         if (!currentPlayersIds.includes(userId)) {
           await rtc.client.leave();
           setUsersInVoiceChannel(prev => prev.filter(id => id !== userId));
-          console.log(`User ${userId} left the voice channel because they are not in the game`);
         }
       });
       currentPlayersIds.forEach(async playerId => {
         if (!usersInVoiceChannel.includes(playerId)) {
           await joinVoiceChannel();
           setUsersInVoiceChannel(prev => [...prev, playerId]);
-          console.log(`User ${playerId} joined the voice channel`);
         }
       });
     }
@@ -492,7 +474,6 @@ const Game = () => {
       });
     }
     rtc.localAudioTrack?.close();
-    console.log("Cleaned up Agora resources");
   };
 
   const toggleMute = async () => {
@@ -501,13 +482,11 @@ const Game = () => {
       const newMutedState = !isMuted;
       await rtc.localAudioTrack.setMuted(newMutedState);
       setIsMuted(newMutedState);
-      console.log(newMutedState ? "Microphone muted" : "Microphone unmuted");
     }
   };
 
   const toggleAudioPlay = async (userId) => {
     if (!usersInVoiceChannel.includes(userId)) {
-      console.log(`User ${userId} is not in the voice channel`);
 
       return;
     }
@@ -522,12 +501,6 @@ const Game = () => {
           currentSubscription.track.stop();
           rtc.client.unsubscribe(currentSubscription.track);
         }
-
-        console.log(
-          newIsPlaying
-            ? `Playing audio from user ${userId}`
-            : `Stopped playing audio from user ${userId}`
-        );
 
         return {
           ...prev,
@@ -559,7 +532,6 @@ const Game = () => {
       if (!isInVoiceChannel) {
         await joinVoiceChannel();
         setUsersInVoiceChannel(prev => [...prev, playerId]);
-        console.log(`User ${playerId} joined the voice channel`);
       }
     } catch (error) {
       console.error(`Error adding player ${playerId} to the voice channel:`, error);
@@ -578,7 +550,6 @@ const Game = () => {
             }
           });
           setUsersInVoiceChannel(prev => prev.filter(id => id !== playerId));
-          console.log(`User ${playerId} kicked from the voice channel`);
         }
       }
     } catch (error) {
