@@ -325,9 +325,7 @@ const Game = () => {
 
   const joinVoiceChannel = async () => {
     try {
-      await checkMicrophoneAvailability();
       const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-
       setRtc(prevState => ({ ...prevState, client }));
 
       await client.join(APP_ID, lobbyId, TEMP_TOKEN, userId);
@@ -340,6 +338,8 @@ const Game = () => {
 
       setIsInVoiceChannel(true);
       setUsersInVoiceChannel(prev => [...prev, userId]);
+
+      await checkMicrophoneAvailability();
     } catch (error) {
       console.error("Error joining channel:", error);
       setIsMicAvailable(false);
@@ -408,7 +408,6 @@ const Game = () => {
       }
     } catch {
       console.log("Error checking microphone availability:");
-      //setIsMicAvailable(false);
     }
   };
 
@@ -609,13 +608,7 @@ const Game = () => {
                   ))
                 )}
               </div>
-              <Button
-                className="listen-button"
-                onClick={() => toggleAudioPlay(player.id)}
-                disabled={!checkUserInVoiceChannel(player.id)}
-              >
-                {volumeToggle[player.id] ? "Set Volume to Max" : "Set Volume to Zero"}
-              </Button>
+              <p className = "volume-wrap" >Player volume: </p>
               <input
                 type="range"
                 min="0"
