@@ -137,8 +137,9 @@ const Registration = () => {
         console.log("User is in VC but not in a lobby, removing from VC");
         await leaveVoiceChannel();
       }
+    } else{
+      console.log("User is in lobby but not in an associated VC")
     }
-    console.log("User is in lobby but not in an associated VC")
   };
 
   useEffect(() => {
