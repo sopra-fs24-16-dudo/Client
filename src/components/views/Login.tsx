@@ -145,10 +145,13 @@ const Login = () => {
     }
   };
 
+
   useEffect(() => {
-    const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-    setRtc((prevState) => ({ ...prevState, client }));
-  }, []);
+    if (!rtc.client) {
+      const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+      setRtc((prevState) => ({ ...prevState, client }));
+    }
+  }, [rtc.client]);
 
   useEffect(() => {
     // Function to periodically check and remove from VC if needed
