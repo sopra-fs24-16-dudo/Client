@@ -358,6 +358,8 @@ const Game = () => {
 
   useEffect(() => {
     joinVoiceChannel();
+    rtc.localAudioTrack.setMuted(true);
+    rtc.localAudioTrack.setMuted(false);
 
     return () => {
       leaveVoiceChannel();
