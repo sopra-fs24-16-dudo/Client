@@ -106,6 +106,7 @@ const Game = () => {
       location.reload();
       break;
     default:
+      location.reload();
       break;
     }
   }
