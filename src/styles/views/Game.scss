@@ -495,22 +495,23 @@
         left: 50%;
         transform: translate(-50%, -50%);
         font-size: 16px;
-        color: red;
+        color: #721c1c;
         pointer-events: none;
       }
 
       &:hover::before {
-        content: "Slider is disabled";
+        content: "User is muted or has no microphone connected";
         position: absolute;
         top: -25px;
         left: 50%;
         transform: translateX(-50%);
         background: rgba(96, 91, 71, 0.76);
-        color: $background;
+        color: #fff; /* Use a fixed color for visibility */
         padding: 5px;
         border-radius: 3px;
         white-space: nowrap;
         font-size: 12px;
+        z-index: 1000; /* Ensure it's on top */
       }
     }
   }

@@ -533,16 +533,14 @@ const Game = () => {
                 )}
               </div>
               <p className = "volume-wrap" >Player volume: </p>
-              <div className="slider-container" >
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.01"
-                  value={(audioSubscriptions[player.id]?.volume)/100 ?? 0.5}
-                  onChange={(e) => handleVolumeChange(player.id, (Number(e.target.value)*100))}
-                  disabled={!audioSubscriptions[player.id]?.isPlaying} />
-              </div>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={(audioSubscriptions[player.id]?.volume)/100 ?? 0.5}
+                onChange={(e) => handleVolumeChange(player.id, (Number(e.target.value)*100))}
+                disabled={!audioSubscriptions[player.id]?.isPlaying} />
             </div>
           ))}
           <a href="#" className="question-image" onClick={showRules}>
