@@ -365,8 +365,8 @@ const Game = () => {
         setIsInVoiceChannel(false);
         setUsersInVoiceChannel(prev => prev.filter(id => id !== userId));
       }
-    } catch (error) {
-      console.error("Error leaving the voice channel:", error);
+    } catch {
+      console.log("Error leaving the voice channel:");
     }
   };
 
@@ -733,6 +733,7 @@ const Game = () => {
             )}
             <Button onClick={() => {
               setShowWinnerModal(false);
+              leaveVoiceChannel();
               navigatToLobby();
             }}>Back to Lobby</Button>
           </div>
