@@ -474,5 +474,31 @@
     transition: all 0.3s ease;
     margin-top: 1em;
   }
+  input[type="range"] {
+    /* This is the track */
+    -webkit-appearance: none;
+    width: 120px;
+    height: 5px;
+    border-radius: 5px;
+    background: BROWN;
+    outline: none;
+
+    /* This is the thumb */
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: brown;
+      cursor: pointer;
+      transition: background 0.15s ease-in-out;
+      border: 0.8px solid white;
+
+      &:hover {
+        background: #721c1c;
+      }
+    }
+  }
 
 }

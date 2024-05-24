@@ -87,7 +87,7 @@ const Game = () => {
 
   const [isMicAvailable, setIsMicAvailable] = useState(true);
   const muteButtonClass = !isMicAvailable ? "disabled-button" : "";
-  const [volume, setVolume] = useState(0.5);
+  const [volume, setVolume] = useState(0.1);
 
   const audioRef = useRef(null);
   const [navigationEntry] = performance.getEntriesByType("navigation");
