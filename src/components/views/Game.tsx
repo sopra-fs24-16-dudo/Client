@@ -353,6 +353,20 @@ const Game = () => {
       setIsInVoiceChannel(true);
       setUsersInVoiceChannel(prev => [...prev, userId]);
 
+      // Check if there are existing remote users and subscribe to their audio tracks
+      const remoteUsers = client.remoteUsers;
+      for (const remoteUser of remoteUsers) {
+        if (remoteUser.hasAudio) {
+          await client.subscribe(remoteUser, "audio");
+          const audioTrack = remoteUser.audioTrack;
+          setAudioSubscriptions(prev => ({
+            ...prev,
+            [remoteUser.uid]: { track: audioTrack, isPlaying: true }
+          }));
+          audioTrack.play();
+        }
+      }
+
       await checkMicrophoneAvailability();
     } catch (error) {
       console.error("Error joining channel:", error);
