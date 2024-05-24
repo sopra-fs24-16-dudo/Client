@@ -310,7 +310,7 @@ const Game = () => {
 
   const leaveGame = async () => {
     try {
-      leaveVoiceChannel();
+      //leaveVoiceChannel();
       const reqBody = JSON.stringify({ playerId });
       await api.post(`/games/exit/${lobbyId}`, playerId);
       navigate("/homepage");
