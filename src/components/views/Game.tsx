@@ -106,7 +106,6 @@ const Game = () => {
       break;
     case "prerender":
       console.log("Page was prerendered");
-      window.location.href = loc;
       break;
     default:
       break;
