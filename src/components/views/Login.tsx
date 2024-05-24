@@ -126,7 +126,7 @@ const Login = () => {
 
   const leaveVoiceChannel = async () => {
     try {
-      if (rtc.client) {
+      if (rtc.client.remoteUsers) {
         await rtc.client.leave();
         rtc.localAudioTrack?.close();
         setRtc({ client: null, localAudioTrack: null });

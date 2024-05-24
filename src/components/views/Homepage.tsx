@@ -111,7 +111,7 @@ const Homepage = () => {
 
   // Function to check if user is in voice channel
   const checkUserInVoiceChannel = async (userId) => {
-    if (rtc.client) {
+    if (rtc.client.remoteUsers) {
       const remoteUsers = rtc.client.remoteUsers;
 
       return remoteUsers.some(user => user.uid === userId);
