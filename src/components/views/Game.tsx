@@ -207,15 +207,6 @@ const Game = () => {
     }
   }, [showRulesModal]);
 
-  useEffect(() => {
-    AgoraRTC.getDevices().then(devices => {
-      const audioOutputDevices = devices.filter(device => device.kind === "audiooutput");
-      if (audioOutputDevices.length > 0) {
-      }
-    });
-  }, []);
-
-
   const navigatToLobby = () => {
     navigate(`/lobby/${lobbyId}`);
   };
@@ -387,6 +378,8 @@ const Game = () => {
 
   useEffect(() => {
     joinVoiceChannel();
+    rtc.localAudioTrack.setMuted(true);
+    rtc.localAudioTrack.setMuted(false);
 
     return () => {
       leaveVoiceChannel();
