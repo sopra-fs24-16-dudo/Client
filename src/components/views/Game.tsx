@@ -329,8 +329,12 @@ const Game = () => {
       setRtc(prevState => ({ ...prevState, client }));
 
       await client.join(APP_ID, lobbyId, TEMP_TOKEN, userId);
+      console.log("stop 1")
       const localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+      console.log("stop 2")
+
       await client.publish(localAudioTrack);
+      console.log("stop 3")
 
       setRtc(prevState => ({ ...prevState, localAudioTrack }));
 
@@ -340,6 +344,7 @@ const Game = () => {
       setUsersInVoiceChannel(prev => [...prev, userId]);
 
       await checkMicrophoneAvailability();
+      toggleMute();
     } catch (error) {
       console.error("Error joining channel:", error);
       setIsMicAvailable(false);
