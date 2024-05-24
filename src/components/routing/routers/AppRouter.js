@@ -40,9 +40,11 @@ const AppRouter = () => {
           <Route path="/game/:gameId" element={<Game/>} />
         </Route>
 
-        <Route path="/Profile" element={<ProfileGuard/>}>
-          <Route path="/Profile" element={<Profile/>} />
-        </Route>
+        <ForceReload>
+          <Route path="/Profile" element={<ProfileGuard/>}>
+            <Route path="/Profile" element={<Profile/>} />
+          </Route>
+        </ForceReload>
 
         <Route path="/login" element={<Login/>} />
         
