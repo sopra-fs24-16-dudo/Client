@@ -482,6 +482,36 @@
         background: #721c1c;
       }
     }
-  }
 
+    &.disabled {
+      background-color: #37523d;
+      pointer-events: none;
+      position: relative;
+
+      &::after {
+        content: "✖";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 16px;
+        color: red;
+        pointer-events: none;
+      }
+
+      &:hover::before {
+        content: "Slider is disabled";
+        position: absolute;
+        top: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(96, 91, 71, 0.76);
+        color: $background;
+        padding: 5px;
+        border-radius: 3px;
+        white-space: nowrap;
+        font-size: 12px;
+      }
+    }
+  }
 }
