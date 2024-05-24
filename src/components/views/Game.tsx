@@ -91,21 +91,6 @@ const Game = () => {
 
   const audioRef = useRef(null);
 
-  const [navigationEntry] = performance.getEntriesByType("navigation");
-  const loc = window.location.href;
-
-  if (navigationEntry) {
-    let a = window.location.href;
-    switch (navigationEntry["type"]) {
-    case "back_forward":
-      console.log("User used back/forward button");
-      window.location.href = loc;
-      break;
-    default:
-      break;
-    }
-  }
-
   const playersToArray = (playersObj) => {
     return Object.values(playersObj);
   };
