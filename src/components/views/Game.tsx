@@ -441,6 +441,8 @@ const Game = () => {
 
   const setupClientEventHandlers = (client: IAgoraRTCClient) => {
     client.on("user-published", async (user, mediaType: "audio") => {
+      toggleMute();
+      toggleMute();
       if (mediaType === "audio") {
         await client.subscribe(user, mediaType);
         const audioTrack = user.audioTrack;
