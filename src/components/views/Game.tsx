@@ -93,19 +93,13 @@ const Game = () => {
 
   const [navigationEntry] = performance.getEntriesByType("navigation");
   const loc = window.location.href;
+
   if (navigationEntry) {
     let a = window.location.href;
     switch (navigationEntry["type"]) {
-    case "navigate":
-      console.log("User navigated to the page");
-      window.location.href = loc;
-      break;
     case "back_forward":
       console.log("User used back/forward button");
       window.location.href = loc;
-      break;
-    case "prerender":
-      console.log("Page was prerendered");
       break;
     default:
       break;
