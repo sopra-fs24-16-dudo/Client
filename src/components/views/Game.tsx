@@ -344,7 +344,6 @@ const Game = () => {
       setUsersInVoiceChannel(prev => [...prev, userId]);
 
       await checkMicrophoneAvailability();
-      toggleMute();
     } catch (error) {
       console.error("Error joining channel:", error);
       setIsMicAvailable(false);
@@ -368,6 +367,7 @@ const Game = () => {
 
   useEffect(() => {
     joinVoiceChannel();
+    toggleMute();
 
     return () => {
       leaveVoiceChannel();
