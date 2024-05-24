@@ -367,6 +367,7 @@ const Game = () => {
 
   useEffect(() => {
     joinVoiceChannel();
+    console.log("Joined")
     toggleMute();
 
     return () => {
