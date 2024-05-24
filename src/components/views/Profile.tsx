@@ -67,7 +67,7 @@ const Profile = () => {
   }, []);
 
   const doHome = () => {
-    navigate("/homepage");
+    navigate("/userList");
   };
 
   /////////////////////////PROFILE AGORA HANDLE///////////////////////////////////
@@ -155,7 +155,7 @@ const Profile = () => {
             </li>
           </ul>
           <Button onClick={() => doHome()}>
-            Back to Homepage
+            Back
           </Button>
         </div>
       </div>

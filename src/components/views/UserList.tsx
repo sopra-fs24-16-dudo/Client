@@ -80,7 +80,7 @@ const UserList = () => {
   };
 
   const navigateToHomepage = () => {
-    navigate("/");
+    navigate(`/homepage`);
   };
 
   /////////////////////////USERLIST AGORA HANDLE///////////////////////////////////
@@ -175,7 +175,7 @@ const UserList = () => {
         ) : (
           <Spinner />
         )}
-        <div className="button-container">
+        <div className="button-container" style={{width: '150px'}}>
           <Button className="primary-button" onClick={navigateToHomepage}>
             Go to Homepage
           </Button>
