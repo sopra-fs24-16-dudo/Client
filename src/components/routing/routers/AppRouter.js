@@ -57,7 +57,7 @@ const AppRouter = () => {
         </Route>
 
         <Route path="/" element={
-          <Navigate to="/homepage" replace />
+          <Navigate to="/registration" replace />
         }/>
 
       </Routes>

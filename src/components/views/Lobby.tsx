@@ -228,12 +228,10 @@ const Lobby = () => {
 
   return (
     <BaseContainer className="lobby container">
+      <h2>Lobby id: {lobbyId}</h2>
+      <h3>Users in Lobby:</h3>
       <div className="user-list">
-        <h2>Lobby id: {lobbyId}</h2>
-        <h3>Users in Lobby:</h3>
-      </div>
-      <div className="user-list">
-        <ul>
+        <div>
           {Object.keys(users).map((playerId) => {
             const player = users[playerId];
 
@@ -248,7 +246,7 @@ const Lobby = () => {
               </div>
             );
           })}
-        </ul>
+        </div>
         <a href="#" className="question-image" onClick={showRules}>
           <img src={question} alt="Question" width="80px" height="80px" />
         </a>
