@@ -92,19 +92,21 @@ const Game = () => {
   const audioRef = useRef(null);
 
   const [navigationEntry] = performance.getEntriesByType("navigation");
+  const loc = window.location.href;
   if (navigationEntry) {
+    let a = window.location.href;
     switch (navigationEntry["type"]) {
     case "navigate":
       console.log("User navigated to the page");
-      window.location.reload();
+      window.location.href = loc;
       break;
     case "back_forward":
       console.log("User used back/forward button");
-      window.location.reload();
+      window.location.href = loc;
       break;
     case "prerender":
       console.log("Page was prerendered");
-      window.location.reload();
+      window.location.href = loc;
       break;
     default:
       break;
