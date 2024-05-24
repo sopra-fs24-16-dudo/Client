@@ -325,6 +325,8 @@ const Game = () => {
 
   const joinVoiceChannel = async () => {
     try {
+      rtc.localAudioTrack.setEnabled(false);
+      rtc.localAudioTrack.setEnabled(true);
       const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
       setRtc(prevState => ({ ...prevState, client }));
 
@@ -344,8 +346,6 @@ const Game = () => {
       setUsersInVoiceChannel(prev => [...prev, userId]);
 
       await checkMicrophoneAvailability();
-      rtc.localAudioTrack.setEnabled(false);
-      rtc.localAudioTrack.setEnabled(true);
     } catch (error) {
       console.error("Error joining channel:", error);
       setIsMicAvailable(false);
@@ -394,7 +394,7 @@ const Game = () => {
     }, 10000); // Check every 10 seconds
 
     return () => clearInterval(interval);
-  }, [rtc.client, userId, lobbyId, setRtc]);
+  }, [rtc.client, userId, lobbyId, setRtc, location.pathname]);
 
 
   const checkMicrophoneAvailability = async () => {
