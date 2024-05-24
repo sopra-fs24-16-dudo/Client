@@ -8,7 +8,7 @@ export const ProfileGuard = () => {
     return <Outlet />;
   }
   
-  return <Navigate to="/homepage" replace />;
+  return <Navigate to="/login" replace />;
 };
 
 ProfileGuard.propTypes = {

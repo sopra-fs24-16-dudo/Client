@@ -17,7 +17,7 @@ export const HomepageGuard = () => {
     return <Outlet />;
   }
   
-  return <Navigate to="/registration" replace />;
+  return <Navigate to="/login" replace />;
 };
 
 HomepageGuard.propTypes = {

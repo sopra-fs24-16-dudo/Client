@@ -8,7 +8,7 @@ export const LobbyGuard = () => {
     return <Outlet />;
   }
 
-  return <Navigate to="/homepage" replace />;
+  return <Navigate to="/login" replace />;
 };
 
 LobbyGuard.propTypes = {
