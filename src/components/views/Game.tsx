@@ -90,7 +90,7 @@ const Game = () => {
   const [volume, setVolume] = useState(0.1);
 
   const audioRef = useRef(null);
-  const [navigationEntry] = performance.getEntriesByType("navigation");
+  /*const [navigationEntry] = performance.getEntriesByType("navigation");
   if (navigationEntry) {
     switch (navigationEntry["type"]) {
     case "navigate":
@@ -108,7 +108,7 @@ const Game = () => {
     default:
       break;
     }
-  }
+  }*/
 
   const playersToArray = (playersObj) => {
     return Object.values(playersObj);
