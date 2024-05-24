@@ -90,25 +90,6 @@ const Game = () => {
   const [volume, setVolume] = useState(0.1);
 
   const audioRef = useRef(null);
-  /*const [navigationEntry] = performance.getEntriesByType("navigation");
-  if (navigationEntry) {
-    switch (navigationEntry["type"]) {
-    case "navigate":
-      console.log("User navigated to the page");
-      location.reload();
-      break;
-    case "back_forward":
-      console.log("User used back/forward button");
-      location.reload();
-      break;
-    case "prerender":
-      console.log("Page was prerendered");
-      location.reload();
-      break;
-    default:
-      break;
-    }
-  }*/
 
   const playersToArray = (playersObj) => {
     return Object.values(playersObj);

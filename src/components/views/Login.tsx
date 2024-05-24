@@ -115,7 +115,7 @@ const Login = () => {
 
   // Function to check if user is in voice channel
   const checkUserInVoiceChannel = async (userId) => {
-    if (rtc.client) {
+    if (rtc.client.remoteUsers) {
       const remoteUsers = rtc.client.remoteUsers;
 
       return remoteUsers.some(user => user.uid === userId);
@@ -126,7 +126,7 @@ const Login = () => {
 
   const leaveVoiceChannel = async () => {
     try {
-      if (rtc.client.remoteUsers) {
+      if (rtc.client) {
         await rtc.client.leave();
         rtc.localAudioTrack?.close();
         setRtc({ client: null, localAudioTrack: null });
