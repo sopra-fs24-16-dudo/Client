@@ -96,15 +96,15 @@ const Game = () => {
     switch (navigationEntry["type"]) {
     case "navigate":
       console.log("User navigated to the page");
-      location.reload();
+      window.location.reload();
       break;
     case "back_forward":
       console.log("User used back/forward button");
-      location.reload();
+      window.location.reload();
       break;
     case "prerender":
       console.log("Page was prerendered");
-      location.reload();
+      window.location.reload();
       break;
     default:
       break;
