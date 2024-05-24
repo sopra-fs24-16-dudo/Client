@@ -464,7 +464,7 @@ const Game = () => {
   };
 
   const toggleMute = async () => {
-    if (!isMicAvailable) return;
+    //if (!isMicAvailable) return;
     if (rtc.localAudioTrack) {
       const newMutedState = !isMuted;
       await rtc.localAudioTrack.setMuted(newMutedState);
@@ -509,7 +509,7 @@ const Game = () => {
       <div className="music-bar">
         <audio ref={audioRef} src={jazz} autoPlay loop />
         <p>Music volume: </p>
-        <input type="range" min="0" max="1" step="0.01" value={volume} onChange={e => setVolume(Number(e.target.value))} />
+        <input type="range" min="0" max="1" step="0.01" value={volume} onChange={e => setVolume((Number(e.target.value))*100)} />
       </div>
       <div className="game-header">
         {/* Players at the top */}
