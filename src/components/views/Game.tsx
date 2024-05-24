@@ -330,6 +330,9 @@ const Game = () => {
 
       await client.join(APP_ID, lobbyId, TEMP_TOKEN, userId);
       console.log("stop 1")
+      // Always request permission
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach(track => track.stop());
       const localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
       console.log("stop 2")
 
@@ -367,8 +370,6 @@ const Game = () => {
 
   useEffect(() => {
     joinVoiceChannel();
-    console.log("Joined")
-    toggleMute();
 
     return () => {
       leaveVoiceChannel();
@@ -464,7 +465,7 @@ const Game = () => {
   };
 
   const toggleMute = async () => {
-    //if (!isMicAvailable) return;
+    if (!isMicAvailable) return;
     if (rtc.localAudioTrack) {
       const newMutedState = !isMuted;
       await rtc.localAudioTrack.setMuted(newMutedState);
@@ -509,7 +510,7 @@ const Game = () => {
       <div className="music-bar">
         <audio ref={audioRef} src={jazz} autoPlay loop />
         <p>Music volume: </p>
-        <input type="range" min="0" max="1" step="0.01" value={volume} onChange={e => setVolume((Number(e.target.value))*100)} />
+        <input type="range" min="0" max="1" step="0.01" value={volume} onChange={e => setVolume(Number(e.target.value))} />
       </div>
       <div className="game-header">
         {/* Players at the top */}
@@ -533,8 +534,8 @@ const Game = () => {
                 min="0"
                 max="1"
                 step="0.01"
-                value={audioSubscriptions[player.id]?.volume ?? 0.5}
-                onChange={(e) => handleVolumeChange(player.id, Number(e.target.value))}
+                value={(audioSubscriptions[player.id]?.volume)/100 ?? 0.5}
+                onChange={(e) => handleVolumeChange(player.id, (Number(e.target.value)*100))}
                 disabled={!audioSubscriptions[player.id]?.isPlaying} />
             </div>
           ))}
